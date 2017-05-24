@@ -25,7 +25,45 @@ class UsuarioAdmin(models.Model):
     def __str__(self):
         return self.nombre
 
+class UsuarioVAmbulante(models.Model):
+    id = models.AutoField(primary_key=True)
+    nombre = models.CharField(max_length=200)
+    email = models.CharField(max_length=200)
+    tipo = models.IntegerField(default=3, editable=False)
+    avatar = models.CharField(max_length=200)
+    contraseña = models.CharField(max_length=200)
+    activo = models.BooleanField();
+    litaFormasDePago = (
+        (0, 'Tarjeta'),
+        (1, 'Efectivo'),
+    )
+    formasDePago = MultiSelectField(choices=litaFormasDePago)
+
+    def __str__(self):
+        return self.nombre
+
+class UsuarioVFijo(models.Model):
+    id = models.AutoField(primary_key=True)
+    nombre = models.CharField(max_length=200)
+    email = models.CharField(max_length=200)
+    tipo = models.IntegerField(default=2, editable=False)
+    avatar = models.CharField(max_length=200)
+    contraseña = models.CharField(max_length=200)
+    horario =  models.CharField(max_length=200)
+    litaFormasDePago = (
+        (0, 'Tarjeta'),
+        (1, 'Efectivo'),
+    )
+    formasDePago = MultiSelectField(choices=litaFormasDePago)
+
+    def __str__(self):
+        return self.nombre
+
+
+
+
 class Comida(models.Model):
+    idVendedor = models.IntegerField(default=0);
     nombre = models.CharField(max_length=200,primary_key=True)
     listaCategorias = (
         (0, 'Cerdo'),
