@@ -15,6 +15,7 @@ def login(request):
 def signup(request):
     return render(request, 'main/signup.html', {})
 
+<<<<<<< HEAD
 
 
 def loginReq(request):
@@ -36,3 +37,10 @@ def loginReq(request):
 
 
     #return render(request, 'main/loggedin.html', {"email" : tipo})
+=======
+def gestionproductos(request):
+    return render(request, 'main/gestion-productos.html', {})
+
+def vendedorprofilepage(request):
+    return render(request, 'main/vendedor-profile-page.html', {})
+>>>>>>> cc4d7ac03fced100649cdc4a315d29a4b3412b3f
