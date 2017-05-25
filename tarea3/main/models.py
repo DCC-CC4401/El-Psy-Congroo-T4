@@ -54,11 +54,8 @@ class Comida(models.Model):
     descripcion = models.CharField(max_length=500)
     stock = models.PositiveSmallIntegerField(default=0)
     precio = models.PositiveSmallIntegerField(default=0)
-<<<<<<< HEAD
-
-=======
     imagen = models.CharField(max_length=300)
->>>>>>> cc4d7ac03fced100649cdc4a315d29a4b3412b3f
+
     def __str__(self):
         return self.nombre
 
