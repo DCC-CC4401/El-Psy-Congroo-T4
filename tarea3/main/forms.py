@@ -8,7 +8,6 @@ class LoginForm(forms.Form):
    password = forms.CharField(widget = forms.PasswordInput())
 
 class GestionProductosForm(forms.ModelForm):
-
     class Meta:
         model = Comida
         fields = ('idVendedor','nombre','categorias','descripcion','stock','precio','imagen')

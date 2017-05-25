@@ -7,4 +7,5 @@ urlpatterns = [
     url(r'^loginReq/',views.loginReq, name = 'loginReq'),
     url(r'^gestionproductos/$', views.gestionproductos,name='gestionproductos'),
     url(r'^vendedorprofilepage/$', views.vendedorprofilepage,name='vendedorprofilepage'),
+    url(r'^productoReq/$', views.productoReq, name='productoReq'),
 ]

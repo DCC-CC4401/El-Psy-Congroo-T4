@@ -2,7 +2,9 @@ from django.shortcuts import render
 from django.views.generic import TemplateView
 from django.utils import timezone
 from .forms import LoginForm
+from .forms import GestionProductosForm
 from .models import Usuario
+from .models import Comida
 
 
 # Create your views here.
@@ -39,7 +41,19 @@ def loginReq(request):
     #return render(request, 'main/loggedin.html', {"email" : tipo})
 
 def gestionproductos(request):
-    return render(request, 'main/gestion-productos.html', {})
+    return render(request, 'main/gestion-productos.html',{} )
+
+def productoReq(request):
+
+    if request.method == "POST":
+        producto = Comida()
+        producto.nombre = request.POST.get("nombre")
+        producto.precio = request.POST.get("precio")
+        producto.stock = request.POST.get("stock")
+        producto.descripcion = request.POST.get("descripcion")
+        producto.save()
+
+    return render(request,'main/productoReq.html',{"nombre" : "guardado"})
 
 def vendedorprofilepage(request):
     return render(request, 'main/vendedor-profile-page.html', {})
