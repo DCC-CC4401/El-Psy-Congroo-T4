@@ -11,13 +11,16 @@ class Usuario(models.Model):
     tipo = models.IntegerField(choices=tipos)
     avatar = models.CharField(max_length=200)
     contraseña = models.CharField(max_length=200)
-    activo = models.BooleanField(blank=True);
+    activo = models.BooleanField(default=False,blank=True)
     litaFormasDePago = (
-        (0, 'Tarjeta'),
-        (1, 'Efectivo'),
+        (0, 'Efectivo'),
+        (1, 'Tarjeta de Crédito'),
+        (2, 'Tarjeta de Débito'),
+        (3, 'Tarjeta Junaeb'),
     )
-    formasDePago = MultiSelectField(choices=litaFormasDePago,blank=True)
-    horario = models.CharField(max_length=200,blank=True)
+    formasDePago = MultiSelectField(choices=litaFormasDePago,null=True)
+    horarioIni = models.CharField(max_length=200,null=True)
+    horarioFin = models.CharField(max_length=200, null=True)
 
     def __str__(self):
         return self.nombre
@@ -51,7 +54,7 @@ class Comida(models.Model):
         (16, 'Vegetariano'),
     )
     categorias = MultiSelectField(choices=listaCategorias)
-    descripcion = models.CharField(max_length=500)
+    descripcion = models.CharField(max_length=500,default="descripcion del producot")
     stock = models.PositiveSmallIntegerField(default=0)
     precio = models.PositiveSmallIntegerField(default=0)
     imagen = models.CharField(max_length=300)
