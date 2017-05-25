@@ -1,9 +1,10 @@
 from django import forms
 
-from .models import UsuarioAlumno
 
-class PostForm(forms.ModelForm):
 
-    class Meta:
-        model = UsuarioAlumno
-        fields = ('id','nombre', 'email','tipo','avatar','contraseña',)
+from django import forms
+
+class LoginForm(forms.Form):
+   user = forms.CharField(max_length = 100)
+   password = forms.CharField(widget = forms.PasswordInput())
+

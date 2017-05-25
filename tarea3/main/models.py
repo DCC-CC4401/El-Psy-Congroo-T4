@@ -3,61 +3,27 @@ from multiselectfield import MultiSelectField
 
 # Create your models here
 
-class UsuarioAlumno(models.Model):
+class Usuario(models.Model):
     id = models.AutoField(primary_key=True)
     nombre = models.CharField(max_length=200)
     email = models.CharField(max_length=200)
-    tipo = models.IntegerField(default=1, editable=False)
+    tipos = ((0, 'admin'), (1, 'alumno'), (2, 'fijo'), (3, 'ambulante'))
+    tipo = models.IntegerField(choices=tipos)
     avatar = models.CharField(max_length=200)
     contraseña = models.CharField(max_length=200)
-
-    def __str__(self):
-        return self.nombre
-
-class UsuarioAdmin(models.Model):
-    id = models.AutoField(primary_key=True)
-    nombre = models.CharField(max_length=200)
-    email = models.CharField(max_length=200)
-    tipo = models.IntegerField(default=0, editable=False)
-    avatar = models.CharField(max_length=200)
-    contraseña = models.CharField(max_length=200)
-
-    def __str__(self):
-        return self.nombre
-
-class UsuarioVAmbulante(models.Model):
-    id = models.AutoField(primary_key=True)
-    nombre = models.CharField(max_length=200)
-    email = models.CharField(max_length=200)
-    tipo = models.IntegerField(default=3, editable=False)
-    avatar = models.CharField(max_length=200)
-    contraseña = models.CharField(max_length=200)
-    activo = models.BooleanField();
+    activo = models.BooleanField(blank=True);
     litaFormasDePago = (
         (0, 'Tarjeta'),
         (1, 'Efectivo'),
     )
-    formasDePago = MultiSelectField(choices=litaFormasDePago)
+    formasDePago = MultiSelectField(choices=litaFormasDePago,blank=True)
+    horario = models.CharField(max_length=200,blank=True)
 
     def __str__(self):
         return self.nombre
 
-class UsuarioVFijo(models.Model):
-    id = models.AutoField(primary_key=True)
-    nombre = models.CharField(max_length=200)
-    email = models.CharField(max_length=200)
-    tipo = models.IntegerField(default=2, editable=False)
-    avatar = models.CharField(max_length=200)
-    contraseña = models.CharField(max_length=200)
-    horario =  models.CharField(max_length=200)
-    litaFormasDePago = (
-        (0, 'Tarjeta'),
-        (1, 'Efectivo'),
-    )
-    formasDePago = MultiSelectField(choices=litaFormasDePago)
-
-    def __str__(self):
-        return self.nombre
+    class Meta:
+        db_table = 'usuario'
 
 
 
@@ -88,7 +54,11 @@ class Comida(models.Model):
     descriptcion = models.CharField(max_length=500)
     stock = models.PositiveSmallIntegerField(default=0)
     precio = models.PositiveSmallIntegerField(default=0)
+
     def __str__(self):
         return self.nombre
+
+    class Meta:
+        db_table = 'Comida'
 
 
