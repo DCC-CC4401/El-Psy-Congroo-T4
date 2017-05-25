@@ -43,4 +43,3 @@ def gestionproductos(request):
 
 def vendedorprofilepage(request):
     return render(request, 'main/vendedor-profile-page.html', {})
-
