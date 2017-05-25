@@ -46,14 +46,19 @@ def gestionproductos(request):
 def productoReq(request):
 
     if request.method == "POST":
-        producto = Comida()
-        producto.nombre = request.POST.get("nombre")
-        producto.precio = request.POST.get("precio")
-        producto.stock = request.POST.get("stock")
-        producto.descripcion = request.POST.get("descripcion")
-        producto.save()
+        Formulario = GestionProductosForm(request.POST)
+        if Formulario.is_valid():
+            producto = Comida()
+            producto.nombre = request.POST.get("nombre")
+            producto.precio = request.POST.get("precio")
+            producto.stock = request.POST.get("stock")
+            producto.descripcion = request.POST.get("descripcion")
+            producto.categorias = request.POST.get("categoria")
+            producto.save()
+        else:
+            return render(request, 'main/gestion-productos.html', {"respuesta":"¡Ingrese todos los datos!"})
 
-    return render(request,'main/productoReq.html',{"nombre" : "guardado"})
+    return render(request,'main/vendedor-profile-page.html', {})
 
 def vendedorprofilepage(request):
     return render(request, 'main/vendedor-profile-page.html', {})
