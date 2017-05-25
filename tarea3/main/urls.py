@@ -7,6 +7,9 @@ urlpatterns = [
     url(r'^loginReq/',views.loginReq, name = 'loginReq'),
     url(r'^gestionproductos/$', views.gestionproductos,name='gestionproductos'),
     url(r'^vendedorprofilepage/$', views.vendedorprofilepage,name='vendedorprofilepage'),
-
-
+    url(r'^formView/', views.formView, name='formView'),
+    url(r'^logout/', views.logout, name='logout'),
+    url(r'^register/', views.register, name='register'),
+    url(r'^loggedin/', views.loggedin, name='loggedin'),
+    url(r'^productoReq/', views.productoReq, name='productoReq'),
 ]
