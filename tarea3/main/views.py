@@ -36,6 +36,7 @@ def loginReq(request):
     avatar = ''
     password = request.POST.get("password")
     listaDeProductos = []
+    activo = False
 
     #buscar vendedor en base de datos
     MyLoginForm = LoginForm(request.POST)
@@ -66,6 +67,7 @@ def loginReq(request):
                     horarioIni = p.horarioIni
                     horarioFin = p.horarioFin
                     avatar = p.avatar
+                    activo = p.activo
                     break
                 elif (tipo == 3):
                     url = 'main/vendedor-ambulante.html'
@@ -73,6 +75,7 @@ def loginReq(request):
                     tipo = p.tipo
                     encontrado = True
                     avatar = p.avatar
+                    activo = p.activo
                     break
 
         #si no se encuentra el usuario, se retorna a pagina de login
@@ -112,9 +115,9 @@ def loginReq(request):
         if (tipo == 1):
             argumentos = argumentos
         if (tipo == 2):
-            argumentos = {"nombre": nombre,  "tipo": tipo, "id": id,"horarioIni": horarioIni, "horarioFin" : horarioFin, "avatar" : avatar, "listaDeProductos" : listaDeProductos}
+            argumentos = {"nombre": nombre,  "tipo": tipo, "id": id,"horarioIni": horarioIni, "horarioFin" : horarioFin, "avatar" : avatar, "listaDeProductos" : listaDeProductos, "activo" : activo}
         if (tipo ==3):
-            argumentos ={"nombre": nombre,  "tipo": tipo, "id": id,"avatar" : avatar, "listaDeProductos" : listaDeProductos}
+            argumentos ={"nombre": nombre,  "tipo": tipo, "id": id,"avatar" : avatar, "listaDeProductos" : listaDeProductos, "activo" : activo}
 
         #enviar a vista respectiva de usuario
         return render(request, url, argumentos)

@@ -36,20 +36,32 @@
             <div class="card-content s12">
                 <div class="row">
                     <div class="col s3 offset-s2 hide-on-med-and-down">
+
+                        <!-- Nombre -->
                         <h4 class="card-title grey-text flow-text text-darken-4">{{nombre}}</h4>
+
+                        <!-- Tipo -->
                         <p class="medium-small flow-text grey-text">&emsp;&emsp;&ensp;Vendedor Ambulante</p>
+
+                        <!-- Horario -->
 {#                        <p class="flow-text text-darken-4" style="font-size: 0.88rem;">#}
 {#                            &emsp;&emsp;Horario: <a class="light-green-text">12:30-14:15</a>#}
 {#                        </p>#}
                     </div>
+
+                    <!-- Estado -->
                     <div class="col s3 l2 hide-on-med-and-down center-align">
-                         <h4 class="card-title flow-text text-darken-4">Estado</h4>
-                        <p class="medium-small flow-text light-green-text">Disponible</p> <!-- TODO cambiar el estado segun el request -->
+                        <h4 class="card-title flow-text text-darken-4">Estado</h4>
+                        <p class="" id="estado-desktop"></p> <!-- TODO cambiar el estado segun el request -->
                     </div>
+
+                    <!-- Formas de pago -->
                     <div class="col s3 l2 hide-on-med-and-down center-align">
                         <h3 class=" grey-text flow-text text-darken-4" style="font-size: 1.3rem;">Formas de pago</h3>
                         <p class="medium-small flow-text grey-text">Efectivo</p>  <!-- TODO agregar medios de pago desde el request -->
                     </div>
+
+                    <!-- Favoritos -->
                     <div class="col s3 l2 hide-on-med-and-down center-align">
                         <div class="switch" style="margin-left: 10px;">
                             <label>
@@ -63,36 +75,47 @@
                     </div>
                 </div>
 
-                <div class="col s3 l2 hide-on-med-and-down right-align">
+                <!-- Boton para Editar -->
+                {% comment %}<div class="col s3 l2 hide-on-med-and-down right-align">
                     <a class="btn-floating activator waves-effect waves-light darken-2">
                           <i class="material-icons">mode_edit</i>
                       </a>
-                 </div>
+                 </div>{% endcomment %}
+
             </div>
 
             <!-- Info del vendedor movil -->
             <div class="row show-on-medium-and-down hide-on-med-and-up">
                 <div class="col s3 m2 offset-s2">
-                        <h4 class="card-title grey-text flow-text text-darken-4">{{nombre}}</h4>
-                        <p class="medium-small flow-text grey-text">&ensp;Vendedor Ambulante</p>
+
+                    <!-- Nombre -->
+                    <h4 class="card-title grey-text flow-text text-darken-4">{{nombre}}</h4>
+
+                    <!--  -->
+                    <p class="medium-small flow-text grey-text">&ensp;Vendedor Ambulante</p>
 {#                        <p class="flow-text text-darken-4" style="font-size: 0.88rem;">#}
 {#                            &ensp;Horario: <a class="light-green-text">12:30-14:15</a>#}
 {#                        </p>#}
-                        <div class="switch" style="margin-left: 10px;">
-                            <label>
-                                <p class="card-title grey-text flow-text text-darken-4" style="font-size: 1.3rem;">Favorito</p>
-                                <!--<input type="checkbox"><span class="lever"></span>-->
-                                <h6><i class="material-icons amber-text">grade</i>
-                                    <span class=" grey-text flow-text text-darken-4"style="font-size:22px; line-height:25px;">42</span>  <!-- TODO agregar favoritos desde el request -->
-                                </h6>
-                            </label>
-                        </div>
+
+                    <!-- Favoritos -->
+                    <div class="switch" style="margin-left: 10px;">
+                        <label>
+                            <p class="card-title grey-text flow-text text-darken-4" style="font-size: 1.3rem;">Favorito</p>
+                            <!--<input type="checkbox"><span class="lever"></span>-->
+                            <h6><i class="material-icons amber-text">grade</i>
+                                <span class=" grey-text flow-text text-darken-4"style="font-size:22px; line-height:25px;">42</span>  <!-- TODO agregar favoritos desde el request -->
+                            </h6>
+                        </label>
                     </div>
-                <div class="col s3 m2 l12 offset-s1">
-                    <p class="flow-text text-darken-4">Estado</p>
-                    <p class="medium-small flow-text light-green-text">Disponible</p>
                 </div>
 
+                <!-- Estado -->
+                <div class="col s3 m2 l12 offset-s1">
+                    <p class="flow-text text-darken-4">Estado</p>
+                    <p class="" id="estado-movil"></p>
+                </div>
+
+                <!-- Formas de pago -->
                 <div class="col s3 m2 l12 offset-s1"> <!--offset-s2-->
                     <p class=" grey-text flow-text text-darken-4" style="font-size: 1.3rem;">Formas de pago</p>
                     <p class="medium-small flow-text grey-text">Efectivo</p>  <!-- TODO agregar medios de pago desde el request -->
@@ -106,11 +129,13 @@
                         </label>
                     </div>
                 </div>-->
-                <div class="col s4 offset-s8 right-align"> <!--offset-s4-->
+
+                <!-- Boton para Editar -->
+                {% comment %}<div class="col s4 offset-s8 right-align"> <!--offset-s4-->
                     <a class="btn-floating activator waves-effect waves-light darken-2">
                           <i class="material-icons">mode_edit</i>
                       </a>
-                 </div>
+                 </div>{% endcomment %}
             </div>
         </div>
     </div>
@@ -254,7 +279,27 @@
     }
 </script>
 
+<script>
+    function EstadoVendedor() {
+        var estado = "{{ activo }}";
+        if (estado == "True") {
+            document.getElementById("estado-desktop").classList.add("medium-small","flow-text","light-green-text");
+            document.getElementById("estado-desktop").innerHTML = "Disponible";
+
+            document.getElementById("estado-movil").classList.add("medium-small","flow-text","light-green-text");
+            document.getElementById("estado-movil").innerHTML = "Disponible";
+        } else {
+            document.getElementById("estado-desktop").classList.add("medium-small","flow-text","red-text");
+            document.getElementById("estado-desktop").innerHTML = "No Disponible";
+
+            document.getElementById("estado-movil").classList.add("medium-small","flow-text","red-text");
+            document.getElementById("estado-movil").innerHTML = "No Disponible";
+        }
+    }
+</script>
+
  <script>
     window.onload = ProfileImg();
+    window.onload = EstadoVendedor();
 </script>
 {% endblock %}

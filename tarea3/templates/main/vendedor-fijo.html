@@ -40,20 +40,32 @@
             <div class="card-content s12">
                 <div class="row">
                     <div class="col s3 offset-s2 hide-on-med-and-down">
+
+                        <!-- Nombre -->
                         <h4 class="card-title grey-text flow-text text-darken-4">{{nombre}}</h4>
+
+                        <!-- Tipo -->
                         <p class="medium-small flow-text grey-text">&emsp;&emsp;&ensp;Vendedor Fijo</p>
+
+                        <!-- Horario -->
                         <p class="flow-text text-darken-4" style="font-size: 0.88rem;">
                             &ensp;Horario: <a class="light-green-text">{{horarioIni}} - {{horarioFin}}</a>
                         </p>
                     </div>
+
+                    <!-- Estado -->
                     <div class="col s3 l2 hide-on-med-and-down center-align">
-                         <h4 class="card-title flow-text text-darken-4">Estado</h4>
+                        <h4 class="card-title flow-text text-darken-4">Estado</h4>
                         <p class="medium-small flow-text light-green-text">Disponible</p>  <!-- TODO cambiar el estado segun el horario -->
                     </div>
+
+                    <!-- Formas de pago -->
                     <div class="col s3 l2 hide-on-med-and-down center-align">
                         <h3 class=" grey-text flow-text text-darken-4" style="font-size: 1.3rem;">Formas de pago</h3>
                         <p class="medium-small flow-text grey-text">Efectivo  </p> <!-- TODO agregar desde el request -->
                     </div>
+
+                    <!-- Favoritos -->
                     <div class="col s3 l2 hide-on-med-and-down center-align">
                         <div class="switch" style="margin-left: 10px;">
                             <label>
@@ -67,36 +79,48 @@
                     </div>
                 </div>
 
-                <div class="col s3 l2 hide-on-med-and-down right-align">
+                <!-- Boton para Editar -->
+                {% comment %}<div class="col s3 l2 hide-on-med-and-down right-align">
                     <a class="btn-floating activator waves-effect waves-light darken-2">
                           <i class="material-icons">mode_edit</i>
                       </a>
-                 </div>
+                 </div>{% endcomment %}
             </div>
 
             <!-- Info del vendedor movil -->
             <div class="row show-on-medium-and-down hide-on-med-and-up">
                 <div class="col s4 offset-s2">
-                        <h4 class="card-title grey-text flow-text text-darken-4">{{nombre}}</h4>
-                        <p class="medium-small flow-text grey-text">&ensp;Vendedor Fijo</p>
-                        <p class="flow-text text-darken-4" style="font-size: 0.88rem;">
-                            &ensp;Horario: <a class="light-green-text">{{horarioIni}} - {{horarioFin}}</a>
-                        </p>
-                        <div class="switch" style="margin-left: 10px;">
-                            <label>
-                                <p class="card-title grey-text flow-text text-darken-4" style="font-size: 1.3rem;">Favorito</p>
-                                <!--<input type="checkbox"><span class="lever"></span>-->
-                                <h6><i class="material-icons amber-text">grade</i>
-                                    <span class=" grey-text flow-text text-darken-4"style="font-size:22px; line-height:25px;">42</span> <!-- TODO agregar desde el request -->
-                                </h6>
-                            </label>
-                        </div>
+
+                    <!-- Nombre -->
+                    <h4 class="card-title grey-text flow-text text-darken-4">{{nombre}}</h4>
+
+                    <!-- Tipo -->
+                    <p class="medium-small flow-text grey-text">&ensp;Vendedor Fijo</p>
+
+                    <!-- Horario -->
+                    <p class="flow-text text-darken-4" style="font-size: 0.88rem;">
+                        &ensp;Horario: <a class="light-green-text">{{horarioIni}} - {{horarioFin}}</a>
+                    </p>
+
+                    <!-- Favoritos -->
+                    <div class="switch" style="margin-left: 10px;">
+                        <label>
+                            <p class="card-title grey-text flow-text text-darken-4" style="font-size: 1.3rem;">Favorito</p>
+                            <!--<input type="checkbox"><span class="lever"></span>-->
+                            <h6><i class="material-icons amber-text">grade</i>
+                                <span class=" grey-text flow-text text-darken-4"style="font-size:22px; line-height:25px;">42</span> <!-- TODO agregar desde el request -->
+                            </h6>
+                        </label>
                     </div>
+                </div>
+
+                <!-- Estado -->
                 <div class="col s3 m2 l12 offset-s1">
                     <p class="flow-text text-darken-4">Estado</p>
                     <p class="medium-small flow-text light-green-text">Disponible</p> <!-- TODO cambiar el estado segun el horario -->
                 </div>
 
+                <!-- Formas de pago -->
                 <div class="col s3 m2 l12 offset-s1"> <!--offset-s2-->
                     <p class=" grey-text flow-text text-darken-4" style="font-size: 1.3rem;">Formas de pago</p>
                     <p class="medium-small flow-text grey-text">Efectivo</p> <!-- TODO agregar desde el request -->
@@ -110,6 +134,8 @@
                         </label>
                     </div>
                 </div>-->
+
+                <!-- Boton para Editar -->
                 <div class="col s4 offset-s8 right-align"> <!--offset-s4-->
                     <a class="btn-floating activator waves-effect waves-light darken-2">
                           <i class="material-icons">mode_edit</i>
