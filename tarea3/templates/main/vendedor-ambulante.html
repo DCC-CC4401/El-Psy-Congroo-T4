@@ -21,14 +21,14 @@
             <!-- Imagen del perfil en pantallas grandes -->
             <div class="row hide-on-small-and-down">
                 <a class="card-profile-image-large">
-                    <img style="margin-top: 20%;" id="img-perfil-desktop" src="" alt="profile image" class="circle z-depth-2 responsive-img activator"> <!-- TODO foto agregar desde el request -->
+                    <img style="margin-top: 20%;" id="img-perfil-desktop" src="" alt="profile image" class="circle z-depth-2 responsive-img activator">
                 </a>
             </div>
 
             <!-- Imagen del perfil en pantallas medianas/pequeñas -->
             <div class="row show-on-small hide-on-med-and-up">
                 <a class="card-profile-image-small">
-                    <img id="img-perfil-movil" src="" alt="profile image" class="circle z-depth-2 responsive-img activator"> <!-- TODO foto agregar desde el request -->
+                    <img id="img-perfil-movil" src="" alt="profile image" class="circle z-depth-2 responsive-img activator">
                 </a>
             </div>
 
@@ -52,13 +52,13 @@
                     <!-- Estado -->
                     <div class="col s3 l2 hide-on-med-and-down center-align">
                         <h4 class="card-title flow-text text-darken-4">Estado</h4>
-                        <p class="" id="estado-desktop"></p> <!-- TODO cambiar el estado segun el request -->
+                        <p class="" id="estado-desktop"></p>
                     </div>
 
                     <!-- Formas de pago -->
                     <div class="col s3 l2 hide-on-med-and-down center-align">
                         <h3 class=" grey-text flow-text text-darken-4" style="font-size: 1.3rem;">Formas de pago</h3>
-                        <p class="medium-small flow-text grey-text">Efectivo</p>  <!-- TODO agregar medios de pago desde el request -->
+                        <p class="medium-small flow-text grey-text" id="medios-pago-desktop"></p>
                     </div>
 
                     <!-- Favoritos -->
@@ -118,7 +118,7 @@
                 <!-- Formas de pago -->
                 <div class="col s3 m2 l12 offset-s1"> <!--offset-s2-->
                     <p class=" grey-text flow-text text-darken-4" style="font-size: 1.3rem;">Formas de pago</p>
-                    <p class="medium-small flow-text grey-text">Efectivo</p>  <!-- TODO agregar medios de pago desde el request -->
+                    <p class="medium-small flow-text grey-text" id="medios-pago-movil"></p>
                 </div>
 
                 <!--<div class="col s3 offset-s2 offset-l10">
@@ -298,8 +298,23 @@
     }
 </script>
 
+<script>
+    function FormasDePago() {
+        var rawPagos = "{{ formasDePago|safe }}";
+        var pagos = rawPagos.split(", ");
+        var largo = pagos.length;
+        var texto = "<ul>";
+        for (var i = 0; i < largo; i++)  {
+            texto += "<li>" + pagos[i] + "</li>";
+        }
+        document.getElementById("medios-pago-desktop").innerHTML = texto;
+        document.getElementById("medios-pago-movil").innerHTML = texto;
+    }
+</script>
+
  <script>
     window.onload = ProfileImg();
     window.onload = EstadoVendedor();
+    window.onload = FormasDePago();
 </script>
 {% endblock %}
