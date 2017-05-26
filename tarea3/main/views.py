@@ -24,6 +24,8 @@ def loggedin(request):
 
 
 def loginReq(request):
+
+    #inicaliar variables
     tipo = 0
     url = ''
     id = 0
@@ -33,6 +35,9 @@ def loginReq(request):
     email = request.POST.get("email")
     avatar = ''
     password = request.POST.get("password")
+    listaDeProductos = []
+
+    #buscar vendedor en base de datos
     MyLoginForm = LoginForm(request.POST)
     if MyLoginForm.is_valid():
         vendedores = []
@@ -69,23 +74,67 @@ def loginReq(request):
                     encontrado = True
                     avatar = p.avatar
                     break
-        for p in Usuario.objects.raw('SELECT * FROM usuario'):
-            if p.tipo == 2 or p.tipo == 3:
-                vendedores.append(p.id)
+
+        #si no se encuentra el usuario, se retorna a pagina de login
         if encontrado==False:
             return render(request, 'main/login.html', {"error": "Usuario o contraseña invalidos"})
+
+        #crear datos de sesion
         request.session['id'] = id
         request.session['tipo'] = tipo
         request.session['email'] = email
+
+        # si son vendedores, crear lista de productos
+        for p in Usuario.objects.raw('SELECT * FROM usuario'):
+            if p.tipo == 2 or p.tipo == 3:
+                vendedores.append(p.id)
         vendedoresJson = simplejson.dumps(vendedores)
-        return render(request, url, {"email": email, "tipo": tipo, "id": id,"vendedores": vendedoresJson, "nombre": nombre, "horarioIni": horarioIni, "horarioFin" : horarioFin, "avatar" : avatar})
+
+        #obtener alimentos en caso de que sea vendedor fijo o ambulante
+        if tipo == 2 or tipo == 3:
+            i = 0
+            for producto in Comida.objects.raw('SELECT * FROM comida WHERE idVendedor = "' + str(id) +'"'):
+                listaDeProductos.append([])
+                listaDeProductos[i].append(producto.nombre)
+                categoria = str(producto.categorias)
+                listaDeProductos[i].append(categoria)
+                listaDeProductos[i].append(producto.stock)
+                listaDeProductos[i].append(producto.precio)
+                listaDeProductos[i].append(producto.descripcion)
+                listaDeProductos[i].append(str(producto.imagen))
+                i += 1
+        listaDeProductos = simplejson.dumps(listaDeProductos,ensure_ascii=False).encode('utf8')
+
+        #limpiar argumentos de salida segun tipo de vista
+        argumentos ={"email": email, "tipo": tipo, "id": id,"vendedores": vendedoresJson, "nombre": nombre, "horarioIni": horarioIni, "horarioFin" : horarioFin, "avatar" : avatar, "listaDeProductos" : listaDeProductos}
+        if (tipo == 0):
+            argumentos = {"nombre": nombre,"id": id,}
+        if (tipo == 1):
+            argumentos = argumentos
+        if (tipo == 2):
+            argumentos = {"nombre": nombre,  "tipo": tipo, "id": id,"horarioIni": horarioIni, "horarioFin" : horarioFin, "avatar" : avatar, "listaDeProductos" : listaDeProductos}
+        if (tipo ==3):
+            argumentos ={"nombre": nombre,  "tipo": tipo, "id": id,"avatar" : avatar, "listaDeProductos" : listaDeProductos}
+
+        #enviar a vista respectiva de usuario
+        return render(request, url, argumentos)
+
+    #retornar en caso de datos invalidos
     else:
         return render(request, 'main/login.html', {"error" : "Usuario o contraseña invalidos"})
 
 
 
 def gestionproductos(request):
-    return render(request, 'main/gestion-productos.html', {})
+    if request.session.has_key('id'):
+        email = request.session['email']
+        tipo = request.session['tipo']
+        id = request.session['id']
+        if tipo == 3:
+            path = "main/baseVAmbulante.html"
+        if tipo == 2:
+            path = "main/baseVFijo.html"
+    return render(request, 'main/gestion-productos.html', {"path" : path})
 
 def vendedorprofilepage(request):
     return render(request, 'main/vendedor-profile-page.html', {})
@@ -137,22 +186,51 @@ def register(request):
     return loginReq(request)
 
 def productoReq(request):
+    horarioIni = 0
+    horarioFin = 0
+    avatar = ""
     if request.method == "POST":
-        Formulario = GestionProductosForm(request.POST)
-        if Formulario.is_valid():
-            producto = Comida()
-            producto.nombre = request.POST.get("nombre")
-            producto.imagen = request.FILES.get("comida")
-            producto.precio = request.POST.get("precio")
-            producto.stock = request.POST.get("stock")
-            producto.descripcion = request.POST.get("descripcion")
-            producto.categorias = request.POST.get("categoria")
-            producto.save()
-        else:
-            return render(request, 'main/gestion-productos.html', {"respuesta": "¡Ingrese todos los datos!"})
-    return render(request, 'main/vendedor-profile-page.html', {})
+        if request.session.has_key('id'):
+            id = request.session['id']
+            email = request.session['email']
+            tipo = request.session['tipo']
+            if tipo == 3:
+                path = "main/baseVAmbulante.html"
+                url ="main/vendedor-ambulante.html"
+            if tipo == 2:
+                path = "main/baseVFijo.html"
+                url = "main/vendedor-fijo.html"
+            Formulario = GestionProductosForm(request.POST)
+            if Formulario.is_valid():
+                producto = Comida()
+                producto.idVendedor = id
+                producto.nombre = request.POST.get("nombre")
+                producto.imagen = request.FILES.get("comida")
+                producto.precio = request.POST.get("precio")
+                producto.stock = request.POST.get("stock")
+                producto.descripcion = request.POST.get("descripcion")
+                producto.categorias = request.POST.get("categoria")
+                producto.save()
+            else:
+                return render(request, 'main/gestion-productos.html', {"path" : path, "respuesta": "¡Ingrese todos los datos!"})
+
+
+    for p in Usuario.objects.raw('SELECT * FROM usuario'):
+        if p.id == id:
+            avatar = p.avatar
+            horarioIni = p.horarioIni
+            horarioFin = p.horarioFin
+            nombre = p.nombre
+    return render(request, url, {"email": email, "tipo": tipo, "id": id, "nombre": nombre, "horarioIni": horarioIni, "horarioFin" : horarioFin, "avatar" : avatar})
 
 def vistaVendedorPorAlumno(request):
     if request.method == 'POST':
-        id = request.POST.get("id")
-    return render(request,'main/vendedor-profile-page.html',{})
+        id = int(request.POST.get("id"))
+        for p in Usuario.objects.raw('SELECT * FROM usuario'):
+            if p.id == id:
+                tipo = p.tipo
+                nombre = p.nombre
+                if tipo == 3:
+                    return render(request,'main/vendedor-ambulante-vistaAlumno.html',{"nombre": nombre})
+                if tipo == 2:
+                    return render(request, 'main/vendedor-fijo-vistaAlumno.html', {"nombre": nombre})
