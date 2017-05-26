@@ -148,4 +148,6 @@ def productoReq(request):
     return render(request, 'main/vendedor-profile-page.html', {})
 
 def vistaVendedorPorAlumno(request):
+    if request.method == 'POST':
+        id = request.POST.get("id")
     return render(request,'main/vendedor-profile-page.html',{})
