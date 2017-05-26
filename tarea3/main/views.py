@@ -37,7 +37,7 @@ def loginReq(request):
             if (tipo == 2):
                 return render(request, 'main/baseVFijo.html', {})
             if (tipo == 3):
-                return render(request, 'main/baseVAmbulante.html', {})
+                return render(request, 'main/vendedor-ambulante.html', {})
 
 
     #return render(request, 'main/loggedin.html', {"email" : tipo})
@@ -60,7 +60,7 @@ def formView(request):
       elif (tipo == 2):
           url = 'main/baseVFijo.html'
       elif (tipo == 3):
-          url = 'main/baseVAmbulante.html'
+          url = 'main/vendedor-ambulante.html'
       return render(request, url, {"email" : email, "tipo" : tipo, "id": id})
    else:
       return render(request, 'main/login.html', {})
