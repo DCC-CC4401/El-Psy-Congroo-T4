@@ -107,6 +107,8 @@ def register(request):
     password = request.POST.get("password")
     horaInicial = request.POST.get("horaIni")
     horaFinal = request.POST.get("horaFin")
+    avatar = request.FILES.get("avatar")
+    print(avatar)
     formasDePago =[]
     if not (request.POST.get("formaDePago0") is None):
         formasDePago.append(request.POST.get("formaDePago0"))
@@ -116,7 +118,7 @@ def register(request):
         formasDePago.append(request.POST.get("formaDePago2"))
     if not (request.POST.get("formaDePago3") is None):
         formasDePago.append(request.POST.get("formaDePago3"))
-    usuarioNuevo = Usuario(nombre=nombre,email=email,tipo=tipo,contraseña=password,avatar="jpge",formasDePago=formasDePago,horarioIni=horaInicial,horarioFin=horaFinal)
+    usuarioNuevo = Usuario(nombre=nombre,email=email,tipo=tipo,contraseña=password,avatar=avatar,formasDePago=formasDePago,horarioIni=horaInicial,horarioFin=horaFinal)
     usuarioNuevo.save()
     return loginReq(request)
 
