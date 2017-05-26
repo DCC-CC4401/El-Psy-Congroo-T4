@@ -214,6 +214,20 @@ def productoReq(request):
             else:
                 return render(request, 'main/gestion-productos.html', {"path" : path, "respuesta": "¡Ingrese todos los datos!"})
 
+    # obtener alimentos en caso de que sea vendedor fijo o ambulante
+    i = 0
+    listaDeProductos=[]
+    for producto in Comida.objects.raw('SELECT * FROM comida WHERE idVendedor = "' + str(id) + '"'):
+        listaDeProductos.append([])
+        listaDeProductos[i].append(producto.nombre)
+        categoria = str(producto.categorias)
+        listaDeProductos[i].append(categoria)
+        listaDeProductos[i].append(producto.stock)
+        listaDeProductos[i].append(producto.precio)
+        listaDeProductos[i].append(producto.descripcion)
+        listaDeProductos[i].append(str(producto.imagen))
+        i += 1
+    listaDeProductos = simplejson.dumps(listaDeProductos, ensure_ascii=False).encode('utf8')
 
     for p in Usuario.objects.raw('SELECT * FROM usuario'):
         if p.id == id:
@@ -221,7 +235,7 @@ def productoReq(request):
             horarioIni = p.horarioIni
             horarioFin = p.horarioFin
             nombre = p.nombre
-    return render(request, url, {"email": email, "tipo": tipo, "id": id, "nombre": nombre, "horarioIni": horarioIni, "horarioFin" : horarioFin, "avatar" : avatar})
+    return render(request, url, {"email": email, "tipo": tipo, "id": id, "nombre": nombre, "horarioIni": horarioIni, "horarioFin" : horarioFin, "avatar" : avatar, "listaDeProductos" : listaDeProductos})
 
 def vistaVendedorPorAlumno(request):
     if request.method == 'POST':
