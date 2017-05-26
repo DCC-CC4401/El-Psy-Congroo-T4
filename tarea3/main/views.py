@@ -27,6 +27,8 @@ def loginReq(request):
     tipo = 0
     url = ''
     id = 0
+    horarioIni = 0
+    horarioFin = 0
     encontrado = False
     email = request.POST.get("email")
     password = request.POST.get("password")
@@ -72,7 +74,7 @@ def loginReq(request):
         request.session['tipo'] = tipo
         request.session['email'] = email
         vendedoresJson = simplejson.dumps(vendedores)
-        return render(request, url, {"email": email, "tipo": tipo, "id": id,"vendedores": vendedoresJson, "nombre": nombre, "activo": activo, "horarioIni": horarioIni, "horarioFin" : horarioFin})
+        return render(request, url, {"email": email, "tipo": tipo, "id": id,"vendedores": vendedoresJson, "nombre": nombre, "horarioIni": horarioIni, "horarioFin" : horarioFin})
     else:
         return render(request, 'main/login.html', {"error" : "Usuario o contraseña invalidos"})
 
