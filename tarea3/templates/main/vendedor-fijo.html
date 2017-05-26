@@ -163,12 +163,23 @@
                                             <script>
                                             var productos ={{ listaDeProductos|safe }};
                                             var largo = productos.length;
+                                            //crear todos los modales
+                                            for (var i = 0; i < largo; i++)  {
+                                                document.write( "<div id='modal"+(i + 1)+"' class='modal'>");
+                                                document.write("<div class='modal-content'>");
+                                                document.write("<img class='activator responsive-img center-block'  style='max-width: 30%; margin-top:20px; margin-bottom:20px;' src ='../static/media/"+productos[i][5]+"'>");
+                                                document.write("</div>");
+                                                document.write("<div class='modal-footer'>");
+                                                document.write("<a href='#!' class='modal-action modal-close waves-effect waves-green btn-flat'><i class='large material-icons'>close</i></a>");
+                                                document.write("</div></div>");
+                                            }
+                                            //imprimir en pantalla todas las tarjetas de productos
                                             for (var i = 0; i < largo; i++)  {
                                                 document.write(" <div class='col s6 m6 l4'>");
                                                 document.write("<div class='container'>");
                                                 document.write(" <div class='card z-depth-1'>");
                                                 document.write("<div class='teal lighten-2 card-image waves-effect waves-block waves-light'>");
-                                                document.write("<img class='activator responsive-img center-block'  style='max-width: 30%; margin-top:20px; margin-bottom:20px;' src='../static/img/pizza.png'>");
+                                                document.write("<img class='activator responsive-img center-block'  style='max-width: 30%; margin-top:20px; margin-bottom:20px;height: 100px; width: 100px;' src ='../static/media/"+productos[i][5]+"'>");
                                                 document.write("</div>");
                                                 document.write(" <div class='card-content'>");
                                                 document.write("<span class='card-title activator grey-text text-darken-4'> "+productos[i][0] +" <i class='material-icons right'>more_vert</i></span>");
@@ -181,7 +192,7 @@
                                                 document.write("<li>Categoria: "+productos[i][1]+" </li>");
                                                 document.write("<li>Stock: "+productos[i][2]+" </li>");
                                                 document.write("<li>Descripcion: "+productos[i][4]+" </li>");
-                                                document.write("<li><img class='activator responsive-img center-block'  style='max-width: 30%; margin-top:20px; margin-bottom:20px;' src ='../static/media/"+productos[i][5]+"'></li>");
+                                                document.write("<li><img class='activator responsive-img center-block'  style='max-width: 30%; margin-top:20px; margin-bottom:20px; height: 50px; width: 50px;' src ='../static/media/"+productos[i][5]+"'></li>");
                                                 document.write(" </ul></div></div></div></div>");
                                             }
                                             </script>
