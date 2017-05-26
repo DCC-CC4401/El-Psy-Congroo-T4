@@ -11,7 +11,7 @@ import simplejson
 
 # Create your views here.
 def index(request):
-    return render(request, 'main/base.html', {})
+    return formView(request)
 
 def login(request):
     return render(request, 'main/login.html', {})
@@ -31,6 +31,7 @@ def loginReq(request):
     horarioFin = 0
     encontrado = False
     email = request.POST.get("email")
+    avatar = ''
     password = request.POST.get("password")
     MyLoginForm = LoginForm(request.POST)
     if MyLoginForm.is_valid():
@@ -48,6 +49,7 @@ def loginReq(request):
                 elif (tipo == 1):
                     url = 'main/baseAlumno.html'
                     id = p.id
+                    avatar = p.avatar
                     tipo = p.tipo
                     encontrado = True
                     break
@@ -58,12 +60,14 @@ def loginReq(request):
                     encontrado = True
                     horarioIni = p.horarioIni
                     horarioFin = p.horarioFin
+                    avatar = p.avatar
                     break
                 elif (tipo == 3):
                     url = 'main/vendedor-ambulante.html'
                     id = p.id
                     tipo = p.tipo
                     encontrado = True
+                    avatar = p.avatar
                     break
         for p in Usuario.objects.raw('SELECT * FROM usuario'):
             if p.tipo == 2 or p.tipo == 3:
@@ -74,7 +78,7 @@ def loginReq(request):
         request.session['tipo'] = tipo
         request.session['email'] = email
         vendedoresJson = simplejson.dumps(vendedores)
-        return render(request, url, {"email": email, "tipo": tipo, "id": id,"vendedores": vendedoresJson, "nombre": nombre, "horarioIni": horarioIni, "horarioFin" : horarioFin})
+        return render(request, url, {"email": email, "tipo": tipo, "id": id,"vendedores": vendedoresJson, "nombre": nombre, "horarioIni": horarioIni, "horarioFin" : horarioFin, "avatar" : avatar})
     else:
         return render(request, 'main/login.html', {"error" : "Usuario o contraseña invalidos"})
 
@@ -101,7 +105,7 @@ def formView(request):
           url = 'main/vendedor-ambulante.html'
       return render(request, url, {"email" : email, "tipo" : tipo, "id": id})
    else:
-      return render(request, 'main/login.html', {})
+      return render(request, 'main/base.html', {})
 
 def logout(request):
     try:
@@ -138,6 +142,7 @@ def productoReq(request):
         if Formulario.is_valid():
             producto = Comida()
             producto.nombre = request.POST.get("nombre")
+            producto.imagen = request.FILES.get("comida")
             producto.precio = request.POST.get("precio")
             producto.stock = request.POST.get("stock")
             producto.descripcion = request.POST.get("descripcion")
