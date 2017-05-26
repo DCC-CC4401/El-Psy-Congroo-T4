@@ -178,8 +178,10 @@
                                                 document.write(" <span class='card-title grey-text text-darken-4'> "+productos[i][0] +" <i class='material-icons right'>close</i></span>");
                                                 document.write(" <ul>");
                                                 document.write(" <li>Precio: <a class='green-text light-green-text'> $"+productos[i][3]+" </a></li>");
-                                                document.write("<li>Categoria: "+productos[i][2]+" </li>")
-                                                document.write("<li>Descripcion: "+productos[i][4]+" </li>")
+                                                document.write("<li>Categoria: "+productos[i][1]+" </li>");
+                                                document.write("<li>Stock: "+productos[i][2]+" </li>");
+                                                document.write("<li>Descripcion: "+productos[i][4]+" </li>");
+                                                document.write("<li><img class='activator responsive-img center-block'  style='max-width: 30%; margin-top:20px; margin-bottom:20px;' src ='../static/media/"+productos[i][5]+"'></li>");
                                                 document.write(" </ul></div></div></div></div>");
                                             }
                                             </script>

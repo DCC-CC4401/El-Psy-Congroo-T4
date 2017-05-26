@@ -24,6 +24,8 @@ def loggedin(request):
 
 
 def loginReq(request):
+
+    #inicaliar variables
     tipo = 0
     url = ''
     id = 0
@@ -34,6 +36,8 @@ def loginReq(request):
     avatar = ''
     password = request.POST.get("password")
     listaDeProductos = []
+
+    #buscar vendedor en base de datos
     MyLoginForm = LoginForm(request.POST)
     if MyLoginForm.is_valid():
         vendedores = []
@@ -70,14 +74,20 @@ def loginReq(request):
                     encontrado = True
                     avatar = p.avatar
                     break
-        for p in Usuario.objects.raw('SELECT * FROM usuario'):
-            if p.tipo == 2 or p.tipo == 3:
-                vendedores.append(p.id)
+
+        #si no se encuentra el usuario, se retorna a pagina de login
         if encontrado==False:
             return render(request, 'main/login.html', {"error": "Usuario o contraseña invalidos"})
+
+        #crear datos de sesion
         request.session['id'] = id
         request.session['tipo'] = tipo
         request.session['email'] = email
+
+        # si son vendedores, crear lista de productos
+        for p in Usuario.objects.raw('SELECT * FROM usuario'):
+            if p.tipo == 2 or p.tipo == 3:
+                vendedores.append(p.id)
         vendedoresJson = simplejson.dumps(vendedores)
 
         #obtener alimentos en caso de que sea vendedor fijo o ambulante
@@ -86,10 +96,12 @@ def loginReq(request):
             for producto in Comida.objects.raw('SELECT * FROM comida WHERE idVendedor = "' + str(id) +'"'):
                 listaDeProductos.append([])
                 listaDeProductos[i].append(producto.nombre)
-                listaDeProductos[i].append(producto.categorias)
+                categoria = str(producto.categorias)
+                listaDeProductos[i].append(categoria)
                 listaDeProductos[i].append(producto.stock)
                 listaDeProductos[i].append(producto.precio)
                 listaDeProductos[i].append(producto.descripcion)
+                listaDeProductos[i].append(str(producto.imagen))
                 i += 1
         listaDeProductos = simplejson.dumps(listaDeProductos,ensure_ascii=False).encode('utf8')
 
@@ -98,13 +110,16 @@ def loginReq(request):
         if (tipo == 0):
             argumentos = {"nombre": nombre,"id": id,}
         if (tipo == 1):
-            argumentos = {"nombre": nombre, "id": id,"vendedores": vendedoresJson}
+            argumentos = argumentos
         if (tipo == 2):
             argumentos = {"nombre": nombre,  "tipo": tipo, "id": id,"horarioIni": horarioIni, "horarioFin" : horarioFin, "avatar" : avatar, "listaDeProductos" : listaDeProductos}
         if (tipo ==3):
             argumentos ={"nombre": nombre,  "tipo": tipo, "id": id,"avatar" : avatar, "listaDeProductos" : listaDeProductos}
 
+        #enviar a vista respectiva de usuario
         return render(request, url, argumentos)
+
+    #retornar en caso de datos invalidos
     else:
         return render(request, 'main/login.html', {"error" : "Usuario o contraseña invalidos"})
 
@@ -198,6 +213,8 @@ def productoReq(request):
                 producto.save()
             else:
                 return render(request, 'main/gestion-productos.html', {"path" : path, "respuesta": "¡Ingrese todos los datos!"})
+
+
     for p in Usuario.objects.raw('SELECT * FROM usuario'):
         if p.id == id:
             avatar = p.avatar
