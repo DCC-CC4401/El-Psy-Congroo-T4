@@ -33,6 +33,7 @@ def loginReq(request):
     email = request.POST.get("email")
     avatar = ''
     password = request.POST.get("password")
+    listaDeProductos = []
     MyLoginForm = LoginForm(request.POST)
     if MyLoginForm.is_valid():
         vendedores = []
@@ -78,7 +79,20 @@ def loginReq(request):
         request.session['tipo'] = tipo
         request.session['email'] = email
         vendedoresJson = simplejson.dumps(vendedores)
-        return render(request, url, {"email": email, "tipo": tipo, "id": id,"vendedores": vendedoresJson, "nombre": nombre, "horarioIni": horarioIni, "horarioFin" : horarioFin, "avatar" : avatar})
+
+        #obtener alimentos en caso de que sea vendedor fijo o ambulante
+        if tipo == 2 or tipo == 3:
+            i = 0
+            for producto in Comida.objects.raw('SELECT * FROM comida WHERE idVendedor = "' + str(id) +'"'):
+                listaDeProductos.append([])
+                listaDeProductos[i].append(producto.nombre)
+                listaDeProductos[i].append(producto.categorias)
+                listaDeProductos[i].append(producto.stock)
+                listaDeProductos[i].append(producto.precio)
+                listaDeProductos[i].append(producto.descripcion)
+                i += 1
+        listaDeProductos = simplejson.dumps(listaDeProductos,ensure_ascii=False).encode('utf8')
+        return render(request, url, {"email": email, "tipo": tipo, "id": id,"vendedores": vendedoresJson, "nombre": nombre, "horarioIni": horarioIni, "horarioFin" : horarioFin, "avatar" : avatar, "listaDeProductos" : listaDeProductos})
     else:
         return render(request, 'main/login.html', {"error" : "Usuario o contraseña invalidos"})
 
