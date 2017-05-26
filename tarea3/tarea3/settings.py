@@ -57,7 +57,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'tarea3.urls'
 
-MEDIA_ROOT = "media/"
+MEDIA_ROOT = "static/media/"
 
 TEMPLATES = [
     {

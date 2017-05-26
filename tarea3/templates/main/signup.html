@@ -7,6 +7,12 @@ $(document).ready(function() {
 });
 </script>
 
+
+
+
+
+    <script type="text/javascript" src="../static/js/signupScript.js"></script>
+
 <div class="section"></div>
   <main>
       <div class="section"></div>
@@ -24,7 +30,7 @@ $(document).ready(function() {
             </div>
 
               <div class="input-field col s12 m12">
-                <select name="tipo" id="tipo">
+                <select name="tipo" id="tipo" required>
                   <option value="" disabled selected>Elige una opción</option>
                   <option value="1">Alumno</option>
                   <option value="2">Vendedor fijo</option>
@@ -35,71 +41,50 @@ $(document).ready(function() {
 
             <div class='row'>
               <div class='input-field col s12 m12'>
-                <input class='validate' type='text' name='nombre' id='nombre' />
+                <input class='validate' type='text' name='nombre' id='nombre' required onchange="crearFormulario()"/>
                 <label style="text-align: center" for='nombre'>Ingresa tu nombre</label>
               </div>
             </div>
 
             <div class='row'>
               <div class='input-field col s12 m12'>
-                <input class='validate' type='email' name='email' id='email' />
+                <input class='validate' type='email' name='email' id='email' required/>
                 <label style="text-align: center" for='email'>Ingresa tu e-mail</label>
               </div>
             </div>
 
                <div id="file-upload" class="section">
                   Sube un avatar:
-                  <input id="avatar" type="file" class="" name="avatar">
+                  <input id="avatar" type="file" class="" name="avatar" required>
               </div>
 
             <div class="row">
                   <div class="row">
-                    <div class="input-field col s6">
-                      <i class="material-icons prefix">alarm</i>
-                      <input name="horaIni" id="icon_prefix" type="text" class="validate">
-                      <label for="icon_prefix">Hora inicial</label>
+                    <div id="divHoraIni" class="input-field col s6">
+                      <!-- HTML con hora ini -->
                     </div>
-                    <div class="input-field col s6">
-                      <i class="material-icons prefix">alarm</i>
-                      <input name="horaFin" id="icon_telephone" type="text" class="validate">
-                      <label for="icon_telephone">Hora final</label>
+                    <div id="divHoraFin" class="input-field col s6">
+                     <!-- HTML con hora fin -->
                     </div>
                   </div>
               </div>
 
 
             <div class='row'>
-              <div class='input-field col s12 m12'>
-                Seleccione sus formas de pago:
-                      <p>
-                        <input type="checkbox" class="filled-in" id="filled-in-box" name="formaDePago0" value="0"/>
-                        <label for="filled-in-box">Efectivo</label>
-                      </p>
-                      <p>
-                        <input type="checkbox" class="filled-in" id="filled-in-box2" name="formaDePago1" value="1"/>
-                        <label for="filled-in-box2">Tarjeta de Crédito</label>
-                      </p>
-                      <p>
-                        <input type="checkbox" class="filled-in" id="filled-in-box3" name="formaDePago2" value="2"/>
-                        <label for="filled-in-box3">Tarjeta de Débito</label>
-                      </p>
-                      <p>
-                        <input type="checkbox" class="filled-in" id="filled-in-box4" name="formaDePago3" value="3"/>
-                        <label for="filled-in-box4">Tarjeta Junaeb</label>
-                      </p>
-              </div>
+              <div id="formasDePago" class='input-field col s12 m12'>
+                  <!-- HTML con las formas de pago-->
             </div>
 
             <div class='row'>
               <div class='input-field col s12 m12'>
-                <input class='validate' type='password' name='password' id='password' />
+                <input class='validate' type='password' name='password' id='password' required/>
                 <label style="text-align: center" for='password'>Ingresa tu contraseña</label>
               </div>
             </div>
 
             <div class='row'>
               <div class='input-field col s12 m12'>
-                <input class='validate' type='password' name='password2' id='password2' />
+                <input class='validate' type='password' name='password2' id='password2' required/>
                 <label style="text-align: center" for='password2'>Repite tu contraseña</label>
               </div>
             </div>
@@ -107,6 +92,7 @@ $(document).ready(function() {
               <div class='row'>{% csrf_token %}
                 <button type='submit' name='btn_login' class='col l6 offset-l3 btn btn-large waves-effect teal'>Registrarse</button>
               </div>
+            </div>
           </form>
         </div>
       </div>
@@ -117,6 +103,19 @@ $(document).ready(function() {
     <div class="section"></div>
   </main>
 
+
+
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.1/jquery.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/js/materialize.min.js"></script>
+
+    {% block javascript %}
+  <script>
+    $("#tipo").change(function () {
+      crearFormulario()
+
+    });
+  </script>
+{% endblock %}
+
+
 {% endblock %}
