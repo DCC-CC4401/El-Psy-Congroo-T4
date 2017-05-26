@@ -5,6 +5,7 @@ from .forms import LoginForm
 from .forms import GestionProductosForm
 from .models import Usuario
 from .models import Comida
+from django.http import HttpResponse
 
 
 
@@ -24,23 +25,53 @@ def loggedin(request):
 
 def loginReq(request):
     tipo = 0
+    url = ''
+    id = 0
+    encontrado = False
     email = request.POST.get("email")
     password = request.POST.get("password")
-    for p in Usuario.objects.raw('SELECT * FROM usuario'):
-        if p.contraseña == password and p.email == email:
-            print(p.id)
-            tipo=p.tipo
-            if (tipo==0):
-                return render(request, 'main/baseAdmin.html', {})
-            if (tipo == 1):
-                return render(request, 'main/baseAlumno.html', {})
-            if (tipo == 2):
-                return render(request, 'main/baseVFijo.html', {})
-            if (tipo == 3):
-                return render(request, 'main/vendedor-ambulante.html', {})
+    MyLoginForm = LoginForm(request.POST)
+    if MyLoginForm.is_valid():
+        vendedores = []
+        for p in Usuario.objects.raw('SELECT * FROM usuario'):
+            if p.tipo == 2 or p.tipo == 3:
+                vendedores.append(p.id)
+            if p.contraseña == password and p.email == email:
+                tipo = p.tipo
+                if (tipo == 0):
+                    url = 'main/baseAdmin.html'
+                    id = p.id
+                    tipo = p.tipo
+                    encontrado = True
+                    break
+                elif (tipo == 1):
+                    url = 'main/baseAlumno.html'
+                    id = p.id
+                    tipo = p.tipo
+                    encontrado = True
+                    break
+                elif (tipo == 2):
+                    url = 'main/baseVFijo.html'
+                    id = p.id
+                    tipo = p.tipo
+                    encontrado = True
+                    break
+                elif (tipo == 3):
+                    url = 'main/vendedor-ambulante.html'
+                    id = p.id
+                    tipo = p.tipo
+                    encontrado = True
+                    break
+        if encontrado==False:
+            return render(request, 'main/login.html', {"error": "Usuario o contraseña invalidos"})
+        request.session['id'] = id
+        request.session['tipo'] = tipo
+        request.session['email'] = email
+        return render(request, url, {"email": email, "tipo": tipo, "id": id,"vendedores" : vendedores})
+    else:
+        return render(request, 'main/login.html', {"error" : "Usuario o contraseña invalidos"})
 
 
-    #return render(request, 'main/loggedin.html', {"email" : tipo})
 
 def gestionproductos(request):
     return render(request, 'main/gestion-productos.html', {})
@@ -76,14 +107,21 @@ def register(request):
     tipo = request.POST.get("tipo")
     nombre = request.POST.get("nombre")
     email = request.POST.get("email")
-    #group1 = request.POST.get("group1")
     password = request.POST.get("password")
     horaInicial = request.POST.get("horaIni")
     horaFinal = request.POST.get("horaFin")
-    formasDePago = request.POST.get("formasDePago[]")
+    formasDePago =[]
+    if not (request.POST.get("formaDePago0") is None):
+        formasDePago.append(request.POST.get("formaDePago0"))
+    if not (request.POST.get("formaDePago1") is None):
+        formasDePago.append(request.POST.get("formaDePago1"))
+    if not (request.POST.get("formaDePago2") is None):
+        formasDePago.append(request.POST.get("formaDePago2"))
+    if not (request.POST.get("formaDePago3") is None):
+        formasDePago.append(request.POST.get("formaDePago3"))
     usuarioNuevo = Usuario(nombre=nombre,email=email,tipo=tipo,contraseña=password,avatar="jpge",formasDePago=formasDePago,horarioIni=horaInicial,horarioFin=horaFinal)
     usuarioNuevo.save()
-    return render(request, 'main/loggedin.html', {"email" : email})
+    return loginReq(request)
 
 def productoReq(request):
     if request.method == "POST":
