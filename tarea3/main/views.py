@@ -8,6 +8,7 @@ from .models import Comida
 from django.http import HttpResponse
 import simplejson
 
+
 # Create your views here.
 def index(request):
     return render(request, 'main/base.html', {})
@@ -35,6 +36,7 @@ def loginReq(request):
         for p in Usuario.objects.raw('SELECT * FROM usuario'):
             if p.contraseña == password and p.email == email:
                 tipo = p.tipo
+                nombre = p.nombre
                 if (tipo == 0):
                     url = 'main/baseAdmin.html'
                     id = p.id
@@ -48,13 +50,15 @@ def loginReq(request):
                     encontrado = True
                     break
                 elif (tipo == 2):
-                    url = 'main/baseVFijo.html'
+                    url = 'main/vendedor-fijo.html'
                     id = p.id
                     tipo = p.tipo
                     encontrado = True
+                    horarioIni = p.horarioIni
+                    horarioFin = p.horarioFin
                     break
                 elif (tipo == 3):
-                    url = 'main/baseVAmbulante.html'
+                    url = 'main/vendedor-ambulante.html'
                     id = p.id
                     tipo = p.tipo
                     encontrado = True
@@ -64,12 +68,11 @@ def loginReq(request):
                 vendedores.append(p.id)
         if encontrado==False:
             return render(request, 'main/login.html', {"error": "Usuario o contraseña invalidos"})
-
         request.session['id'] = id
         request.session['tipo'] = tipo
         request.session['email'] = email
         vendedoresJson = simplejson.dumps(vendedores)
-        return render(request, url, {"email": email, "tipo": tipo, "id": id, "vendedores": vendedoresJson})
+        return render(request, url, {"email": email, "tipo": tipo, "id": id,"vendedores": vendedoresJson, "nombre": nombre, "activo": activo, "horarioIni": horarioIni, "horarioFin" : horarioFin})
     else:
         return render(request, 'main/login.html', {"error" : "Usuario o contraseña invalidos"})
 
@@ -91,9 +94,9 @@ def formView(request):
       elif (tipo == 1):
           url = 'main/baseAlumno.html'
       elif (tipo == 2):
-          url = 'main/baseVFijo.html'
+          url = 'main/vendedor-fijo.html'
       elif (tipo == 3):
-          url = 'main/baseVAmbulante.html'
+          url = 'main/vendedor-ambulante.html'
       return render(request, url, {"email" : email, "tipo" : tipo, "id": id})
    else:
       return render(request, 'main/login.html', {})
