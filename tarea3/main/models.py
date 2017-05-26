@@ -54,7 +54,7 @@ class Comida(models.Model):
         (16, 'Vegetariano'),
     )
     categorias = MultiSelectField(choices=listaCategorias)
-    descripcion = models.CharField(max_length=500,default="descripcion del producot")
+    descripcion = models.CharField(max_length=500)
     stock = models.PositiveSmallIntegerField(default=0)
     precio = models.PositiveSmallIntegerField(default=0)
     imagen = models.ImageField(upload_to="productos")
@@ -66,3 +66,12 @@ class Comida(models.Model):
         db_table = 'Comida'
 
 
+class Favoritos(models.Model):
+    idAlumno = models.IntegerField(primary_key=True)
+    idVendedor = models.IntegerField()
+
+    def __str__(self):
+        return self.idAlumno
+
+    class Meta:
+        db_table = 'Favoritos'
