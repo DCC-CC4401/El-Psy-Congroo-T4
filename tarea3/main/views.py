@@ -6,8 +6,7 @@ from .forms import GestionProductosForm
 from .models import Usuario
 from .models import Comida
 from django.http import HttpResponse
-
-
+import simplejson
 
 # Create your views here.
 def index(request):
@@ -34,8 +33,6 @@ def loginReq(request):
     if MyLoginForm.is_valid():
         vendedores = []
         for p in Usuario.objects.raw('SELECT * FROM usuario'):
-            if p.tipo == 2 or p.tipo == 3:
-                vendedores.append(p.id)
             if p.contraseña == password and p.email == email:
                 tipo = p.tipo
                 if (tipo == 0):
@@ -62,12 +59,17 @@ def loginReq(request):
                     tipo = p.tipo
                     encontrado = True
                     break
+        for p in Usuario.objects.raw('SELECT * FROM usuario'):
+            if p.tipo == 2 or p.tipo == 3:
+                vendedores.append(p.id)
         if encontrado==False:
             return render(request, 'main/login.html', {"error": "Usuario o contraseña invalidos"})
+
         request.session['id'] = id
         request.session['tipo'] = tipo
         request.session['email'] = email
-        return render(request, url, {"email": email, "tipo": tipo, "id": id,"vendedores" : vendedores})
+        vendedoresJson = simplejson.dumps(vendedores)
+        return render(request, url, {"email": email, "tipo": tipo, "id": id, "vendedores": vendedoresJson})
     else:
         return render(request, 'main/login.html', {"error" : "Usuario o contraseña invalidos"})
 
@@ -137,3 +139,6 @@ def productoReq(request):
         else:
             return render(request, 'main/gestion-productos.html', {"respuesta": "¡Ingrese todos los datos!"})
     return render(request, 'main/vendedor-profile-page.html', {})
+
+def vistaVendedorPorAlumno(request):
+    return render(request,'main/vendedor-profile-page.html',{})
