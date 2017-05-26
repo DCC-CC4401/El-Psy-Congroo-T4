@@ -85,7 +85,15 @@ def loginReq(request):
 
 
 def gestionproductos(request):
-    return render(request, 'main/gestion-productos.html', {})
+    if request.session.has_key('id'):
+        email = request.session['email']
+        tipo = request.session['tipo']
+        id = request.session['id']
+        if tipo == 3:
+            path = "main/baseVAmbulante.html"
+        if tipo == 2:
+            path = "main/baseVFijo.html"
+    return render(request, 'main/gestion-productos.html', {"path" : path})
 
 def vendedorprofilepage(request):
     return render(request, 'main/vendedor-profile-page.html', {})
@@ -137,20 +145,40 @@ def register(request):
     return loginReq(request)
 
 def productoReq(request):
+    horarioIni = 0
+    horarioFin = 0
+    avatar = ""
     if request.method == "POST":
-        Formulario = GestionProductosForm(request.POST)
-        if Formulario.is_valid():
-            producto = Comida()
-            producto.nombre = request.POST.get("nombre")
-            producto.imagen = request.FILES.get("comida")
-            producto.precio = request.POST.get("precio")
-            producto.stock = request.POST.get("stock")
-            producto.descripcion = request.POST.get("descripcion")
-            producto.categorias = request.POST.get("categoria")
-            producto.save()
-        else:
-            return render(request, 'main/gestion-productos.html', {"respuesta": "¡Ingrese todos los datos!"})
-    return render(request, 'main/vendedor-profile-page.html', {})
+        if request.session.has_key('id'):
+            id = request.session['id']
+            email = request.session['email']
+            tipo = request.session['tipo']
+            if tipo == 3:
+                path = "main/baseVAmbulante.html"
+                url ="main/vendedor-ambulante.html"
+            if tipo == 2:
+                path = "main/baseVFijo.html"
+                url = "main/vendedor-fijo.html"
+            Formulario = GestionProductosForm(request.POST)
+            if Formulario.is_valid():
+                producto = Comida()
+                producto.idVendedor = id
+                producto.nombre = request.POST.get("nombre")
+                producto.imagen = request.FILES.get("comida")
+                producto.precio = request.POST.get("precio")
+                producto.stock = request.POST.get("stock")
+                producto.descripcion = request.POST.get("descripcion")
+                producto.categorias = request.POST.get("categoria")
+                producto.save()
+            else:
+                return render(request, 'main/gestion-productos.html', {"path" : path, "respuesta": "¡Ingrese todos los datos!"})
+    for p in Usuario.objects.raw('SELECT * FROM usuario'):
+        if p.id == id:
+            avatar = p.avatar
+            horarioIni = p.horarioIni
+            horarioFin = p.horarioFin
+            nombre = p.nombre
+    return render(request, url, {"email": email, "tipo": tipo, "id": id, "nombre": nombre, "horarioIni": horarioIni, "horarioFin" : horarioFin, "avatar" : avatar})
 
 def vistaVendedorPorAlumno(request):
     if request.method == 'POST':
