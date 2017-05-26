@@ -32,7 +32,10 @@ def loginReq(request):
     password = request.POST.get("password")
     MyLoginForm = LoginForm(request.POST)
     if MyLoginForm.is_valid():
+        vendedores = []
         for p in Usuario.objects.raw('SELECT * FROM usuario'):
+            if p.tipo == 2 or p.tipo == 3:
+                vendedores.append(p.id)
             if p.contraseña == password and p.email == email:
                 tipo = p.tipo
                 if (tipo == 0):
@@ -64,7 +67,7 @@ def loginReq(request):
         request.session['id'] = id
         request.session['tipo'] = tipo
         request.session['email'] = email
-        return render(request, url, {"email": email, "tipo": tipo, "id": id})
+        return render(request, url, {"email": email, "tipo": tipo, "id": id,"vendedores" : vendedores})
     else:
         return render(request, 'main/login.html', {"error" : "Usuario o contraseña invalidos"})
 
