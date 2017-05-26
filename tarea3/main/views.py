@@ -149,5 +149,12 @@ def productoReq(request):
 
 def vistaVendedorPorAlumno(request):
     if request.method == 'POST':
-        id = request.POST.get("id")
-    return render(request,'main/vendedor-profile-page.html',{})
+        id = int(request.POST.get("id"))
+        for p in Usuario.objects.raw('SELECT * FROM usuario'):
+            if p.id == id:
+                tipo = p.tipo
+                nombre = p.nombre
+                if tipo == 3:
+                    return render(request,'main/vendedor-ambulante-vistaAlumno.html',{"nombre": nombre})
+                if tipo == 2:
+                    return render(request, 'main/vendedor-fijo-vistaAlumno.html', {"nombre": nombre})
