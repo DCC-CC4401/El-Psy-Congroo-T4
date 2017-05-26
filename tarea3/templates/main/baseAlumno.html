@@ -1,13 +1,15 @@
 {% extends 'main/base.html' %}
 {% block content %}
     <main>
-    {{vendedores}}
-        {% vendedores = 0 %}
     <div class="container">
         <div class='row'></div>
         <div class='row'>
-            <form method="post" action="#" > {% csrf_token %}
-                <input type="hidden" name='id' id="id" value="{{vendedores}}" >
+            <form method="post" action="{% url 'vistaVendedorPorAlumno' %}" > {% csrf_token %}
+                <script>
+                var vendedor = {{ vendedores|safe }}
+                var vendedor1 = vendedor[0]
+                document.write("<input type='hidden' name='id' id='id' value ='"+ vendedor1 +"' >" )
+            </script>
                 <button type="submit"  class='col l5 offset-l4 btn btn-large waves-effect button teal' >Vendedor 1</button>
             </form>
         </div>

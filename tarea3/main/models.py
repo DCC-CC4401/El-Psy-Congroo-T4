@@ -9,7 +9,7 @@ class Usuario(models.Model):
     email = models.CharField(max_length=200)
     tipos = ((0, 'admin'), (1, 'alumno'), (2, 'fijo'), (3, 'ambulante'))
     tipo = models.IntegerField(choices=tipos)
-    avatar = models.CharField(max_length=200)
+    avatar = models.ImageField(upload_to = 'avatars')
     contraseña = models.CharField(max_length=200)
     activo = models.BooleanField(default=False,blank=True)
     litaFormasDePago = (
@@ -18,9 +18,9 @@ class Usuario(models.Model):
         (2, 'Tarjeta de Débito'),
         (3, 'Tarjeta Junaeb'),
     )
-    formasDePago = MultiSelectField(choices=litaFormasDePago,null=True)
-    horarioIni = models.CharField(max_length=200,null=True)
-    horarioFin = models.CharField(max_length=200, null=True)
+    formasDePago = MultiSelectField(choices=litaFormasDePago,null=True,blank=True)
+    horarioIni = models.CharField(max_length=200,blank=True,null=True)
+    horarioFin = models.CharField(max_length=200,blank=True,null=True)
 
     def __str__(self):
         return self.nombre

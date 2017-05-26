@@ -6,7 +6,7 @@ from .forms import GestionProductosForm
 from .models import Usuario
 from .models import Comida
 from django.http import HttpResponse
-
+import simplejson
 
 
 # Create your views here.
@@ -27,6 +27,8 @@ def loginReq(request):
     tipo = 0
     url = ''
     id = 0
+    horarioIni = 0
+    horarioFin = 0
     encontrado = False
     email = request.POST.get("email")
     password = request.POST.get("password")
@@ -34,8 +36,6 @@ def loginReq(request):
     if MyLoginForm.is_valid():
         vendedores = []
         for p in Usuario.objects.raw('SELECT * FROM usuario'):
-            if p.tipo == 2 or p.tipo == 3:
-                vendedores.append(p.id)
             if p.contraseña == password and p.email == email:
                 tipo = p.tipo
                 nombre = p.nombre
@@ -55,23 +55,26 @@ def loginReq(request):
                     url = 'main/vendedor-fijo.html'
                     id = p.id
                     tipo = p.tipo
+                    encontrado = True
                     horarioIni = p.horarioIni
                     horarioFin = p.horarioFin
-                    encontrado = True
                     break
                 elif (tipo == 3):
                     url = 'main/vendedor-ambulante.html'
                     id = p.id
                     tipo = p.tipo
-                    activo = p.activo
                     encontrado = True
                     break
+        for p in Usuario.objects.raw('SELECT * FROM usuario'):
+            if p.tipo == 2 or p.tipo == 3:
+                vendedores.append(p.id)
         if encontrado==False:
             return render(request, 'main/login.html', {"error": "Usuario o contraseña invalidos"})
         request.session['id'] = id
         request.session['tipo'] = tipo
         request.session['email'] = email
-        return render(request, url, {"email": email, "tipo": tipo, "id": id,"vendedores" : vendedores, "nombre": nombre, "activo": activo, "horarioIni": horarioIni, "horarioFin" : horarioFin})
+        vendedoresJson = simplejson.dumps(vendedores)
+        return render(request, url, {"email": email, "tipo": tipo, "id": id,"vendedores": vendedoresJson, "nombre": nombre, "horarioIni": horarioIni, "horarioFin" : horarioFin})
     else:
         return render(request, 'main/login.html', {"error" : "Usuario o contraseña invalidos"})
 
@@ -114,6 +117,8 @@ def register(request):
     password = request.POST.get("password")
     horaInicial = request.POST.get("horaIni")
     horaFinal = request.POST.get("horaFin")
+    avatar = request.FILES.get("avatar")
+    print(avatar)
     formasDePago =[]
     if not (request.POST.get("formaDePago0") is None):
         formasDePago.append(request.POST.get("formaDePago0"))
@@ -123,7 +128,7 @@ def register(request):
         formasDePago.append(request.POST.get("formaDePago2"))
     if not (request.POST.get("formaDePago3") is None):
         formasDePago.append(request.POST.get("formaDePago3"))
-    usuarioNuevo = Usuario(nombre=nombre,email=email,tipo=tipo,contraseña=password,avatar="jpge",formasDePago=formasDePago,horarioIni=horaInicial,horarioFin=horaFinal)
+    usuarioNuevo = Usuario(nombre=nombre,email=email,tipo=tipo,contraseña=password,avatar=avatar,formasDePago=formasDePago,horarioIni=horaInicial,horarioFin=horaFinal)
     usuarioNuevo.save()
     return loginReq(request)
 
@@ -141,3 +146,8 @@ def productoReq(request):
         else:
             return render(request, 'main/gestion-productos.html', {"respuesta": "¡Ingrese todos los datos!"})
     return render(request, 'main/vendedor-profile-page.html', {})
+
+def vistaVendedorPorAlumno(request):
+    if request.method == 'POST':
+        id = request.POST.get("id")
+    return render(request,'main/vendedor-profile-page.html',{})
