@@ -92,7 +92,19 @@ def loginReq(request):
                 listaDeProductos[i].append(producto.descripcion)
                 i += 1
         listaDeProductos = simplejson.dumps(listaDeProductos,ensure_ascii=False).encode('utf8')
-        return render(request, url, {"email": email, "tipo": tipo, "id": id,"vendedores": vendedoresJson, "nombre": nombre, "horarioIni": horarioIni, "horarioFin" : horarioFin, "avatar" : avatar, "listaDeProductos" : listaDeProductos})
+
+        #limpiar argumentos de salida segun tipo de vista
+        argumentos ={"email": email, "tipo": tipo, "id": id,"vendedores": vendedoresJson, "nombre": nombre, "horarioIni": horarioIni, "horarioFin" : horarioFin, "avatar" : avatar, "listaDeProductos" : listaDeProductos}
+        if (tipo == 0):
+            argumentos = {"nombre": nombre,"id": id,}
+        if (tipo == 1):
+            argumentos = {"nombre": nombre, "id": id,"vendedores": vendedoresJson}
+        if (tipo == 2):
+            argumentos = {"nombre": nombre,  "tipo": tipo, "id": id,"horarioIni": horarioIni, "horarioFin" : horarioFin, "avatar" : avatar, "listaDeProductos" : listaDeProductos}
+        if (tipo ==3):
+            argumentos ={"nombre": nombre,  "tipo": tipo, "id": id,"avatar" : avatar, "listaDeProductos" : listaDeProductos}
+
+        return render(request, url, argumentos)
     else:
         return render(request, 'main/login.html', {"error" : "Usuario o contraseña invalidos"})
 
