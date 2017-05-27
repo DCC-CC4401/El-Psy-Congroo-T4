@@ -45,10 +45,16 @@
                 <!-- Boton Activo -->>
                 <li><a class="subheader">Activo</a></li>
                 <li>
-                    <div class="switch" style="margin-left: 80px;">
+                    <div class="switch" style="margin-left: 80px;" method="post" action="{% url 'cambiarEstado' %}" >
                         <label>
-                            No<input type="checkbox"><span class="lever"></span>Si <!-- TODO darle funcionalidad-->
+                            No<input type="checkbox"><span class="lever" id="boton-activo"></span>Si <!-- TODO darle funcionalidad-->
                         </label>
+                        <input type="hidden" name="id" id="id" value={{ id }}>
+                        <input type="hidden" name="estado" id="estado" value="">
+                        <script>
+                            document.getElementById("estado").value = document.getElementById("boton-activo").checked
+                            onChange="this.form.submit()"
+                        </script>
                     </div>
                 </li>
 

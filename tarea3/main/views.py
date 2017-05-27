@@ -240,3 +240,13 @@ def vistaVendedorPorAlumno(request):
                     return render(request,'main/vendedor-ambulante-vistaAlumno.html',{"nombre": nombre})
                 if tipo == 2:
                     return render(request, 'main/vendedor-fijo-vistaAlumno.html', {"nombre": nombre})
+
+def cambiarEstado(request):
+    if request.method == 'POST':
+        id_vendedor = int(request.POST.get("id"))
+        estado = bool(request.POST.get("estado"))
+        if estado == True:
+            Usuario.objects.get(id=id_vendedor).update(activo=False)
+        else:
+            Usuario.objects.get(id=id_vendedor).update(activo=True)
+        Usuario.save()
