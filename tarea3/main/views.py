@@ -7,6 +7,8 @@ from .models import Usuario
 from .models import Comida
 from django.http import HttpResponse
 import simplejson
+from django.views.decorators.csrf import ensure_csrf_cookie
+@ensure_csrf_cookie
 
 
 # Create your views here.
@@ -245,7 +247,8 @@ def cambiarEstado(request):
     if request.method == 'POST':
         id_vendedor = int(request.POST.get("id"))
         estado = bool(request.POST.get("estado"))
-        if estado == True:
+        print(estado)
+        if estado == False:
             Usuario.objects.get(id=id_vendedor).update(activo=False)
         else:
             Usuario.objects.get(id=id_vendedor).update(activo=True)

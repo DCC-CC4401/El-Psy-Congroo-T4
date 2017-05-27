@@ -45,17 +45,18 @@
                 <!-- Boton Activo -->>
                 <li><a class="subheader">Activo</a></li>
                 <li>
-                    <div class="switch" style="margin-left: 80px;" method="post" action="{% url 'cambiarEstado' %}" >
-                        <label>
-                            No<input type="checkbox"><span class="lever" id="boton-activo"></span>Si <!-- TODO darle funcionalidad-->
-                        </label>
-                        <input type="hidden" name="id" id="id" value={{ id }}>
-                        <input type="hidden" name="estado" id="estado" value="">
-                        <script>
-                            document.getElementById("estado").value = document.getElementById("boton-activo").checked
-                            onChange="this.form.submit()"
-                        </script>
-                    </div>
+                    <form method="post" action="{% url 'cambiarEstado' %}">
+                        <div class="switch" style="margin-left: 80px;" id="boton-activo">
+                            <input type="hidden" name="id" id="id" value={{ id }}>
+                            <input type="hidden" name="estado" id="estado" value="">
+                            <script>
+                                document.getElementById("estado").value = document.getElementById("boton-activo").checked;
+                            </script>
+                            <label>{% csrf_token %}
+                                No<input type="checkbox" onChange='this.form.submit()' id="checkbox-estado"><span class="lever"></span>Si <!-- TODO darle funcionalidad-->
+                            </label>
+                        </div>
+                    </form>
                 </li>
 
                 <!-- <li><a class="subheader">Filtros</a></li>
@@ -90,6 +91,20 @@
 
 {% block content %}
 {% endblock %}
+<script>
+    function EstadoActual() {
+        var estdoInicial = "{{ activo }}";
+        if (estdoInicial == "True") {
+            document.getElementById("checkbox-estado").checked = true;
+        } else {
+            document.getElementById("checkbox-estado").checked = false;
+        }
+    }
+</script>
+
+ <script>
+    window.onload = EstadoActual();
+</script>
 
 </body>
 
