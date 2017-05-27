@@ -13,4 +13,5 @@ urlpatterns = [
     url(r'^loggedin/', views.loggedin, name='loggedin'),
     url(r'^productoReq/', views.productoReq, name='productoReq'),
     url(r'^vistaVendedorPorAlumno/', views.vistaVendedorPorAlumno, name='vistaVendedorPorAlumno'),
+    url(r'^inicioAlumno/', views.inicioAlumno, name='inicioAlumno'),
 ]

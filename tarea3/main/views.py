@@ -59,6 +59,7 @@ def loginReq(request):
                     avatar = p.avatar
                     tipo = p.tipo
                     encontrado = True
+                    avatar = p.avatar
                     break
                 elif (tipo == 2):
                     url = 'main/vendedor-fijo.html'
@@ -89,7 +90,7 @@ def loginReq(request):
         request.session['id'] = id
         request.session['tipo'] = tipo
         request.session['email'] = email
-
+        request.session['avatar'] = str(avatar)
         # si son vendedores, crear lista de productos
         for p in Usuario.objects.raw('SELECT * FROM usuario'):
             if p.tipo == 2 or p.tipo == 3:
@@ -116,7 +117,7 @@ def loginReq(request):
         if (tipo == 0):
             argumentos = {"nombre": nombre,"id": id,}
         if (tipo == 1):
-            argumentos = argumentos
+            argumentos = {"nombre": nombre,  "tipo": tipo, "id": id,"vendedores": vendedoresJson, "avatarSesion": avatar}
         if (tipo == 2):
             argumentos = {"nombre": nombre,  "tipo": tipo, "id": id,"horarioIni": horarioIni, "horarioFin" : horarioFin, "avatar" : avatar, "listaDeProductos" : listaDeProductos, "activo" : activo, "formasDePago" : formasDePago}
         if (tipo ==3):
@@ -220,6 +221,20 @@ def productoReq(request):
             else:
                 return render(request, 'main/gestion-productos.html', {"path" : path, "respuesta": "¡Ingrese todos los datos!"})
 
+    # obtener alimentos en caso de que sea vendedor fijo o ambulante
+    i = 0
+    listaDeProductos=[]
+    for producto in Comida.objects.raw('SELECT * FROM comida WHERE idVendedor = "' + str(id) + '"'):
+        listaDeProductos.append([])
+        listaDeProductos[i].append(producto.nombre)
+        categoria = str(producto.categorias)
+        listaDeProductos[i].append(categoria)
+        listaDeProductos[i].append(producto.stock)
+        listaDeProductos[i].append(producto.precio)
+        listaDeProductos[i].append(producto.descripcion)
+        listaDeProductos[i].append(str(producto.imagen))
+        i += 1
+    listaDeProductos = simplejson.dumps(listaDeProductos, ensure_ascii=False).encode('utf8')
 
     for p in Usuario.objects.raw('SELECT * FROM usuario'):
         if p.id == id:
@@ -227,7 +242,7 @@ def productoReq(request):
             horarioIni = p.horarioIni
             horarioFin = p.horarioFin
             nombre = p.nombre
-    return render(request, url, {"email": email, "tipo": tipo, "id": id, "nombre": nombre, "horarioIni": horarioIni, "horarioFin" : horarioFin, "avatar" : avatar})
+    return render(request, url, {"email": email, "tipo": tipo, "id": id, "nombre": nombre, "horarioIni": horarioIni, "horarioFin" : horarioFin, "avatar" : avatar, "listaDeProductos" : listaDeProductos})
 
 def vistaVendedorPorAlumno(request):
     if request.method == 'POST':
@@ -236,7 +251,38 @@ def vistaVendedorPorAlumno(request):
             if p.id == id:
                 tipo = p.tipo
                 nombre = p.nombre
+                avatar = p.avatar
                 if tipo == 3:
-                    return render(request,'main/vendedor-ambulante-vistaAlumno.html',{"nombre": nombre})
+                    url = 'main/vendedor-ambulante-vistaAlumno.html'
+                    break
                 if tipo == 2:
-                    return render(request, 'main/vendedor-fijo-vistaAlumno.html', {"nombre": nombre})
+                    url = 'main/vendedor-fijo-vistaAlumno.html'
+                    break
+    # obtener alimentos
+    i = 0
+    listaDeProductos = []
+    for producto in Comida.objects.raw('SELECT * FROM comida WHERE idVendedor = "' + str(id) + '"'):
+        listaDeProductos.append([])
+        listaDeProductos[i].append(producto.nombre)
+        categoria = str(producto.categorias)
+        listaDeProductos[i].append(categoria)
+        listaDeProductos[i].append(producto.stock)
+        listaDeProductos[i].append(producto.precio)
+        listaDeProductos[i].append(producto.descripcion)
+        listaDeProductos[i].append(str(producto.imagen))
+        i += 1
+    avatarSesion = request.session['avatar']
+    listaDeProductos = simplejson.dumps(listaDeProductos, ensure_ascii=False).encode('utf8')
+    return render(request, url, {"nombre": nombre, "tipo": tipo, "id": id, "avatar" : avatar, "listaDeProductos" :listaDeProductos,"avatarSesion": avatarSesion})
+
+def inicioAlumno(request):
+    id = request.session['id']
+    vendedores =[]
+    # si son vendedores, crear lista de productos
+    for p in Usuario.objects.raw('SELECT * FROM usuario'):
+        if p.id == id:
+            avatar = p.avatar
+        if p.tipo == 2 or p.tipo == 3:
+            vendedores.append(p.id)
+    vendedoresJson = simplejson.dumps(vendedores)
+    return render(request, 'main/baseAlumno.html',{"id": id,"vendedores": vendedoresJson,"avatarSesion": avatar })
