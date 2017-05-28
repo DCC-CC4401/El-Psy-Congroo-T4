@@ -67,7 +67,8 @@ class Comida(models.Model):
 
 
 class Favoritos(models.Model):
-    idAlumno = models.IntegerField(primary_key=True)
+    id = models.AutoField(primary_key=True)
+    idAlumno = models.IntegerField()
     idVendedor = models.IntegerField()
 
     def __str__(self):

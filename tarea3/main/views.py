@@ -14,9 +14,16 @@ from multiselectfield import MultiSelectField
 from django.core.files.storage import default_storage
 # Create your views here.
 def index(request):
-    return formView(request)
+    vendedores = []
+    # lista de vendedores
+    for p in Usuario.objects.raw('SELECT * FROM usuario'):
+        if p.tipo == 2 or p.tipo == 3:
+            vendedores.append(p.id)
+    vendedoresJson = simplejson.dumps(vendedores)
+    return render(request, 'main/baseAlumno-sinLogin.html', {"vendedores": vendedoresJson})
 
 def login(request):
+
     return render(request, 'main/login.html', {})
 
 def signup(request):
@@ -260,6 +267,7 @@ def vistaVendedorPorAlumno(request):
                 tipo = p.tipo
                 nombre = p.nombre
                 avatar = p.avatar
+                formasDePago = p.formasDePago
                 if tipo == 3:
                     url = 'main/vendedor-ambulante-vistaAlumno.html'
                     break
@@ -281,7 +289,39 @@ def vistaVendedorPorAlumno(request):
         i += 1
     avatarSesion = request.session['avatar']
     listaDeProductos = simplejson.dumps(listaDeProductos, ensure_ascii=False).encode('utf8')
-    return render(request, url, {"nombre": nombre, "tipo": tipo, "id": id, "avatar" : avatar, "listaDeProductos" :listaDeProductos,"avatarSesion": avatarSesion,"favorito": favorito})
+    return render(request, url, {"nombre": nombre, "tipo": tipo, "id": id, "avatar" : avatar, "listaDeProductos" :listaDeProductos,"avatarSesion": avatarSesion,"favorito": favorito, "formasDePago": formasDePago})
+
+def vistaVendedorPorAlumnoSinLogin(request):
+    if request.method == 'POST':
+        id = int(request.POST.get("id"))
+        for p in Usuario.objects.raw('SELECT * FROM usuario'):
+            if p.id == id:
+                tipo = p.tipo
+                nombre = p.nombre
+                avatar = p.avatar
+                formasDePago = p.formasDePago
+                if tipo == 3:
+                    url = 'main/vendedor-ambulante-vistaAlumno-sinLogin.html'
+                    break
+                if tipo == 2:
+                    url = 'main/vendedor-fijo-vistaAlumno-sinLogin.html'
+                    break
+                    # obtener alimentos
+    i = 0
+    listaDeProductos = []
+    for producto in Comida.objects.raw('SELECT * FROM comida WHERE idVendedor = "' + str(id) + '"'):
+        listaDeProductos.append([])
+        listaDeProductos[i].append(producto.nombre)
+        categoria = str(producto.categorias)
+        listaDeProductos[i].append(categoria)
+        listaDeProductos[i].append(producto.stock)
+        listaDeProductos[i].append(producto.precio)
+        listaDeProductos[i].append(producto.descripcion)
+        listaDeProductos[i].append(str(producto.imagen))
+        i += 1
+    listaDeProductos = simplejson.dumps(listaDeProductos, ensure_ascii=False).encode('utf8')
+    return render(request, url, {"nombre": nombre, "tipo": tipo, "id": id,"avatar" : avatar, "listaDeProductos" :listaDeProductos, "formasDePago": formasDePago})
+
 
 def inicioAlumno(request):
     id = request.session['id']
@@ -303,6 +343,7 @@ def borrarProducto(request):
             Comida.objects.filter(nombre=comida).delete()
             data = {"eliminar" : comida}
             return JsonResponse(data)
+
 @csrf_exempt
 def editarProducto(request):
     if request.method == 'POST':
@@ -317,13 +358,6 @@ def editarProducto(request):
             nuevaDescripcion = request.POST.get('descripcion')
             nuevaCategoria = (request.POST.get('categoria'))
             nuevaImagen = request.FILES.get("comida")
-            print (nombreOriginal)
-            print (nuevoNombre)
-            print (nuevoPrecio)
-            print (nuevoStock)
-            print (nuevaDescripcion)
-            print (nuevaCategoria)
-            print(nuevaImagen)
             if nuevoNombre != "":
                 if Comida.objects.filter(nombre=nuevoNombre).exists():
                     data = {"respuesta": "repetido"}
@@ -346,3 +380,19 @@ def editarProducto(request):
 
             data = {"respuesta" : nombreOriginal}
             return JsonResponse(data)
+
+def cambiarFavorito(request):
+    if request.method == "GET":
+        if request.is_ajax():
+            favorito = request.GET.get('favorito')
+            agregar = request.GET.get('agregar')
+            if agregar == "si":
+                nuevoFavorito = Favoritos()
+                nuevoFavorito.idAlumno = request.session['id']
+                nuevoFavorito.idVendedor = favorito
+                nuevoFavorito.save()
+                respuesta = {"respuesta": "si"}
+            else:
+                Favoritos.objects.filter(idAlumno=request.session['id']).filter(idVendedor=favorito).delete()
+                respuesta = {"respuesta": "no"}
+            return JsonResponse(respuesta)
