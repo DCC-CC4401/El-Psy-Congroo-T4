@@ -69,9 +69,13 @@ def loginReq(request):
                     encontrado = True
                     horarioIni = p.horarioIni
                     horarioFin = p.horarioFin
+                    request.session['horarioIni'] = horarioIni
+                    request.session['horarioFin'] = horarioFin
                     avatar = p.avatar
+                    request.session['avatar'] = str(avatar)
                     activo = p.activo
                     formasDePago = p.formasDePago
+                    request.session['formasDePago'] = formasDePago
                     break
                 elif (tipo == 3):
                     url = 'main/vendedor-ambulante.html'
@@ -79,8 +83,10 @@ def loginReq(request):
                     tipo = p.tipo
                     encontrado = True
                     avatar = p.avatar
+                    request.session['avatar'] = str(avatar)
                     activo = p.activo
                     formasDePago = p.formasDePago
+                    request.session['formasDePago'] = formasDePago
                     break
 
         #si no se encuentra el usuario, se retorna a pagina de login
@@ -91,6 +97,7 @@ def loginReq(request):
         request.session['id'] = id
         request.session['tipo'] = tipo
         request.session['email'] = email
+        request.session['nombre'] = nombre
 
         # si son vendedores, crear lista de productos
         for p in Usuario.objects.raw('SELECT * FROM usuario'):
@@ -258,7 +265,6 @@ def cambiarEstado(request):
 def editarVendedor(request):
     if request.session.has_key('id'):
         id = request.session['id']
-        print(id)
         nombre = request.session['nombre']
         formasDePago = request.session['formasDePago']
         avatar = request.session['avatar']
@@ -279,7 +285,7 @@ def editarVendedor(request):
 def editarDatos(request):
     nombre = request.POST.get("nombre")
     tipo = request.POST.get("tipo")
-    horaInicial = request.POST.get("horaIni")
+    horaInicial = request.POST.get("horaIni") # TODO poner en un if segun el tipo
     horaFinal = request.POST.get("horaFin")
     avatar = request.FILES.get("avatar")
     formasDePago =[]
