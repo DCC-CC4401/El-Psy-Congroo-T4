@@ -6,6 +6,7 @@ from .forms import GestionProductosForm
 from .forms import editarProductosForm
 from .models import Usuario
 from .models import Comida
+from .models import Favoritos
 import simplejson
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -251,6 +252,11 @@ def vistaVendedorPorAlumno(request):
         id = int(request.POST.get("id"))
         for p in Usuario.objects.raw('SELECT * FROM usuario'):
             if p.id == id:
+                favorito = 0
+                for f in Favoritos.objects.raw('SELECT * FROM Favoritos'):
+                    if request.session['id'] == f.idAlumno:
+                        if id == f.idVendedor:
+                            favorito = 1
                 tipo = p.tipo
                 nombre = p.nombre
                 avatar = p.avatar
@@ -275,7 +281,7 @@ def vistaVendedorPorAlumno(request):
         i += 1
     avatarSesion = request.session['avatar']
     listaDeProductos = simplejson.dumps(listaDeProductos, ensure_ascii=False).encode('utf8')
-    return render(request, url, {"nombre": nombre, "tipo": tipo, "id": id, "avatar" : avatar, "listaDeProductos" :listaDeProductos,"avatarSesion": avatarSesion})
+    return render(request, url, {"nombre": nombre, "tipo": tipo, "id": id, "avatar" : avatar, "listaDeProductos" :listaDeProductos,"avatarSesion": avatarSesion,"favorito": favorito})
 
 def inicioAlumno(request):
     id = request.session['id']

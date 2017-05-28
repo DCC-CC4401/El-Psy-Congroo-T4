@@ -54,7 +54,8 @@
                             <label>
                                 <h4 class="card-title grey-text flow-text text-darken-4">Favorito</h4>
                                 <h6><i class="material-icons amber-text" >grade</i></h6>
-                                <input type="checkbox"><span class="lever"></span>
+                                <div id = "favorito">
+                                </div>
                             </label>
                         </div>
                     </div>
@@ -166,8 +167,22 @@
         document.getElementById("img-perfil-movil").src = ruta;
     }
 </script>
-
+<script>
+    function switchFavorito(){
+        var div = document.getElementById("favorito");
+        var input = document.createElement("input");
+        input.setAttribute("type" ,'checkbox' );
+        if ("{{favorito}}" == '1'){
+            input.setAttribute("checked",true);
+        }
+        div.appendChild(input);
+        var span = document.createElement("span");
+        span.setAttribute("class","lever");
+        div.appendChild(span);
+    }
+</script>
  <script>
     window.onload = ProfileImg();
+    window.onload = switchFavorito();
 </script>
 {% endblock %}
