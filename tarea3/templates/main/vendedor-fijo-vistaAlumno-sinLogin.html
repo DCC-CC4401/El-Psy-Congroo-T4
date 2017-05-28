@@ -1,4 +1,4 @@
-{% extends 'main/baseAlumno.html' %}
+    {% extends 'main/baseAlumno-sinLogin.html' %}
 {% block content %}
 
 <script>
@@ -8,7 +8,6 @@
 
 </script>
     <main>
-#    Perfil del vendedor           #}
     <div class="container">
         <div id="profile-page-header" class="card">
 
@@ -62,12 +61,6 @@
 
                     <div class="col s3 l2 hide-on-med-and-down center-align">
                         <div class="switch" style="margin-left: 10px;">
-                            <label>
-                                <h4 class="card-title grey-text flow-text text-darken-4">Favorito</h4>
-                                <h6><i class="material-icons amber-text" >grade</i></h6>
-                                <div id = "favorito">
-                                </div>
-                            </label>
                         </div>
                     </div>
                 </div>
@@ -83,11 +76,7 @@
 {#                        </p>#}
                          <div class="col s3 l2 hide-on-med-and-down center-align">
                         <div class="switch" style="margin-left: 10px;">
-                            <label>
-                                <h4 class="card-title grey-text flow-text text-darken-4">Favorito</h4>
-                                <h6><i class="material-icons amber-text" >grade</i></h6>
-                                <input type="checkbox"><span class="lever"></span>
-                            </label>
+
                         </div>
                     </div>
                     </div>
@@ -172,54 +161,7 @@
             </div>
         </div>
     </div>    </main>
-    <script>
-    function switchFavorito(){
-        var div = document.getElementById("favorito");
-        var input = document.createElement("input");
-        input.setAttribute("type" ,'checkbox' );
-        input.setAttribute("onchange" ,'handleChange(this);');
-        if ("{{favorito}}" == '1'){
-            input.setAttribute("checked",true);
-        }
-        div.appendChild(input);
-        var span = document.createElement("span");
-        span.setAttribute("class","lever");
-        div.appendChild(span);
-    }
-</script>
-<script>
-    function handleChange(checkbox) {
-    if(checkbox.checked == true){
-         var datos ="favorito=" + "{{id}}"+"&agregar=si";
-         $.ajax({
-           url:{% url 'cambiarFavorito' %},
-           type: "GET",
-           data: datos,
-           dataType: "json",
 
-           success: function(data) {
-           },
-           error:function(data) {
-               alert("error in getting from server")
-           },
-        });
-    }else{
-        var datos ="favorito=" + "{{id}}"+"&agregar=no";
-         $.ajax({
-           url:{% url 'cambiarFavorito' %},
-           type: "GET",
-           data: datos,
-           dataType: "json",
-
-           success: function(data) {
-           },
-           error:function(data) {
-               alert("error in getting from server")
-           },
-        });
-   }
-}
-</script>
 
 <script>
     function ProfileImg() {
@@ -275,6 +217,5 @@
     window.onload = ProfileImg();
     window.onload = EstadoVendedor();
     window.onload = FormasDePago();
-    window.onload = switchFavorito();
 </script>
 {% endblock %}

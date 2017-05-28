@@ -3,17 +3,28 @@ from django.views.generic import TemplateView
 from django.utils import timezone
 from .forms import LoginForm
 from .forms import GestionProductosForm
+from .forms import editarProductosForm
 from .models import Usuario
 from .models import Comida
-from django.http import HttpResponse
+from .models import Favoritos
 import simplejson
 from django.views.decorators.csrf import ensure_csrf_cookie
 @ensure_csrf_cookie
 
 
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from multiselectfield import MultiSelectField
+from django.core.files.storage import default_storage
 # Create your views here.
 def index(request):
-    return formView(request)
+    vendedores = []
+    # lista de vendedores
+    for p in Usuario.objects.raw('SELECT * FROM usuario'):
+        if p.tipo == 2 or p.tipo == 3:
+            vendedores.append(p.id)
+    vendedoresJson = simplejson.dumps(vendedores)
+    return render(request, 'main/baseAlumno-sinLogin.html', {"vendedores": vendedoresJson})
 
 def login(request):
     return render(request, 'main/login.html', {})
@@ -61,6 +72,7 @@ def loginReq(request):
                     avatar = p.avatar
                     tipo = p.tipo
                     encontrado = True
+                    avatar = p.avatar
                     break
                 elif (tipo == 2):
                     url = 'main/vendedor-fijo.html'
@@ -72,7 +84,6 @@ def loginReq(request):
                     request.session['horarioIni'] = horarioIni
                     request.session['horarioFin'] = horarioFin
                     avatar = p.avatar
-                    request.session['avatar'] = str(avatar)
                     activo = p.activo
                     formasDePago = p.formasDePago
                     request.session['formasDePago'] = formasDePago
@@ -83,7 +94,6 @@ def loginReq(request):
                     tipo = p.tipo
                     encontrado = True
                     avatar = p.avatar
-                    request.session['avatar'] = str(avatar)
                     activo = p.activo
                     formasDePago = p.formasDePago
                     request.session['formasDePago'] = formasDePago
@@ -98,7 +108,7 @@ def loginReq(request):
         request.session['tipo'] = tipo
         request.session['email'] = email
         request.session['nombre'] = nombre
-
+        request.session['avatar'] = str(avatar)
         # si son vendedores, crear lista de productos
         for p in Usuario.objects.raw('SELECT * FROM usuario'):
             if p.tipo == 2 or p.tipo == 3:
@@ -125,7 +135,7 @@ def loginReq(request):
         if (tipo == 0):
             argumentos = {"nombre": nombre,"id": id,}
         if (tipo == 1):
-            argumentos = argumentos
+            argumentos = {"nombre": nombre,  "tipo": tipo, "id": id,"vendedores": vendedoresJson, "avatarSesion": avatar}
         if (tipo == 2):
             argumentos = {"nombre": nombre,  "tipo": tipo, "id": id,"horarioIni": horarioIni, "horarioFin" : horarioFin, "avatar" : avatar, "listaDeProductos" : listaDeProductos, "activo" : activo, "formasDePago" : formasDePago}
         if (tipo ==3):
@@ -229,6 +239,20 @@ def productoReq(request):
             else:
                 return render(request, 'main/agregar-productos.html', {"path" : path, "respuesta": "¡Ingrese todos los datos!"})
 
+    # obtener alimentos en caso de que sea vendedor fijo o ambulante
+    i = 0
+    listaDeProductos=[]
+    for producto in Comida.objects.raw('SELECT * FROM comida WHERE idVendedor = "' + str(id) + '"'):
+        listaDeProductos.append([])
+        listaDeProductos[i].append(producto.nombre)
+        categoria = str(producto.categorias)
+        listaDeProductos[i].append(categoria)
+        listaDeProductos[i].append(producto.stock)
+        listaDeProductos[i].append(producto.precio)
+        listaDeProductos[i].append(producto.descripcion)
+        listaDeProductos[i].append(str(producto.imagen))
+        i += 1
+    listaDeProductos = simplejson.dumps(listaDeProductos, ensure_ascii=False).encode('utf8')
 
     for p in Usuario.objects.raw('SELECT * FROM usuario'):
         if p.id == id:
@@ -236,19 +260,76 @@ def productoReq(request):
             horarioIni = p.horarioIni
             horarioFin = p.horarioFin
             nombre = p.nombre
-    return render(request, url, {"email": email, "tipo": tipo, "id": id, "nombre": nombre, "horarioIni": horarioIni, "horarioFin" : horarioFin, "avatar" : avatar})
+    return render(request, url, {"email": email, "tipo": tipo, "id": id, "nombre": nombre, "horarioIni": horarioIni, "horarioFin" : horarioFin, "avatar" : avatar, "listaDeProductos" : listaDeProductos})
 
 def vistaVendedorPorAlumno(request):
     if request.method == 'POST':
         id = int(request.POST.get("id"))
         for p in Usuario.objects.raw('SELECT * FROM usuario'):
             if p.id == id:
+                favorito = 0
+                for f in Favoritos.objects.raw('SELECT * FROM Favoritos'):
+                    if request.session['id'] == f.idAlumno:
+                        if id == f.idVendedor:
+                            favorito = 1
                 tipo = p.tipo
                 nombre = p.nombre
+                avatar = p.avatar
+                formasDePago = p.formasDePago
                 if tipo == 3:
-                    return render(request,'main/vendedor-ambulante-vistaAlumno.html',{"nombre": nombre})
+                    url = 'main/vendedor-ambulante-vistaAlumno.html'
+                    break
                 if tipo == 2:
-                    return render(request, 'main/vendedor-fijo-vistaAlumno.html', {"nombre": nombre})
+                    url = 'main/vendedor-fijo-vistaAlumno.html'
+                    break
+    # obtener alimentos
+    i = 0
+    listaDeProductos = []
+    for producto in Comida.objects.raw('SELECT * FROM comida WHERE idVendedor = "' + str(id) + '"'):
+        listaDeProductos.append([])
+        listaDeProductos[i].append(producto.nombre)
+        categoria = str(producto.categorias)
+        listaDeProductos[i].append(categoria)
+        listaDeProductos[i].append(producto.stock)
+        listaDeProductos[i].append(producto.precio)
+        listaDeProductos[i].append(producto.descripcion)
+        listaDeProductos[i].append(str(producto.imagen))
+        i += 1
+    avatarSesion = request.session['avatar']
+    listaDeProductos = simplejson.dumps(listaDeProductos, ensure_ascii=False).encode('utf8')
+    return render(request, url, {"nombre": nombre, "tipo": tipo, "id": id, "avatar" : avatar, "listaDeProductos" :listaDeProductos,"avatarSesion": avatarSesion,"favorito": favorito, "formasDePago": formasDePago})
+
+def vistaVendedorPorAlumnoSinLogin(request):
+    if request.method == 'POST':
+        id = int(request.POST.get("id"))
+        for p in Usuario.objects.raw('SELECT * FROM usuario'):
+            if p.id == id:
+                tipo = p.tipo
+                nombre = p.nombre
+                avatar = p.avatar
+                formasDePago = p.formasDePago
+                if tipo == 3:
+                    url = 'main/vendedor-ambulante-vistaAlumno-sinLogin.html'
+                    break
+                if tipo == 2:
+                    url = 'main/vendedor-fijo-vistaAlumno-sinLogin.html'
+                    break
+                    # obtener alimentos
+    i = 0
+    listaDeProductos = []
+    for producto in Comida.objects.raw('SELECT * FROM comida WHERE idVendedor = "' + str(id) + '"'):
+        listaDeProductos.append([])
+        listaDeProductos[i].append(producto.nombre)
+        categoria = str(producto.categorias)
+        listaDeProductos[i].append(categoria)
+        listaDeProductos[i].append(producto.stock)
+        listaDeProductos[i].append(producto.precio)
+        listaDeProductos[i].append(producto.descripcion)
+        listaDeProductos[i].append(str(producto.imagen))
+        i += 1
+    listaDeProductos = simplejson.dumps(listaDeProductos, ensure_ascii=False).encode('utf8')
+    return render(request, url, {"nombre": nombre, "tipo": tipo, "id": id,"avatar" : avatar, "listaDeProductos" :listaDeProductos, "formasDePago": formasDePago})
+
 
 def cambiarEstado(request):
     if request.method == 'POST':
@@ -300,3 +381,65 @@ def editarDatos(request):
     usuarioNuevo = Usuario(nombre=nombre,email=email,tipo=tipo,contraseña=password,avatar=avatar,formasDePago=formasDePago,horarioIni=horaInicial,horarioFin=horaFinal)
     usuarioNuevo.save()
     return loginReq(request)
+
+@csrf_exempt
+def borrarProducto(request):
+    if request.method == 'GET':
+        if request.is_ajax():
+            comida = request.GET.get('eliminar')
+            Comida.objects.filter(nombre=comida).delete()
+            data = {"eliminar" : comida}
+            return JsonResponse(data)
+
+@csrf_exempt
+def editarProducto(request):
+    if request.method == 'POST':
+        if request.is_ajax():
+            form = editarProductosForm(data=request.POST, files=request.FILES)
+            print(request.POST)
+            print(request.FILES)
+            nombreOriginal = request.POST.get("nombreOriginal")
+            nuevoNombre = request.POST.get('nombre')
+            nuevoPrecio = (request.POST.get('precio'))
+            nuevoStock = (request.POST.get('stock'))
+            nuevaDescripcion = request.POST.get('descripcion')
+            nuevaCategoria = (request.POST.get('categoria'))
+            nuevaImagen = request.FILES.get("comida")
+            if nuevoNombre != "":
+                if Comida.objects.filter(nombre=nuevoNombre).exists():
+                    data = {"respuesta": "repetido"}
+                    return JsonResponse(data)
+                Comida.objects.filter(nombre=nombreOriginal).update(nombre=nuevoNombre)
+            if nuevoPrecio != "" :
+                   Comida.objects.filter(nombre=nombreOriginal).update(precio=int(nuevoPrecio))
+            if nuevoStock != "" :
+                   Comida.objects.filter(nombre=nombreOriginal).update(stock=int(nuevoStock))
+            if nuevaDescripcion != "":
+                   Comida.objects.filter(nombre=nombreOriginal).update(descripcion=nuevaDescripcion)
+            if  nuevaCategoria != None:
+                   Comida.objects.filter(nombre=nombreOriginal).update(categorias=(nuevaCategoria))
+            if nuevaImagen != None:
+                filename = nombreOriginal + ".jpg"
+                with default_storage.open('../media/productos/' + filename, 'wb+') as destination:
+                    for chunk in nuevaImagen.chunks():
+                        destination.write(chunk)
+                Comida.objects.filter(nombre =nombreOriginal).update(imagen='/productos/'+filename)
+
+            data = {"respuesta" : nombreOriginal}
+            return JsonResponse(data)
+
+def cambiarFavorito(request):
+    if request.method == "GET":
+        if request.is_ajax():
+            favorito = request.GET.get('favorito')
+            agregar = request.GET.get('agregar')
+            if agregar == "si":
+                nuevoFavorito = Favoritos()
+                nuevoFavorito.idAlumno = request.session['id']
+                nuevoFavorito.idVendedor = favorito
+                nuevoFavorito.save()
+                respuesta = {"respuesta": "si"}
+            else:
+                Favoritos.objects.filter(idAlumno=request.session['id']).filter(idVendedor=favorito).delete()
+                respuesta = {"respuesta": "no"}
+            return JsonResponse(respuesta)
