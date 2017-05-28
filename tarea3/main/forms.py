@@ -15,3 +15,6 @@ class GestionProductosForm(forms.Form):
     stock = forms.IntegerField()
     precio = forms.IntegerField()
 
+
+class editarProductosForm(forms.Form):
+    foto = forms.FileField()

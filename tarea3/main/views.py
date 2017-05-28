@@ -3,12 +3,14 @@ from django.views.generic import TemplateView
 from django.utils import timezone
 from .forms import LoginForm
 from .forms import GestionProductosForm
+from .forms import editarProductosForm
 from .models import Usuario
 from .models import Comida
 import simplejson
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from multiselectfield import MultiSelectField
+from django.core.files.storage import default_storage
 # Create your views here.
 def index(request):
     return formView(request)
@@ -295,41 +297,27 @@ def borrarProducto(request):
             Comida.objects.filter(nombre=comida).delete()
             data = {"eliminar" : comida}
             return JsonResponse(data)
-
+@csrf_exempt
 def editarProducto(request):
-    if request.method == 'GET':
+    if request.method == 'POST':
         if request.is_ajax():
-            nombreOriginal = request.GET.get("nombreOriginal")
-            nuevoNombre = request.GET.get('nombre')
-            nuevoPrecio = (request.GET.get('precio'))
-            nuevoStock = (request.GET.get('stock'))
-            nuevaDescripcion = request.GET.get('descripcion')
-            nuevaCategoria = (request.GET.get('categoria'))
+            form = editarProductosForm(data=request.POST, files=request.FILES)
+            print(request.POST)
+            print(request.FILES)
+            nombreOriginal = request.POST.get("nombreOriginal")
+            nuevoNombre = request.POST.get('nombre')
+            nuevoPrecio = (request.POST.get('precio'))
+            nuevoStock = (request.POST.get('stock'))
+            nuevaDescripcion = request.POST.get('descripcion')
+            nuevaCategoria = (request.POST.get('categoria'))
+            nuevaImagen = request.FILES.get("comida")
             print (nombreOriginal)
             print (nuevoNombre)
             print (nuevoPrecio)
             print (nuevoStock)
             print (nuevaDescripcion)
             print (nuevaCategoria)
-            listaCategorias = (
-                (0, 'Cerdo'),
-                (1, 'Chino'),
-                (2, 'Completos'),
-                (3, 'Egipcio'),
-                (4, 'Empanadas'),
-                (5, 'Ensalada'),
-                (6, 'Japones'),
-                (7, 'Pan'),
-                (8, 'Papas fritas'),
-                (9, 'Pasta'),
-                (10, 'Pescado'),
-                (11, 'Pollo'),
-                (12, 'Postres'),
-                (13, 'Sushi'),
-                (14, 'Vacuno'),
-                (15, 'Vegano'),
-                (16, 'Vegetariano'),
-            )
+            print(nuevaImagen)
             if nuevoNombre != "":
                 if Comida.objects.filter(nombre=nuevoNombre).exists():
                     data = {"respuesta": "repetido"}
@@ -343,6 +331,12 @@ def editarProducto(request):
                    Comida.objects.filter(nombre=nombreOriginal).update(descripcion=nuevaDescripcion)
             if  nuevaCategoria != None:
                    Comida.objects.filter(nombre=nombreOriginal).update(categorias=(nuevaCategoria))
+            if nuevaImagen != None:
+                filename = nombreOriginal + ".jpg"
+                with default_storage.open('../media/productos/' + filename, 'wb+') as destination:
+                    for chunk in nuevaImagen.chunks():
+                        destination.write(chunk)
+                Comida.objects.filter(nombre =nombreOriginal).update(imagen='/productos/'+filename)
 
             data = {"respuesta" : nombreOriginal}
             return JsonResponse(data)
