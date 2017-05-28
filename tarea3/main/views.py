@@ -251,5 +251,46 @@ def cambiarEstado(request):
         if estado == False:
             Usuario.objects.get(id=id_vendedor).update(activo=False)
         else:
-            Usuario.objects.get(id=id_vendedor).update(activo=True)
-        Usuario.save()
+            Usuario.objects.filter(id=id_vendedor).update(activo=False)
+        # Usuario.save()
+
+
+def editarVendedor(request):
+    if request.session.has_key('id'):
+        id = request.session['id']
+        print(id)
+        nombre = request.session['nombre']
+        formasDePago = request.session['formasDePago']
+        avatar = request.session['avatar']
+        tipo = request.session['tipo']
+        if (tipo == 2):
+            horarioIni = request.session['horarioIni']
+            horarioFin = request.session['horarioFin']
+            argumentos = {"nombre": nombre, "id": id, "horarioIni": horarioIni, "horarioFin": horarioFin,
+                          "avatar": avatar, "formasDePago": formasDePago}
+            url = 'main/editar-vendedor-fijo.html'
+        elif (tipo == 3):
+            argumentos = {"nombre": nombre, "id": id, "avatar": avatar, "formasDePago": formasDePago}
+            url = 'main/editar-vendedor-ambulante.html'
+        return render(request, url, argumentos)
+    else:
+        return render(request, 'main/base.html', {})
+
+def editarDatos(request):
+    nombre = request.POST.get("nombre")
+    tipo = request.POST.get("tipo")
+    horaInicial = request.POST.get("horaIni")
+    horaFinal = request.POST.get("horaFin")
+    avatar = request.FILES.get("avatar")
+    formasDePago =[]
+    if not (request.POST.get("formaDePago0") is None):
+        formasDePago.append(request.POST.get("formaDePago0"))
+    if not (request.POST.get("formaDePago1") is None):
+        formasDePago.append(request.POST.get("formaDePago1"))
+    if not (request.POST.get("formaDePago2") is None):
+        formasDePago.append(request.POST.get("formaDePago2"))
+    if not (request.POST.get("formaDePago3") is None):
+        formasDePago.append(request.POST.get("formaDePago3"))
+    usuarioNuevo = Usuario(nombre=nombre,email=email,tipo=tipo,contraseña=password,avatar=avatar,formasDePago=formasDePago,horarioIni=horaInicial,horarioFin=horaFinal)
+    usuarioNuevo.save()
+    return loginReq(request)
