@@ -101,6 +101,7 @@ def loginReq(request):
         request.session['tipo'] = tipo
         request.session['email'] = email
         request.session['avatar'] = str(avatar)
+        request.session['nombre'] = nombre
         # si son vendedores, crear lista de productos
         for p in Usuario.objects.raw('SELECT * FROM usuario'):
             if p.tipo == 2 or p.tipo == 3:
@@ -396,3 +397,26 @@ def cambiarFavorito(request):
                 Favoritos.objects.filter(idAlumno=request.session['id']).filter(idVendedor=favorito).delete()
                 respuesta = {"respuesta": "no"}
             return JsonResponse(respuesta)
+
+
+def editarPerfilAlumno(request):
+    avatar = request.session['avatar']
+    id = request.session['id']
+    nombre =request.session['nombre']
+    favoritos =[]
+    nombres = []
+    for fav in Favoritos.objects.raw("SELECT * FROM Favoritos"):
+        if id == fav.idAlumno:
+            favoritos.append(fav.idVendedor)
+            vendedor = Usuario.objects.filter(id =fav.idVendedor).get()
+            nombre = vendedor.nombre
+            nombres.append(nombre)
+    return render(request,'main/editar-perfil-alumno.html',{"id": id, "avatarSesion": avatar,"nombre": nombre,"favoritos": favoritos, "nombres": nombres})
+
+
+def procesarPerfilAlumno(request):
+    if request.method == "POST":
+        nombreOriginal = request.POST.get("nombreOriginal")
+        nuevoNombre = request.POST.get("nombre")
+        print(request.POST.get("switch0"))
+        return inicioAlumno(request)

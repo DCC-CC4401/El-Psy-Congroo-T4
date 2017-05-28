@@ -18,4 +18,6 @@ urlpatterns = [
     url(r'^editarProducto/', views.editarProducto, name='editarProducto'),
     url(r'^cambiarFavorito/', views.cambiarFavorito, name='cambiarFavorito'),
     url(r'^vistaVendedorPorAlumnoSinLogin/', views.vistaVendedorPorAlumnoSinLogin, name='vistaVendedorPorAlumnoSinLogin'),
+    url(r'^editarPerfilAlumno/', views.editarPerfilAlumno,name='editarPerfilAlumno'),
+    url(r'^procesarPerfilAlumno/', views.procesarPerfilAlumno,name='procesarPerfilAlumno'),
 ]

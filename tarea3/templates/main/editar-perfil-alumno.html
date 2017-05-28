@@ -1,0 +1,145 @@
+{% extends 'main/baseAlumno.html' %}
+{% block content %}
+
+<main>
+<div class="section"></div>
+
+      <h4 class="teal-text" style="text-align: center;">Editar perfil</h4>
+      <div class="section"></div>
+
+      <div class="container">
+        <div class="z-depth-1 grey lighten-4 row" style="margin-left: 5%; margin-right: 5%; padding: 32px 48px 0px 48px; border: 1px solid #EEE;">
+
+          <form enctype="multipart/form-data" class="col s12 m12" method="post" action="{% url 'procesarPerfilAlumno' %}" > {% csrf_token %}
+            <div class='row'>
+              <div class='col s12 m12'>
+              </div>
+            </div>
+            <div class="row">
+                <input type = "hidden" value ={{nombre}}  name='nombreOriginal' id='nombreOriginal' />
+            </div>
+            <div class='row'>
+              <div class='input-field col s12 m12' >
+                  &ensp;Editar nombre:
+                 <div class="input-field inline ">
+                <input placeholder={{nombre}} class='validate' type='text' name='nombre' id='nombre' />
+                <label style="text-align: center" for='item'></label>
+                 </div>
+              </div>
+            </div>
+           <div class ="row col s12 m12">
+               <h6>Editar favoritos:</h6>
+           </div>
+
+              <br>
+          <div id='favoritos'>
+          </div>
+            <div id="file-upload" class="section">
+             <!--Default version-->
+            <div class="row section">
+              <div class="col s8 m4 l3">
+                  <p>&emsp;Cambiar imagen </p>
+                  <p>&emsp;&emsp;&ensp;de perfil:</p>
+              </div>
+              <div class="col s8 m8 l9">
+                  <div class="dropify-wrapper touch-fallback">
+                      <div class="dropify-message">
+                          <div class="row hide-on-med-and-down">
+                              <div class="col s9 m7 l7">
+                                  <i class="material-icons center-align">mdi_file_cloud_upload</i>
+                              </div>
+                          </div>
+                          <div class="row show-on-medium-and-down hide-on-med-and-up">
+                              <div class="col s6">
+                                  <i class="material-icons tiny show-on-medium-and-down center-align">mdi_file_cloud_upload</i>
+                              </div>
+                          </div>
+                          <p>Arrastre y suelte un archivo aquí o haga click</p>
+                          <p class="dropify-error">Sorry, this file is too large</p>
+                      </div>
+                  <input id="comida" type="file" class="" name="comida">
+                      <button type="button" class="dropify-clear">Remove</button>
+                      <div class="dropify-preview"><span class="dropify-render"></span>
+                          <div class="dropify-infos">
+                              <div class="dropify-infos-inner">
+                                  <p class="dropify-filename">
+
+                                      <!--<span class="file-icon"></span>-->
+                                      <span class="dropify-filename-inner"></span></p>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+            </div>
+            <div class='row'>
+                    <button type="submit" class='col l5 offset-l4 btn btn-large waves-effect button teal' >&emsp; &emsp;Agregar<i class="material-icons right">send</i></button>
+            </div>
+            </div>
+            </form>
+          </div>
+
+
+        </div>
+      </div>
+
+
+
+</main>
+    <script>
+    function agregarInputs() {
+        var favoritos ={{ favoritos|safe }};
+        var nombres = {{ nombres|safe }}
+        for (var i = 0; i <= favoritos.length - 1; i++) {
+            //crear columnas
+            var div = document.getElementById("favoritos");
+            var columna = document.createElement("div");
+            div.appendChild(columna);
+            columna.setAttribute("class","row");
+
+            //agregar nombres
+            //setear grid de columna
+                var col = document.createElement("div");
+                col.setAttribute("col","s5 l5 m5");
+                col.innerHTML = nombres[i];
+                col.setAttribute("style","margin-left: 80px;");
+                columna.appendChild(col);
+            //agregar switch
+                //setear grid de columna
+                var col = document.createElement("div");
+                col.setAttribute("col","s5 l5 m5");
+
+                columna.appendChild(col);
+                //setear la clase switch
+                var sw = document.createElement("div");
+                sw.setAttribute("class","switch");
+                sw.setAttribute("style","margin-left: 250px;");
+                col.appendChild(sw);
+                    //crear label
+                    var label = document.createElement("label");
+                    sw.appendChild(label);
+                    //crear input
+                    var inputh = document.createElement("input");
+                    inputh.setAttribute("type","hidden");
+                    inputh.setAttribute("id","switch" + i);
+                    inputh.setAttribute("nombre","switch" + i);
+                    inputh.setAttribute("value",1);
+                    div.appendChild(inputh);
+                    var input = document.createElement("input");
+                    input.setAttribute("type" ,'checkbox' );
+                    input.setAttribute("checked",true);
+                    //input.setAttribute("id","switch" + i);
+                    //input.setAttribute("nombre","switch" + i);
+                    input.setAttribute("value",i)
+                    label.appendChild(input);
+
+                    var span = document.createElement("span");
+                    span.setAttribute("class","lever");
+                    label.appendChild(span);
+        }
+    }
+    </script>
+    <script>
+    window.onload = agregarInputs();
+    </script>
+{% endblock %}
