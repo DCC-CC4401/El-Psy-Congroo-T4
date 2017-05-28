@@ -173,7 +173,11 @@
                                             for (var i = 0; i < largo; i++)  {
                                                 document.write( "<div id='modale"+(i + 1)+"' class='modal'>");
                                                 document.write("<div class='modal-content'>");
-                                                document.write("<form id='form' class='col s12 m12' method='post' action='#' > {% csrf_token %}");
+                                                document.write("<form id='form"+i+"' class='col s12 m12' method='post' action='#' > {% csrf_token %}");
+                                                //guardar nombre original para busqueda en bdd
+                                                document.write("<div class='row'>");
+                                                document.write("<input type ='hidden' name = 'nombreOriginal' id='nombreOriginal' value = '" +productos[i][0] + "'>");
+                                                document.write("</div>");
                                                 //editar nombre
                                                 document.write("<div class='row'>");
                                                 document.write("<div class='input-field col s12 m12' >Editar nombre");
@@ -210,12 +214,12 @@
 
                                                 //guardar cambios
                                                 document.write("<div class='col s6 m6 l6'>");
-                                                document.write(" <div class='row'> <button type='submit' class=' btn-large waves-effect button teal' >Guardar cambios<i class='material-icons right'>send</i></button> </div>");
+                                                document.write('<div class="row"> <button type="button" onclick ="guardarProducto(form'+i+');" class=" btn-large waves-effect button teal" >Guardar cambios<i class="material-icons right">send</i></button> </div>');
                                                 document.write("</form></div>");
 
                                                 //eliminar producto
                                                 document.write("<div class='col s4 m4 l4'>");
-                                                document.write('<div class="row"> <button  type="button" onclick ="alerta('+"\'"+productos[i][0]+"\'"+');" class="btn-large waves-effect button teal" >Eliminar producto<i class="material-icons right">send</i></button> </div>');
+                                                document.write('<div class="row"> <button  type="button" onclick ="eliminarProducto('+"\'"+productos[i][0]+"\'"+');" class="btn-large waves-effect button teal" >Eliminar producto<i class="material-icons right">send</i></button> </div>');
                                                 document.write("</div>");
                                                 //salir
                                                 document.write("<a href='#!' class='modal-action modal-close waves-effect waves-green btn-flat'><i class='large material-icons'>close</i></a>");
@@ -314,7 +318,7 @@
 
 
 <script>
-    function alerta(i){
+    function eliminarProducto(i){
         var datos ="eliminar=" + i;
         $.ajax({
            url:{% url 'borrarProducto' %},
@@ -331,4 +335,28 @@
         });
       }
 </script>
+<script>
+    function guardarProducto(i){
+        var formulario = $(i).serialize();
+         $.ajax({
+           url:{% url 'editarProducto' %},
+           type: "GET",
+           data: formulario,
+           dataType: "json",
+
+           success: function(data) {
+              if (data.respuesta =="repetido"){
+                   alert("Nombre ya existe en la base de datos");
+              }
+              else{
+                   location.reload();
+              }
+           },
+           error:function(data) {
+               alert("error in getting from server");
+           },
+         });
+    }
+</script>
+
 {% endblock %}

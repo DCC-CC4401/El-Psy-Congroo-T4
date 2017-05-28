@@ -15,4 +15,5 @@ urlpatterns = [
     url(r'^vistaVendedorPorAlumno/', views.vistaVendedorPorAlumno, name='vistaVendedorPorAlumno'),
     url(r'^inicioAlumno/', views.inicioAlumno, name='inicioAlumno'),
     url(r'^borrarProducto/', views.borrarProducto, name='borrarProducto'),
+    url(r'^editarProducto/', views.editarProducto, name='editarProducto'),
 ]

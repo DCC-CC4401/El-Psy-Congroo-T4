@@ -8,6 +8,7 @@ from .models import Comida
 import simplejson
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from multiselectfield import MultiSelectField
 # Create your views here.
 def index(request):
     return formView(request)
@@ -295,3 +296,53 @@ def borrarProducto(request):
             data = {"eliminar" : comida}
             return JsonResponse(data)
 
+def editarProducto(request):
+    if request.method == 'GET':
+        if request.is_ajax():
+            nombreOriginal = request.GET.get("nombreOriginal")
+            nuevoNombre = request.GET.get('nombre')
+            nuevoPrecio = (request.GET.get('precio'))
+            nuevoStock = (request.GET.get('stock'))
+            nuevaDescripcion = request.GET.get('descripcion')
+            nuevaCategoria = (request.GET.get('categoria'))
+            print (nombreOriginal)
+            print (nuevoNombre)
+            print (nuevoPrecio)
+            print (nuevoStock)
+            print (nuevaDescripcion)
+            print (nuevaCategoria)
+            listaCategorias = (
+                (0, 'Cerdo'),
+                (1, 'Chino'),
+                (2, 'Completos'),
+                (3, 'Egipcio'),
+                (4, 'Empanadas'),
+                (5, 'Ensalada'),
+                (6, 'Japones'),
+                (7, 'Pan'),
+                (8, 'Papas fritas'),
+                (9, 'Pasta'),
+                (10, 'Pescado'),
+                (11, 'Pollo'),
+                (12, 'Postres'),
+                (13, 'Sushi'),
+                (14, 'Vacuno'),
+                (15, 'Vegano'),
+                (16, 'Vegetariano'),
+            )
+            if nuevoNombre != "":
+                if Comida.objects.filter(nombre=nuevoNombre).exists():
+                    data = {"respuesta": "repetido"}
+                    return JsonResponse(data)
+                Comida.objects.filter(nombre=nombreOriginal).update(nombre=nuevoNombre)
+            if nuevoPrecio != "" :
+                   Comida.objects.filter(nombre=nombreOriginal).update(precio=int(nuevoPrecio))
+            if nuevoStock != "" :
+                   Comida.objects.filter(nombre=nombreOriginal).update(stock=int(nuevoStock))
+            if nuevaDescripcion != "":
+                   Comida.objects.filter(nombre=nombreOriginal).update(descripcion=nuevaDescripcion)
+            if  nuevaCategoria != None:
+                   Comida.objects.filter(nombre=nombreOriginal).update(categorias=(nuevaCategoria))
+
+            data = {"respuesta" : nombreOriginal}
+            return JsonResponse(data)
