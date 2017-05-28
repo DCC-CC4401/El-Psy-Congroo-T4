@@ -155,7 +155,7 @@
                             <div class="row">
                                 <!-- Aca se definen los modales -->
                                 <!-- aca comienzan a mostrarse los productos -->
-                                <!--Este script es para ordenar el listado de productos --> <!-- TODO agregar imagenes, crear dinamicamente los modales-->
+                                <!--Este script es para ordenar el listado de productos -->
                                             <script>
                                             var productos ={{ listaDeProductos|safe }};
                                             var largo = productos.length;
@@ -169,12 +169,69 @@
                                                 document.write("<a href='#!' class='modal-action modal-close waves-effect waves-green btn-flat'><i class='large material-icons'>close</i></a>");
                                                 document.write("</div></div>");
                                             }
+                                            //crear modales para editar
+                                            for (var i = 0; i < largo; i++)  {
+                                                document.write( "<div id='modale"+(i + 1)+"' class='modal'>");
+                                                document.write("<div class='modal-content'>");
+                                                document.write("<form id='form' class='col s12 m12' method='post' action='#' > {% csrf_token %}");
+                                                //editar nombre
+                                                document.write("<div class='row'>");
+                                                document.write("<div class='input-field col s12 m12' >Editar nombre");
+                                                document.write("<div class='input-field inline '>");
+                                                document.write("<input placeholder='" +productos[i][0] + "' class='validate' type='text' name='nombre' id='nombre' />");
+                                                document.write("<label style='text-align: center' for='item'></label></div></div>");
+                                                document.write("</div>");
+                                                //editar precio
+                                                document.write("<div class='row'>");
+                                                document.write("<div class='input-field col s12 m12' >Editar precio");
+                                                document.write("<div class='input-field inline '>");
+                                                document.write("<input placeholder='" +productos[i][3] + "' class='validate' type='text' name='precio' id='precio' />");
+                                                document.write("<label style='text-align: center' for='precio'></label></div></div>");
+                                                document.write("</div>");
+                                                //editar stock
+                                                document.write("<div class='row'>");
+                                                document.write("<div class='input-field col s12 m12' >Editar stock");
+                                                document.write("<div class='input-field inline '>");
+                                                document.write("<input placeholder='" +productos[i][2] + "' class='validate' type='text' name='stock' id='stock' />");
+                                                document.write("<label style='text-align: center' for='precio'></label></div></div>");
+                                                document.write("</div>");
+                                                //editar descripcion
+                                                document.write("<div class='row'>");
+                                                document.write("<div class='input-field col s12 m12' >Editar descripcion");
+                                                document.write("<input placeholder='" +productos[i][2] + "'  class='validate' type='text' name='descripcion' id='descripcion'  />");
+                                                document.write("<label  for='icon_prefix2'></label></div>");
+                                                document.write("</div>");
+                                                //editar categoria
+                                                document.write("<div>Editar categoria:</div><br>");
+                                                document.write(" <div class='col s12 l6'> <input placeholder"+productos[i][1] +"class='with-gap' name='categoria' type='radio' id='0' value='0' /> <label for='0'><img style='max-width: 50px;' src='../static/img/bread.png'></label> <input class='with-gap' name='categoria' type='radio' id='1' value='1' /> <label for='1'><img style='max-width: 50px;' src='../static/img/breakfast.png'></label> <input class='with-gap' name='categoria' type='radio' id='2' value='2' /> <label for='2'><img style='max-width: 50px;' src='../static/img/burger.png'></label> <input class='with-gap' name='categoria' type='radio' id='3' value='3' /> <label for='3'><img style='max-width: 50px;' src='../static/img/chicken.png'></label> <input class='with-gap' name='categoria' type='radio' id='4' value='4'/> <label for='4'><img style='max-width: 50px;' src='../static/img/chicken2.png'></label> </div> <div class='col s12 l6'> <input class='with-gap' name='categoria' type='radio' id='5' value='5' /> <label for='5'><img style='max-width: 50px;' src='../static/img/chocolate.png'></label> <input class='with-gap' name='categoria' type='radio' id='6' value='6' /> <label for='6'><img style='max-width: 50px;' src='../static/img/coke.png'></label> <input class='with-gap' name='categoria' type='radio' id='7' value='7'/> <label for='7'><img style='max-width: 50px;' src='../static/img/cupcake.png'></label> <input class='with-gap' name='categoria' type='radio' id='8' value='8'/> <label for='8'><img style='max-width: 50px;' src='../static/img/donut.png'></label> <input class='with-gap' name='categoria' type='radio' id='9' value='9'/> <label for='9'><img style='max-width: 50px;' src='../static/img/jelly.png'></label> </div> <div class='col s12 l6'> <input class='with-gap' name='categoria' type='radio' id='10' value='10'/> <label for='10'><img style='max-width: 50px;' src='../static/img/fish.png'></label> <input class='with-gap' name='categoria' type='radio' id='11' value='11'/> <label for='11'><img style='max-width: 50px;' src='../static/img/fries.png'></label> <input class='with-gap' name='categoria' type='radio' id='12' value='12'/> <label for='12'><img style='max-width: 50px;' src='../static/img/hot-dog.png'></label> <input class='with-gap' name='categoria' type='radio' id='13' value='13'/> <label for='13'><img style='max-width: 50px;' src='../static/img/icecream.png'></label> <input class='with-gap' name='categoria' type='radio' id='14' value='14' /> <label for='14'><img style='max-width: 50px;' src='../static/img/juice.png'></label> </div> <div class='col s12 l6'> <input class='with-gap' name='categoria' type='radio' id='15' value='15'/> <label for='15'><img style='max-width: 50px;' src='../static/img/lettuce.png'></label> <input class='with-gap' name='categoria' type='radio' id='16' value='16' /> <label for='16'><img style='max-width: 50px;' src='../static/img/pizza.png'></label> </div>");
+                                                //editar foto
+                                                document.write("<div id='file-upload' class='section'>  <div class='row section'> <div class='col s8 m4 l3'> <p>Editar imagen del</p> <p>producto:</p> <br></div> <div class='col s8 m8 l9'> <div class='dropify-wrapper touch-fallback'> <div class='dropify-message'> <div class='row hide-on-med-and-down'> <div class='col s9 m7 l7'> <i class='material-icons center-align'>mdi_file_cloud_upload</i> </div> </div> <div class='row show-on-medium-and-down hide-on-med-and-up'> <div class='col s6'> <i class='material-icons tiny show-on-medium-and-down center-align'>mdi_file_cloud_upload</i> </div> </div> <p>Arrastre y suelte un archivo aquí o haga click</p> <p class='dropify-error'>Sorry, this file is too large</p> </div> <input id='comida' type='file' class='' name='comida' > <button type='button' class='dropify-clear'>Remove</button> <div class='dropify-preview'><span class='dropify-render'></span> <div class='dropify-infos'> <div class='dropify-infos-inner'> <p class='dropify-filename'> <!--<span class='file-icon'></span>--> <span class='dropify-filename-inner'></span></p> </div> </div> </div> </div> </div> </div></div>");
+                                                document.write("<div class='modal-footer'>");
+
+                                                //guardar cambios
+                                                document.write("<div class='col s6 m6 l6'>");
+                                                document.write(" <div class='row'> <button type='submit' class=' btn-large waves-effect button teal' >Guardar cambios<i class='material-icons right'>send</i></button> </div>");
+                                                document.write("</form></div>");
+
+                                                //eliminar producto
+                                                document.write("<div class='col s4 m4 l4'>");
+                                                document.write('<div class="row"> <button  type="button" onclick ="alerta('+"\'"+productos[i][0]+"\'"+');" class="btn-large waves-effect button teal" >Eliminar producto<i class="material-icons right">send</i></button> </div>');
+                                                document.write("</div>");
+                                                //salir
+                                                document.write("<a href='#!' class='modal-action modal-close waves-effect waves-green btn-flat'><i class='large material-icons'>close</i></a>");
+                                                document.write("</div></div></div>");
+                                            }
+
                                             //imprimir en pantalla todas las tarjetas de productos
                                             for (var i = 0; i < largo; i++)  {
                                                 document.write(" <div class='col s6 m6 l4'>");
                                                 document.write("<div class='container'>");
                                                 document.write(" <div class='card z-depth-1'>");
                                                 document.write("<div class='teal lighten-2 card-image waves-effect waves-block waves-light'>");
+                                                document.write("<a href='#modale" + (i + 1) + "'>");
+                                                document.write("<i class='material-icons right grey-text text-lighten-2' style='position: absolute; bottom: 4.5em; right: 0.5em; padding: 0 0 !important;'>settings</i>");
+                                                document.write("</a>");
+                                                document.write("</form>");
                                                 document.write("<img class='activator responsive-img center-block'  style='max-width: 30%; margin-top:20px; margin-bottom:20px;height: 100px; width: 100px;' src ='../static/media/"+productos[i][5]+"'>");
                                                 document.write("</div>");
                                                 document.write(" <div class='card-content'>");
@@ -188,6 +245,7 @@
                                                 document.write("<li>Categoria: "+productos[i][1]+" </li>");
                                                 document.write("<li>Stock: "+productos[i][2]+" </li>");
                                                 document.write("<li>Descripcion: "+productos[i][4]+" </li>");
+                                                document.write("<li><p class= 'left-align'><a class='waves-effect waves-light' href=#>Editar</a></p></li>");
                                                 document.write("<li> <p class='right-align'><a class='waves-effect waves-light' href='#modal"+(i+1)+"'>Ver imagen</a></p></li>");
                                                 document.write(" </ul></div></div></div></div>");
                                             }
@@ -252,5 +310,25 @@
     window.onload = ProfileImg();
     window.onload = EstadoVendedor();
     window.onload = FormasDePago();
+</script>
+
+
+<script>
+    function alerta(i){
+        var datos ="eliminar=" + i;
+        $.ajax({
+           url:{% url 'borrarProducto' %},
+           type: "GET",
+           data: datos,
+           dataType: "json",
+
+           success: function(data) {
+              location.reload();
+           },
+           error:function(data) {
+               alert("error in getting from server")
+           },
+        });
+      }
 </script>
 {% endblock %}

@@ -5,10 +5,9 @@ from .forms import LoginForm
 from .forms import GestionProductosForm
 from .models import Usuario
 from .models import Comida
-from django.http import HttpResponse
 import simplejson
-
-
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 # Create your views here.
 def index(request):
     return formView(request)
@@ -286,3 +285,13 @@ def inicioAlumno(request):
             vendedores.append(p.id)
     vendedoresJson = simplejson.dumps(vendedores)
     return render(request, 'main/baseAlumno.html',{"id": id,"vendedores": vendedoresJson,"avatarSesion": avatar })
+
+@csrf_exempt
+def borrarProducto(request):
+    if request.method == 'GET':
+        if request.is_ajax():
+            comida = request.GET.get('eliminar')
+            Comida.objects.filter(nombre=comida).delete()
+            data = {"eliminar" : comida}
+            return JsonResponse(data)
+
