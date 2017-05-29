@@ -7,11 +7,11 @@ from .forms import editarProductosForm
 from .models import Usuario
 from .models import Comida
 from .models import Favoritos
+from .models import Imagen
+from django.shortcuts import render_to_response
+from django.http import HttpResponse
 import simplejson
 from django.views.decorators.csrf import ensure_csrf_cookie
-
-
-
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from multiselectfield import MultiSelectField
@@ -32,14 +32,46 @@ def login(request):
 def signup(request):
     return render(request, 'main/signup.html', {})
 
+def signupAdmin(request):
+    return render(request, 'main/signupAdmin.html', {})
+
 def loggedin(request):
     return render(request, 'main/loggedin.html', {})
+
+def adminPOST(id,avatar,email,nombre,request):
+    #ids de todos los usuarios no admins
+    datosUsuarios = []
+    i = 0
+    numeroUsuarios= Usuario.objects.count()
+    numeroDeComidas = Comida.objects.count()
+    for usr in Usuario.objects.raw('SELECT * FROM usuario WHERE tipo != 0'):
+        datosUsuarios.append([])
+        datosUsuarios[i].append(usr.id)
+        datosUsuarios[i].append(usr.nombre)
+        datosUsuarios[i].append(usr.email)
+        datosUsuarios[i].append(usr.tipo)
+        datosUsuarios[i].append(str(usr.avatar))
+        datosUsuarios[i].append(usr.activo)
+        datosUsuarios[i].append(usr.formasDePago)
+        datosUsuarios[i].append(usr.horarioIni)
+        datosUsuarios[i].append(usr.horarioFin)
+        datosUsuarios[i].append(usr.contraseña)
+
+        i += 1
+    listaDeUsuarios = simplejson.dumps(datosUsuarios, ensure_ascii=False).encode('utf8')
+    hola = "hola"
+    # print(listaDeUsuarios)
+
+    # limpiar argumentos de salida segun tipo de vista
+    argumentos = {"nombre":nombre,"id":id,"avatar":avatar,"email":email,"lista":listaDeUsuarios,"numeroUsuarios":numeroUsuarios,"numeroDeComidas":numeroDeComidas}
+    return render(request, 'main/baseAdmin.html', argumentos)
 
 
 def loginReq(request):
 
     #inicaliar variables
     tipo = 0
+    nombre=''
     url = ''
     id = 0
     horarioIni = 0
@@ -65,6 +97,7 @@ def loginReq(request):
                     id = p.id
                     tipo = p.tipo
                     encontrado = True
+                    avatar = p.avatar
                     break
                 elif (tipo == 1):
                     url = 'main/baseAlumno.html'
@@ -133,7 +166,7 @@ def loginReq(request):
         #limpiar argumentos de salida segun tipo de vista
         argumentos ={"email": email, "tipo": tipo, "id": id,"vendedores": vendedoresJson, "nombre": nombre, "horarioIni": horarioIni, "horarioFin" : horarioFin, "avatar" : avatar, "listaDeProductos" : listaDeProductos}
         if (tipo == 0):
-            argumentos = {"nombre": nombre,"id": id,}
+            return adminPOST(id, avatar, email, nombre, request)
         if (tipo == 1):
             argumentos = {"nombre": nombre,  "tipo": tipo, "id": id,"vendedores": vendedoresJson, "avatarSesion": avatar}
         if (tipo == 2):
@@ -186,7 +219,7 @@ def logout(request):
         del request.session['id']
     except:
        pass
-    return render(request, 'main/base.html', {})
+    return index(request)
 
 def register(request):
     tipo = request.POST.get("tipo")
@@ -469,7 +502,7 @@ def cambiarFavorito(request):
                 respuesta = {"respuesta": "no"}
             return JsonResponse(respuesta)
 
-
+    #return render_to_response('main/baseAdmin.html', {'form':form,'test':test}, context_instance=RequestContext(request))
 
 
 def cambiarEstado(request):
@@ -483,4 +516,197 @@ def cambiarEstado(request):
                 Usuario.objects.filter(id=id_vendedor).update(activo=False)
             data = {"estado": estado}
             return JsonResponse(data)
+
+
+def editarPerfilAlumno(request):
+    avatar = request.session['avatar']
+    id = request.session['id']
+    nombre =request.session['nombre']
+    favoritos =[]
+    nombres = []
+    for fav in Favoritos.objects.raw("SELECT * FROM Favoritos"):
+        if id == fav.idAlumno:
+            favoritos.append(fav.idVendedor)
+            vendedor = Usuario.objects.filter(id =fav.idVendedor).get()
+            nombre = vendedor.nombre
+            nombres.append(nombre)
+    return render(request,'main/editar-perfil-alumno.html',{"id": id, "avatarSesion": avatar,"nombre": nombre,"favoritos": favoritos, "nombres": nombres})
+
+
+def procesarPerfilAlumno(request):
+    if request.method == "POST":
+        nombreOriginal = request.session['nombre']
+        nuevoNombre = request.POST.get("nombre")
+        count = request.POST.get("switchs")
+        aEliminar= []
+        nuevaImagen = request.FILES.get("comida")
+        for i in range(int(count)):
+            fav = request.POST.get("switch"+str(i))
+            if fav != "":
+                aEliminar.append(fav)
+        print(request.POST)
+        print(request.FILES)
+        print(aEliminar)
+
+        if nuevoNombre != "":
+            if Usuario.objects.filter(nombre=nuevoNombre).exists():
+                data = {"respuesta": "repetido"}
+                return JsonResponse(data)
+            Usuario.objects.filter(nombre=nombreOriginal).update(nombre=nuevoNombre)
+
+        for i in aEliminar:
+            for fav in Favoritos.objects.raw("SELECT * FROM Favoritos"):
+                if request.session['id'] == fav.idAlumno:
+                    if int(i) == fav.idVendedor:
+                        Favoritos.objects.filter(idAlumno=request.session['id']).filter(idVendedor=int(i)).delete()
+        if nuevaImagen != None:
+            filename = nombreOriginal + ".jpg"
+            with default_storage.open('../media/avatars/' + filename, 'wb+') as destination:
+                for chunk in nuevaImagen.chunks():
+                    destination.write(chunk)
+            Usuario.objects.filter(id=request.session['id']).update(avatar='/avatars/' + filename)
+
+        return JsonResponse({"ejemplo": "correcto"})
+
+
+@csrf_exempt
+def borrarUsuario(request):
+    if request.method == 'GET':
+        if request.is_ajax():
+            uID = request.GET.get('eliminar')
+            Usuario.objects.filter(id=uID).delete()
+            data = {"eliminar" : uID}
+            return JsonResponse(data)
+
+@csrf_exempt
+def agregarAvatar(request):
+    if request.is_ajax() or request.method == 'FILES':
+        imagen = request.FILES.get("image")
+        print(request.FILES)
+        nuevaImagen = Imagen(imagen=imagen)
+        nuevaImagen.save()
+        return HttpResponse("Success")
+
+
+def editarUsuario(request):
+    if request.method == 'GET':
+
+            nombre = request.GET.get("name")
+            contraseña = request.GET.get('password')
+            tipo = request.GET.get('type')
+            email = request.GET.get('email')
+            avatar = request.GET.get('avatar')
+            forma0 = request.GET.get('forma0')
+            forma1 = request.GET.get('forma1')
+            forma2 = request.GET.get('forma2')
+            forma3 = request.GET.get('forma3')
+            horaIni = request.GET.get('horaIni')
+            horaFin = request.GET.get('horaFin')
+            userID = request.GET.get('userID')
+
+            nuevaListaFormasDePago = ""
+            if(nombre!=None):
+                print ("nombre:"+nombre)
+            if (contraseña != None):
+                print ("contraseña:"+contraseña)
+            if (tipo != None):
+                print ("tipo:"+tipo)
+            if (email != None):
+                print ("email:"+email)
+            if (avatar != None):
+                print ("avatar:"+avatar)
+            if (horaIni != None):
+                print("horaIni:"+horaIni)
+            if (horaFin != None):
+                print("horaFin:" + horaFin)
+            if (userID != None):
+                print("id:"+userID)
+            if (forma0 != None):
+                print("forma0:" + forma0)
+                nuevaListaFormasDePago+="0"
+            if (forma1 != None):
+                print("forma1:" + forma1)
+                if(len(nuevaListaFormasDePago)!=0):
+                    nuevaListaFormasDePago += ",1"
+                else:
+                    nuevaListaFormasDePago += "1"
+            if (forma2 != None):
+                print("forma2:" + forma2)
+                if (len(nuevaListaFormasDePago) != 0):
+                    nuevaListaFormasDePago += ",2"
+                else:
+                    nuevaListaFormasDePago += "2"
+            if (forma3 != None):
+                print("forma3:" + forma3)
+                if (len(nuevaListaFormasDePago) != 0):
+                    nuevaListaFormasDePago += ",3"
+                else:
+                    nuevaListaFormasDePago += "3"
+
+
+            litaFormasDePago = (
+                (0, 'Efectivo'),
+                (1, 'Tarjeta de Crédito'),
+                (2, 'Tarjeta de Débito'),
+                (3, 'Tarjeta Junaeb'),
+            )
+            if email != None:
+                Usuario.objects.filter(id=userID).update(email=email)
+                print("cambio Mail")
+            if nombre != None:
+                Usuario.objects.filter(id=userID).update(nombre=nombre)
+                print("cambio Nombre")
+            if contraseña != None:
+                Usuario.objects.filter(id=userID).update(contraseña=contraseña)
+                print("cambio contraseña")
+            if tipo != None:
+                Usuario.objects.filter(id=userID).update(tipo=tipo)
+                print("cambio tipo")
+            if avatar != None:
+                Usuario.objects.filter(id=userID).update(avatar=avatar)
+                print("cambio avatar")
+            if horaIni != None:
+                Usuario.objects.filter(id=userID).update(horarioIni=horaIni)
+                print("cambio hora ini")
+            if horaFin != None:
+                Usuario.objects.filter(id=userID).update(horarioFin=horaFin)
+                print("cambio hora fin")
+            Usuario.objects.filter(id=userID).update(formasDePago=nuevaListaFormasDePago)
+            print("cambio formas de pago")
+
+            data = {"respuesta" : userID}
+            return JsonResponse(data)
+
+def registerAdmin(request):
+    tipo = request.POST.get("tipo")
+    nombre = request.POST.get("nombre")
+    email = request.POST.get("email")
+    password = request.POST.get("password")
+    horaInicial = request.POST.get("horaIni")
+    horaFinal = request.POST.get("horaFin")
+    avatar = request.FILES.get("avatar")
+    #print(avatar)
+    formasDePago = []
+    if not (request.POST.get("formaDePago0") is None):
+        formasDePago.append(request.POST.get("formaDePago0"))
+    if not (request.POST.get("formaDePago1") is None):
+        formasDePago.append(request.POST.get("formaDePago1"))
+    if not (request.POST.get("formaDePago2") is None):
+        formasDePago.append(request.POST.get("formaDePago2"))
+    if not (request.POST.get("formaDePago3") is None):
+        formasDePago.append(request.POST.get("formaDePago3"))
+    usuarioNuevo = Usuario(nombre=nombre, email=email, tipo=tipo, contraseña=password, avatar=avatar,
+                               formasDePago=formasDePago, horarioIni=horaInicial, horarioFin=horaFinal)
+    usuarioNuevo.save()
+    id = request.session['id']
+    email = request.session['email']
+    avatar = request.session['avatar']
+    nombre = request.session['nombre']
+    print(id)
+    print(email)
+    print(avatar)
+    print(nombre)
+    return adminPOST(id,avatar,email,nombre,request)
+
+
 
