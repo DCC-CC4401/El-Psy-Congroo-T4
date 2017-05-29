@@ -34,4 +34,7 @@ urlpatterns = [
     url(r'^editarUsuarioAdmin/$', views.editarUsuarioAdmin,name='editarUsuarioAdmin'),
     url(r'^loginAdmin/$', views.loginAdmin, name='loginAdmin'),
     url(r'^createTransaction/$', views.createTransaction, name='createTransaction'),
+    url(r'^fijoDashboard/$', views.fijoDashboard, name='fijoDashboard'),
+
+
 ]

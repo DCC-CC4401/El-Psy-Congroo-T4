@@ -9,6 +9,7 @@ from .models import Comida
 from .models import Favoritos
 from .models import Imagen
 from .models import Transacciones
+from django.db.models import Count
 from django.shortcuts import render_to_response
 from django.http import HttpResponse
 import simplejson
@@ -29,6 +30,19 @@ def index(request):
 
 def login(request):
     return render(request, 'main/login.html', {})
+
+def fijoDashboard(request):
+    print(request.POST)
+    id = request.POST.get("fijoId")
+    #id = str(id)
+    result=Transacciones.objects.filter(idVendedor=id).values('fecha').annotate(transaccionesHechas=Count('fecha'))
+    print(result)
+    #for t in Transacciones.objects.raw('SELECT * FROM transacciones'):
+        #print(t.idVendedor)
+       # print(t.precio)
+       # print(str(t.fecha).split(' ', 1 )[0])
+
+    return render(request, 'main/fijoDashboard.html', {"transacciones":result})
 
 def adminEdit(request):
     print(request.POST)

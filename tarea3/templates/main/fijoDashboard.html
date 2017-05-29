@@ -17,6 +17,7 @@
     <!-- Compiled and minified JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/js/materialize.min.js"></script>
     <script src="http://materializecss.com/templates/starter-template/js/init.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.4/Chart.min.js"></script>
 
     <nav class="top-nav">
         <div class="nav-wrapper teal lighten-1">
@@ -40,7 +41,6 @@
                 </li>
                 <li><div class="section"></div></li>
                 <li><a href="{% url 'logout' %}"><i class="material-icons">exit_to_app</i>Cerrar Sesión</a></li>
-                <li><a href="javascript:;" onclick="document.getElementById('fijoDashboard').submit();"><i class="material-icons">assessment</i>Datos de ventas</a></li>
 
                 <!--<li><a href=""><i class="material-icons">exit_to_app</i>Cerrar Sesión</a></li>-->
                 <!--<li><div class="divider"></div></li>
@@ -79,15 +79,39 @@
     </nav>
 
 </head>
-
+<p></p>
 <body>
+<div class="section">
+          <div class="row">
+                  <h2 style="text-align: center;">DASHBOARD</h2>
+          </div>
+      </div>
 
- <form id="fijoDashboard" method="post" action="{% url 'fijoDashboard' %}">{% csrf_token %}
-                    <input value="{{ id }}" name="fijoId" id="fijoId" type="text" style="display:none;">
- </form>
+<div class="row"><div class="col s8 offset-s4">
+    <h4>Ganancias en los ultimos 5 dias</h4>
+    <div class="row"></div>
+    <canvas id="myChart" width=600 height=300></canvas>
+</div></div>
+<script>
 
-{% block content %}
-{% endblock %}
+    var ctx = document.getElementById('myChart').getContext('2d');
+var myChart = new Chart(ctx, {
+  type: 'bar',
+  data: {
+    labels: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
+    datasets: [{
+      data: [12, 19, 3, 17, 6, 3, 7],
+      backgroundColor: "rgba(153,255,51,0.4)"
+    }]
+  },
+  options: {
+                responsive: false,
+                  legend: {
+                    display: false
+                }
+            }
+});
+</script>
 
 </body>
 
