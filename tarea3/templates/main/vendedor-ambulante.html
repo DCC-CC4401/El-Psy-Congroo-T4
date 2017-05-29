@@ -334,7 +334,7 @@
     function guardarProducto(i){
         var formulario = new FormData($(i).get(0));
          $.ajax({
-           url:{% url 'cambiarFavorito' %},
+           url:{% url 'editarProducto' %},
            type: "POST",
            data: formulario,
           cache: false,

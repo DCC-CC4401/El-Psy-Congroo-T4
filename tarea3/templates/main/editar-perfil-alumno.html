@@ -10,19 +10,16 @@
       <div class="container">
         <div class="z-depth-1 grey lighten-4 row" style="margin-left: 5%; margin-right: 5%; padding: 32px 48px 0px 48px; border: 1px solid #EEE;">
 
-          <form enctype="multipart/form-data" class="col s12 m12" method="post" action="{% url 'procesarPerfilAlumno' %}" > {% csrf_token %}
+          <form id="form" enctype="multipart/form-data" class="col s12 m12" method="POST" action="handleForm();" > {% csrf_token %}
             <div class='row'>
               <div class='col s12 m12'>
               </div>
-            </div>
-            <div class="row">
-                <input type = "hidden" value ={{nombre}}  name='nombreOriginal' id='nombreOriginal' />
             </div>
             <div class='row'>
               <div class='input-field col s12 m12' >
                   &ensp;Editar nombre:
                  <div class="input-field inline ">
-                <input placeholder={{nombre}} class='validate' type='text' name='nombre' id='nombre' />
+                <input class='validate' type='text' name='nombre' id='nombre' />
                 <label style="text-align: center" for='item'></label>
                  </div>
               </div>
@@ -30,7 +27,8 @@
            <div class ="row col s12 m12">
                <h6>Editar favoritos:</h6>
            </div>
-
+            <div class ="row col s12 m12"> </div>
+              <div class ="row col s12 m12"> </div>
               <br>
           <div id='favoritos'>
           </div>
@@ -73,7 +71,7 @@
               </div>
             </div>
             <div class='row'>
-                    <button type="submit" class='col l5 offset-l4 btn btn-large waves-effect button teal' >&emsp; &emsp;Agregar<i class="material-icons right">send</i></button>
+                    <button type=button onclick="handleForm();" class='col l5 offset-l4 btn btn-large waves-effect button teal' >&emsp; &emsp;Guardar cambios<i class="material-icons right">send</i></button>
             </div>
             </div>
             </form>
@@ -100,14 +98,14 @@
             //agregar nombres
             //setear grid de columna
                 var col = document.createElement("div");
-                col.setAttribute("col","s5 l5 m5");
-                col.innerHTML = nombres[i];
+                col.setAttribute("col","s12 l12 m12");
                 col.setAttribute("style","margin-left: 80px;");
+                col.innerHTML ="Vendedor "+nombres[i];
                 columna.appendChild(col);
             //agregar switch
                 //setear grid de columna
                 var col = document.createElement("div");
-                col.setAttribute("col","s5 l5 m5");
+                col.setAttribute("col","s12 l12 m12");
 
                 columna.appendChild(col);
                 //setear la clase switch
@@ -118,18 +116,12 @@
                     //crear label
                     var label = document.createElement("label");
                     sw.appendChild(label);
-                    //crear input
-                    var inputh = document.createElement("input");
-                    inputh.setAttribute("type","hidden");
-                    inputh.setAttribute("id","switch" + i);
-                    inputh.setAttribute("nombre","switch" + i);
-                    inputh.setAttribute("value",1);
-                    div.appendChild(inputh);
+                    //crear inpu
                     var input = document.createElement("input");
                     input.setAttribute("type" ,'checkbox' );
                     input.setAttribute("checked",true);
-                    //input.setAttribute("id","switch" + i);
-                    //input.setAttribute("nombre","switch" + i);
+                    input.setAttribute("id","switch" + i);
+                    input.setAttribute("nombre","switch" + i);
                     input.setAttribute("value",i)
                     label.appendChild(input);
 
@@ -138,6 +130,45 @@
                     label.appendChild(span);
         }
     }
+    </script>
+
+
+    <script>
+        function handleForm(){
+            var favoritos ={{ favoritos|safe }};
+            var formulario = new FormData($('form').get(0));
+            for (i=0;i<favoritos.length ;i++){
+                var input = document.getElementById("switch" + i);
+                if (input.checked){
+                    formulario.append("switch"+i,"");
+                }
+                else{
+                    formulario.append("switch"+i,favoritos[i]);
+                }
+            }
+            formulario.append("switchs",favoritos.length);
+             $.ajax({
+               url:{% url 'procesarPerfilAlumno' %},
+               type: "POST",
+               data: formulario,
+              cache: false,
+                processData: false,
+                contentType: false,
+                success: function(data) {
+                  if (data.respuesta =="repetido"){
+                       alert("Nombre ya existe en la base de datos");
+                  }
+                  else{
+                     location.reload();
+                     window.location={%url 'inicioAlumno'%};
+
+                  }
+               },
+               error:function(data) {
+                   alert("error in getting from server");
+               },
+         });
+        }
     </script>
     <script>
     window.onload = agregarInputs();

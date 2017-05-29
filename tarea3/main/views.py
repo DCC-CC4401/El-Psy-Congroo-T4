@@ -23,7 +23,6 @@ def index(request):
     return render(request, 'main/baseAlumno-sinLogin.html', {"vendedores": vendedoresJson})
 
 def login(request):
-
     return render(request, 'main/login.html', {})
 
 def signup(request):
@@ -179,7 +178,7 @@ def logout(request):
         del request.session['id']
     except:
        pass
-    return render(request, 'main/base.html', {})
+    return index(request)
 
 def register(request):
     tipo = request.POST.get("tipo")
@@ -416,7 +415,35 @@ def editarPerfilAlumno(request):
 
 def procesarPerfilAlumno(request):
     if request.method == "POST":
-        nombreOriginal = request.POST.get("nombreOriginal")
+        nombreOriginal = request.session['nombre']
         nuevoNombre = request.POST.get("nombre")
-        print(request.POST.get("switch0"))
-        return inicioAlumno(request)
+        count = request.POST.get("switchs")
+        aEliminar= []
+        nuevaImagen = request.FILES.get("comida")
+        for i in range(int(count)):
+            fav = request.POST.get("switch"+str(i))
+            if fav != "":
+                aEliminar.append(fav)
+        print(request.POST)
+        print(request.FILES)
+        print(aEliminar)
+
+        if nuevoNombre != "":
+            if Usuario.objects.filter(nombre=nuevoNombre).exists():
+                data = {"respuesta": "repetido"}
+                return JsonResponse(data)
+            Usuario.objects.filter(nombre=nombreOriginal).update(nombre=nuevoNombre)
+
+        for i in aEliminar:
+            for fav in Favoritos.objects.raw("SELECT * FROM Favoritos"):
+                if request.session['id'] == fav.idAlumno:
+                    if int(i) == fav.idVendedor:
+                        Favoritos.objects.filter(idAlumno=request.session['id']).filter(idVendedor=int(i)).delete()
+        if nuevaImagen != None:
+            filename = nombreOriginal + ".jpg"
+            with default_storage.open('../media/avatars/' + filename, 'wb+') as destination:
+                for chunk in nuevaImagen.chunks():
+                    destination.write(chunk)
+            Usuario.objects.filter(id=request.session['id']).update(avatar='/avatars/' + filename)
+
+        return JsonResponse({"ejemplo": "correcto"})
