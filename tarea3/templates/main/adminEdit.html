@@ -59,7 +59,7 @@
 
 
 
-<body class="container">
+<body>
  <main>
 <div class="row">
                <div>
@@ -82,24 +82,26 @@
                </div>
             </div>
              <div class="row">
-                 <label for="userID">ID del usuario</label>
-                 <input placeholder="Comments (Disabled)" value="{{ id }}" name="userID" id="userID" type="text" disabled>
+                <div class="col s6">
+                     <label for="userID">ID del usuario</label>
+                     <input placeholder="Comments (Disabled)" value="{{ id }}" name="userID" id="userID" type="text" disabled>
+                </div>
              </div>
 
             <div class="row">
-               <div class="input-field">
+               <div class="col s6 input-field">
                   <input placeholder="Email" name="email" id="email" value="{{ email }}" type="email" class="validate">
                   <label for="email">Email</label>
                </div>
             </div>
-            <div class="col s2">
+
+            <div class="col s6 offset-s1">
               <img id="avatarActual" src="" alt="" height="100" width="100" class="circle responsive-img"> <!-- notice the "circle" class -->
-            </div>
-            <div class="col s10">
             </div>
 
 
              <div class="row">
+                <div class="col s6">
                <label id="imagenActual">Imagen actual</label>
                <div class="file-field input-field">
                   <div class="btn">
@@ -111,6 +113,7 @@
                   </div>
                </div>
              </div>
+             </div>
 
              <div class="row"></div>
              <div class='row'></div>
@@ -121,8 +124,8 @@
                 <div class='row'></div>
 
                 <div class="row">
-                    <div class='col s6'>
-                        <div class='col s6 '>
+                    <div class='col s8'>
+                        <div class='col s8'>
                         <button type="submit" form="editAdminForm" id="saveButton" class=" btn-large waves-effect button teal">{% csrf_token %}
                             Guardar
                         <i class="material-icons right">send</i>
