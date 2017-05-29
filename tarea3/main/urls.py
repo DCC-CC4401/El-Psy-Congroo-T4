@@ -25,4 +25,5 @@ urlpatterns = [
     url(r'^agregarAvatar/', views.agregarAvatar, name='agregarAvatar'),
     url(r'^signupAdmin/$', views.signupAdmin,name='signupAdmin'),
     url(r'^registerAdmin/$', views.registerAdmin,name='registerAdmin'),
+    url(r'^getStock/$', views.getStock,name='getStock'),
 ]
