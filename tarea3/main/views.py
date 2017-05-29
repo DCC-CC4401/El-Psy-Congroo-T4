@@ -625,5 +625,16 @@ def registerAdmin(request):
     print(nombre)
     return adminPOST(id,avatar,email,nombre,request)
 
+@csrf_exempt
+def verificarEmail(request):
+    if request.is_ajax() or request.method == 'POST':
+        email = request.POST.get("email")
+        print(email)
+        if Usuario.objects.filter(email=email).exists():
+            data = {"respuesta": "repetido"}
+            return JsonResponse(data)
+        else:
+            data = {"respuesta": "disponible"}
+            return JsonResponse(data)
 
 

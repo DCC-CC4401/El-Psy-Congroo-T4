@@ -100,8 +100,7 @@
                   <div class="row"></div>
                   <div class="row"></div>
 
-
-                   <div class="col s10 offset-s1 center-align">
+                  <div class="col s10 offset-s1 center-align">
                       <form action="{% url 'signupAdmin' %}">
                         <button class="btn waves-effect waves-light" type="submit" name="action">
                         Agregar usuario
@@ -202,12 +201,17 @@
                       <!-- HTML con las formas de pago-->
                  </div>
              <div class="row"></div>
-             <div class="row"></div>
-             <div class="row"></div><div class="row"></div>
+             <div class='row'></div>
+
+                <label class='red-text text-accent-2 center-align' >
+                     <h6 style="text-align: center;" id="emailError" class="card-title flow-text text-darken-4"></h6>
+                </label>
+                <div class='row'></div>
+
                 <div class="row">
                     <div class='col s6'>
                         <div class='col s6 '>
-                        <button type="button" onclick ="guardarUsuario();" class=" btn-large waves-effect button teal">
+                        <button type="button" id="saveButton" onclick ="guardarUsuario();" class=" btn-large waves-effect button teal">
                             Guardar
                         <i class="material-icons right">send</i>
                     </button>
@@ -234,6 +238,8 @@
   $(document).ready(function() {
     $('select').material_select();
 });
+
+  //hitler did nothing wrong
 
       $("#type").change(function () {
          //alert(tipoAnterior);
@@ -428,6 +434,37 @@ function guardarUsuario(){
       }
 
 
+
+   formdata2 = new FormData();
+    jQuery("#email").on("change", function() {
+        //verificar si mail ya existe
+        var email = document.getElementById("email").value;
+        if (formdata2) {
+            formdata2.append("email", email);
+
+            jQuery.ajax({
+                url: {% url 'verificarEmail' %},
+                type: "POST",
+                data: formdata2,
+                processData: false,
+                contentType: false,
+                success:function(data){
+                    if(data.respuesta=="repetido"){
+                        document.getElementById("saveButton").disabled = true;
+                        document.getElementById("emailError").innerHTML = "Ese email no esta disponible";
+                    }
+                    else{
+                        document.getElementById("saveButton").disabled = false;
+                         document.getElementById("emailError").innerHTML = "";
+                    }
+
+                },
+                error:function(data) {
+               alert("error in getting from server");
+           }
+            });
+        }
+    });
   </script>
 {% endblock %}
 
