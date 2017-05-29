@@ -10,6 +10,7 @@ from .models import Favoritos
 from .models import Imagen
 from .models import Transacciones
 from django.db.models import Count
+from django.db.models import Sum
 from django.shortcuts import render_to_response
 from django.http import HttpResponse
 import simplejson
@@ -36,25 +37,65 @@ def fijoDashboard(request):
     print(request.POST)
     id = request.POST.get("fijoId")
     #id = str(id)
-    result=Transacciones.objects.filter(idVendedor=id).values('fecha').annotate(conteo=Count('fecha'))
-    #temp_arr = JsonResponse(serializers.serialize('json', result), safe=False)
-    temp_arr = list(result)
-    arr = []
-    #print(temp_arr)
-    #print(result)
-    for element in temp_arr:
+
+
+    #transacciones hechas por hoy
+    transaccionesDiarias=Transacciones.objects.filter(idVendedor=id).values('fecha').annotate(conteo=Count('fecha'))
+    temp_transaccionesDiarias = list(transaccionesDiarias)
+    transaccionesDiariasArr = []
+    for element in temp_transaccionesDiarias:
         aux = []
         aux.append(element['fecha'])
         aux.append(element['conteo'])
-        arr.append(aux)
-    arr=simplejson.dumps(arr)
-    print(arr)
-    #for t in Transacciones.objects.raw('SELECT * FROM transacciones'):
-        #print(t.idVendedor)
-       # print(t.precio)
-       # print(str(t.fecha).split(' ', 1 )[0])
+        transaccionesDiariasArr.append(aux)
+    transaccionesDiariasArr=simplejson.dumps(transaccionesDiariasArr)
+    #print(transaccionesDiariasArr)
 
-    return render(request, 'main/fijoDashboard.html', {"transacciones":arr})
+    #ganancias de hoy
+    gananciasDiarias = Transacciones.objects.filter(idVendedor=id).values('fecha').annotate(ganancia=Sum('precio'))
+    temp_gananciasDiarias = list(gananciasDiarias)
+    gananciasDiariasArr = []
+    for element in temp_gananciasDiarias:
+        aux = []
+        aux.append(element['fecha'])
+        aux.append(element['ganancia'])
+        #print("AUX")
+        #print(aux)
+        gananciasDiariasArr.append(aux)
+    gananciasDiariasArr = simplejson.dumps(gananciasDiariasArr)
+    #print(gananciasDiariasArr)
+
+
+    #todos los productos del vendedor
+    productos = Comida.objects.filter(idVendedor=id).values('nombre','precio')
+    temp_productos = list(productos)
+    productosArr = []
+    productosPrecioArr = []
+    for element in temp_productos:
+        aux = []
+        productosArr.append(element['nombre'])
+        aux.append(element['nombre'])
+        aux.append(element['precio'])
+        productosPrecioArr.append(aux)
+    productosArr = simplejson.dumps(productosArr)
+    productosPrecioArr = simplejson.dumps(productosPrecioArr)
+    print(productosPrecioArr)
+
+    #productos vendidos hoy con su cantidad respectiva
+    fechaHoy = str(timezone.now()).split(' ', 1)[0]
+    productosHoy = Transacciones.objects.filter(idVendedor=id,fecha=fechaHoy).values('nombreComida').annotate(conteo=Count('nombreComida'))
+    temp_productosHoy = list(productosHoy)
+    productosHoyArr = []
+    for element in temp_productosHoy:
+        aux = []
+        aux.append(element['nombreComida'])
+        aux.append(element['conteo'])
+        productosHoyArr.append(aux)
+    productosHoyArr = simplejson.dumps(productosHoyArr)
+    #print(productosHoyArr)
+
+
+    return render(request, 'main/fijoDashboard.html', {"transacciones":transaccionesDiariasArr,"ganancias":gananciasDiariasArr,"productos":productosArr,"productosHoy":productosHoyArr,"productosPrecio":productosPrecioArr})
 
 def adminEdit(request):
     print(request.POST)
@@ -904,7 +945,8 @@ def createTransaction(request):
         print(precio)
     else:
         return HttpResponse('error message')
-    transaccionNueva = Transacciones(idVendedor=idVendedor,precio=precio)
+    print(nombreProducto)
+    transaccionNueva = Transacciones(idVendedor=idVendedor,precio=precio,nombreComida=nombreProducto)
     transaccionNueva.save()
     return JsonResponse({"transaccion": "realizada"})
 
