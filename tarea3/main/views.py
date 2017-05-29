@@ -120,6 +120,7 @@ def loginReq(request):
                     activo = p.activo
                     formasDePago = p.formasDePago
                     request.session['formasDePago'] = formasDePago
+                    request.session['activo'] = activo
                     break
                 elif (tipo == 3):
                     url = 'main/vendedor-ambulante.html'
@@ -130,6 +131,7 @@ def loginReq(request):
                     activo = p.activo
                     formasDePago = p.formasDePago
                     request.session['formasDePago'] = formasDePago
+                    request.session['activo'] = activo
                     break
 
         #si no se encuentra el usuario, se retorna a pagina de login
@@ -161,6 +163,7 @@ def loginReq(request):
                 listaDeProductos[i].append(producto.descripcion)
                 listaDeProductos[i].append(str(producto.imagen))
                 i += 1
+
         listaDeProductos = simplejson.dumps(listaDeProductos,ensure_ascii=False).encode('utf8')
 
         #limpiar argumentos de salida segun tipo de vista
@@ -170,8 +173,10 @@ def loginReq(request):
         if (tipo == 1):
             argumentos = {"nombre": nombre,  "tipo": tipo, "id": id,"vendedores": vendedoresJson, "avatarSesion": avatar}
         if (tipo == 2):
+            request.session['listaDeProductos'] = str(listaDeProductos)
             argumentos = {"nombre": nombre,  "tipo": tipo, "id": id,"horarioIni": horarioIni, "horarioFin" : horarioFin, "avatar" : avatar, "listaDeProductos" : listaDeProductos, "activo" : activo, "formasDePago" : formasDePago}
         if (tipo ==3):
+            request.session['listaDeProductos'] = str(listaDeProductos)
             argumentos ={"nombre": nombre,  "tipo": tipo, "id": id,"avatar" : avatar, "listaDeProductos" : listaDeProductos, "activo" : activo, "formasDePago" : formasDePago}
 
         #enviar a vista respectiva de usuario
@@ -366,7 +371,7 @@ def vistaVendedorPorAlumnoSinLogin(request):
 
 
 
-
+@csrf_exempt
 def editarVendedor(request):
     if request.session.has_key('id'):
         id = request.session['id']
@@ -374,19 +379,24 @@ def editarVendedor(request):
         formasDePago = request.session['formasDePago']
         avatar = request.session['avatar']
         tipo = request.session['tipo']
+        activo = request.session['activo']
+        listaDeProductos = request.session['listaDeProductos']
         if (tipo == 2):
             horarioIni = request.session['horarioIni']
             horarioFin = request.session['horarioFin']
-            argumentos = {"nombre": nombre, "id": id, "horarioIni": horarioIni, "horarioFin": horarioFin,
-                          "avatar": avatar, "formasDePago": formasDePago, "tipo": tipo}
+            argumentos = {"nombre": nombre, "tipo": tipo, "id": id, "horarioIni": horarioIni, "horarioFin": horarioFin,
+                          "avatar": avatar, "listaDeProductos": listaDeProductos, "activo": activo, "formasDePago": formasDePago}
             url = 'main/editar-vendedor-fijo.html'
         elif (tipo == 3):
-            argumentos = {"nombre": nombre, "id": id, "avatar": avatar, "formasDePago": formasDePago, "tipo": tipo}
+            argumentos = {"nombre": nombre, "tipo": tipo, "id": id, "avatar": avatar, "listaDeProductos": listaDeProductos,
+                  "activo": activo, "formasDePago": formasDePago}
             url = 'main/editar-vendedor-ambulante.html'
         return render(request, url, argumentos)
     else:
         return render(request, 'main/base.html', {})
 
+
+@csrf_exempt
 def editarDatos(request):
     id_vendedor = request.POST.get("id_vendedor")
     usuario = Usuario.objects.filter(id=id_vendedor)
@@ -424,9 +434,71 @@ def editarDatos(request):
                 destination.write(chunk)
         usuario.update(avatar='/avatars/'+ str(avatar))
 
-    print(tipo, type(tipo))
+    id = request.session['id']
+    nombre = request.session['nombre']
+    formasDePago = request.session['formasDePago']
+    avatar = request.session['avatar']
+    tipo = request.session['tipo']
+    activo = request.session['activo']
+    listaDeProductos = request.session['listaDeProductos']
+    horarioIni = request.session['horarioIni']
+    horarioFin = request.session['horarioFin']
 
-    return JsonResponse({"respuesta" : "hola"})
+    url = ''
+    argumentos = {}
+
+    if (tipo == 2):
+        url = 'main/vendedor-fijo.html'
+        argumentos = {"nombre": nombre, "tipo": tipo, "id": id, "horarioIni": horarioIni, "horarioFin": horarioFin,
+                           "avatar": avatar, "listaDeProductos": listaDeProductos, "activo": activo,
+                           "formasDePago": formasDePago}
+    elif (tipo == 3):
+        url = 'main/vendedor-ambulante.html'
+        argumentos = {"nombre": nombre, "tipo": tipo, "id": id, "avatar": avatar, "listaDeProductos": listaDeProductos,
+                           "activo": activo, "formasDePago": formasDePago}
+    return redirigirEditar(id, request)
+
+
+def redirigirEditar(id_vendedor,request):
+    for usr in Usuario.objects.raw('SELECT * FROM usuario WHERE id == "' + str(id_vendedor) +'"'):
+        id = usr.id
+        nombre = usr.nombre
+        email = usr.email
+        tipo = usr.tipo
+        avatar = usr.avatar
+        activo = usr.activo
+        formasDePago = usr.formasDePago
+        horarioIni = usr.horarioIni
+        horarioFin = usr.horarioFin
+
+        listaDeProductos = []
+        i = 0
+        url = ''
+        argumentos = {}
+        for producto in Comida.objects.raw('SELECT * FROM comida WHERE idVendedor = "' + str(id_vendedor) +'"'):
+            listaDeProductos.append([])
+            listaDeProductos[i].append(producto.nombre)
+            categoria = str(producto.categorias)
+            listaDeProductos[i].append(categoria)
+            listaDeProductos[i].append(producto.stock)
+            listaDeProductos[i].append(producto.precio)
+            listaDeProductos[i].append(producto.descripcion)
+            listaDeProductos[i].append(str(producto.imagen))
+            i += 1
+
+        listaDeProductos = simplejson.dumps(listaDeProductos,ensure_ascii=False).encode('utf8')
+        if (tipo == 2):
+            url = 'main/vendedor-fijo.html'
+            argumentos = {"nombre": nombre, "tipo": tipo, "id": id, "horarioIni": horarioIni, "horarioFin": horarioFin,
+                          "avatar": avatar, "listaDeProductos": listaDeProductos, "activo": activo,
+                          "formasDePago": formasDePago}
+        elif (tipo == 3):
+            url = 'main/vendedor-ambulante.html'
+            argumentos = {"nombre": nombre, "tipo": tipo, "id": id, "avatar": avatar,
+                          "listaDeProductos": listaDeProductos,
+                          "activo": activo, "formasDePago": formasDePago}
+        return render(request, url, argumentos)
+
 
 def inicioAlumno(request):
     id = request.session['id']
