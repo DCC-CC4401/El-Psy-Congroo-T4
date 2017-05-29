@@ -257,17 +257,17 @@ function guardarUsuario(){
 
 
 
-   formdata2 = new FormData();
+   formdata = new FormData();
     jQuery("#email").on("change", function() {
         //verificar si mail ya existe
         var email = document.getElementById("email").value;
-        if (formdata2) {
-            formdata2.append("email", email);
+        if (formdata) {
+            formdata.append("email", email);
 
             jQuery.ajax({
                 url: {% url 'verificarEmail' %},
                 type: "POST",
-                data: formdata2,
+                data: formdata,
                 processData: false,
                 contentType: false,
                 success:function(data){
