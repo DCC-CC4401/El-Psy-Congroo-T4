@@ -434,32 +434,12 @@ def editarDatos(request):
                 destination.write(chunk)
         usuario.update(avatar='/avatars/'+ str(avatar))
 
-    id = request.session['id']
-    nombre = request.session['nombre']
-    formasDePago = request.session['formasDePago']
-    avatar = request.session['avatar']
-    tipo = request.session['tipo']
-    activo = request.session['activo']
-    listaDeProductos = request.session['listaDeProductos']
-    horarioIni = request.session['horarioIni']
-    horarioFin = request.session['horarioFin']
-
-    url = ''
-    argumentos = {}
-
-    if (tipo == 2):
-        url = 'main/vendedor-fijo.html'
-        argumentos = {"nombre": nombre, "tipo": tipo, "id": id, "horarioIni": horarioIni, "horarioFin": horarioFin,
-                           "avatar": avatar, "listaDeProductos": listaDeProductos, "activo": activo,
-                           "formasDePago": formasDePago}
-    elif (tipo == 3):
-        url = 'main/vendedor-ambulante.html'
-        argumentos = {"nombre": nombre, "tipo": tipo, "id": id, "avatar": avatar, "listaDeProductos": listaDeProductos,
-                           "activo": activo, "formasDePago": formasDePago}
-    return redirigirEditar(id, request)
+    print(id_vendedor)
+    return redirigirEditar(id_vendedor, request)
 
 
 def redirigirEditar(id_vendedor,request):
+    print(str(id_vendedor))
     for usr in Usuario.objects.raw('SELECT * FROM usuario WHERE id == "' + str(id_vendedor) +'"'):
         id = usr.id
         nombre = usr.nombre
@@ -470,6 +450,15 @@ def redirigirEditar(id_vendedor,request):
         formasDePago = usr.formasDePago
         horarioIni = usr.horarioIni
         horarioFin = usr.horarioFin
+
+        request.session['id'] = id
+        request.session['nombre'] = nombre
+        request.session['formasDePago'] = formasDePago
+        request.session['avatar'] = str(avatar)
+        request.session['tipo'] = tipo
+        request.session['activo'] = activo
+        request.session['horarioIni'] = horarioIni
+        request.session['horarioFin'] = horarioFin
 
         listaDeProductos = []
         i = 0
@@ -487,6 +476,7 @@ def redirigirEditar(id_vendedor,request):
             i += 1
 
         listaDeProductos = simplejson.dumps(listaDeProductos,ensure_ascii=False).encode('utf8')
+        request.session['listaDeProductos'] = str(listaDeProductos)
         if (tipo == 2):
             url = 'main/vendedor-fijo.html'
             argumentos = {"nombre": nombre, "tipo": tipo, "id": id, "horarioIni": horarioIni, "horarioFin": horarioFin,
@@ -497,6 +487,7 @@ def redirigirEditar(id_vendedor,request):
             argumentos = {"nombre": nombre, "tipo": tipo, "id": id, "avatar": avatar,
                           "listaDeProductos": listaDeProductos,
                           "activo": activo, "formasDePago": formasDePago}
+        print("chao")
         return render(request, url, argumentos)
 
 
