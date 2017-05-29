@@ -425,20 +425,20 @@ def editarDatos(request):
 
     avatar = request.FILES.get("avatar")
     formasDePago = ""
-    if not (request.POST.get("formaDePago0") is None):
+    if not (request.POST.get("formaDePago0") is None) and request.POST.get("formaDePago0")!="":
         formasDePago += '0,'
-    if not (request.POST.get("formaDePago1") is None):
+    if not (request.POST.get("formaDePago1") is None) and request.POST.get("formaDePago1")!="":
         formasDePago += '1,'
-    if not (request.POST.get("formaDePago2") is None):
+    if not (request.POST.get("formaDePago2") is None) and request.POST.get("formaDePago2")!="":
         formasDePago += '2,'
-    if not (request.POST.get("formaDePago3") is None):
+    if not (request.POST.get("formaDePago3") is None) and request.POST.get("formaDePago3")!="":
         formasDePago += '3,'
 
-    if (nombre is not None):
+    if (nombre is not None and nombre!=""):
         usuario.update(nombre=nombre)
-    if (formasDePago != []):
+    if (formasDePago != ""):
         usuario.update(formasDePago=formasDePago[:-1])
-    if (avatar is not None):
+    if (avatar is not None and avatar!=""):
         with default_storage.open('../media/avatars/' + str(avatar), 'wb+') as destination:
             for chunk in avatar.chunks():
                 destination.write(chunk)
