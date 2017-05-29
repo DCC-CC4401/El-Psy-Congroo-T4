@@ -8,6 +8,7 @@ from .models import Usuario
 from .models import Comida
 from .models import Favoritos
 from .models import Imagen
+from .models import Transacciones
 from django.shortcuts import render_to_response
 from django.http import HttpResponse
 import simplejson
@@ -863,3 +864,21 @@ def getStock(request):
                 return JsonResponse({"stock": stock})
             Comida.objects.filter(nombre=request.GET.get("nombre")).update(stock=nuevoStock)
     return JsonResponse({"stock": stock})
+
+def createTransaction(request):
+    print("GET:")
+    print(request.GET)
+    nombreProducto = request.GET.get("nombre")
+    precio=0
+    idVendedor = request.GET.get("idUsuario")
+    if Comida.objects.filter(nombre=nombreProducto).exists():
+        precio = Comida.objects.filter(nombre=nombreProducto).values('precio')[0]
+        listaAux=list(precio.values())
+        precio=listaAux[0]
+        print(precio)
+    else:
+        return HttpResponse('error message')
+    transaccionNueva = Transacciones(idVendedor=idVendedor,precio=precio)
+    transaccionNueva.save()
+    return JsonResponse({"transaccion": "realizada"})
+

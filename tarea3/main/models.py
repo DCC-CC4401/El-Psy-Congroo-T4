@@ -1,5 +1,6 @@
 from django.db import models
 from multiselectfield import MultiSelectField
+from django.utils import timezone
 
 # Create your models here
 
@@ -87,3 +88,15 @@ class Imagen(models.Model):
 
     class Meta:
         db_table = 'imagen'
+
+class Transacciones(models.Model):
+    idTransaccion = models.AutoField(primary_key=True)
+    idVendedor = models.IntegerField()
+    precio = models.IntegerField()
+    fecha = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return str(self.idTransaccion)
+
+    class Meta:
+        db_table = 'transacciones'
