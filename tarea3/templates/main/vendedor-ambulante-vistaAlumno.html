@@ -74,6 +74,9 @@
             </div>
 
             <!-- Info del vendedor movil -->
+
+              <div class = "row show-on-medium-and-down hide-on-med-and-up"></div>
+            <div class = "row show-on-medium-and-down hide-on-med-and-up"></div>
             <div class="row show-on-medium-and-down hide-on-med-and-up">
                 <div class="col s3 m2 offset-s2">
                         <h4 class="card-title grey-text flow-text text-darken-4">{{nombre}}</h4>
@@ -141,7 +144,7 @@
                                             }
                                             //imprimir en pantalla todas las tarjetas de productos
                                             for (var i = 0; i < largo; i++)  {
-                                                document.write(" <div class='col s6 m6 l4'>");
+                                                document.write(" <div class='col s6 m12 l4'>");
                                                 document.write("<div class='container'>");
                                                 document.write(" <div class='card z-depth-1'>");
                                                 document.write("<div class='teal lighten-2 card-image waves-effect waves-block waves-light'>");
@@ -150,6 +153,7 @@
                                                 document.write(" <div class='card-content'>");
                                                 document.write("<span class='card-title activator grey-text text-darken-4'> "+productos[i][0] +" <i class='material-icons right'>more_vert</i></span>");
                                                 document.write("<p><a class='teal-text'> $"+productos[i][3]+" </a></p>");
+                                                document.write("<p><a class='row col l5' id='Stock-"+productos[i][0]+"' class='teal-text'> Stock :"+productos[i][2]+" </a>");
                                                 document.write("</div>");
                                                 document.write(" <div class='card-reveal'>");
                                                 document.write(" <span class='card-title grey-text text-darken-4'> "+productos[i][0] +" <i class='material-icons right'>close</i></span>");

@@ -228,7 +228,7 @@
 
                                             //imprimir en pantalla todas las tarjetas de productos
                                             for (var i = 0; i < largo; i++)  {
-                                                document.write(" <div class='col s6 m6 l4'>");
+                                                document.write(" <div class='col s6 m12 l4'>");
                                                 document.write("<div class='container'>");
                                                 document.write(" <div class='card z-depth-1'>");
                                                 document.write("<div class='teal lighten-2 card-image waves-effect waves-block waves-light'>");
@@ -239,9 +239,11 @@
                                                 document.write("<img class='activator responsive-img center-block'  style='max-width: 30%; margin-top:20px; margin-bottom:20px;height: 100px; width: 100px;' src ='../static/media/"+productos[i][5]+"'>");
                                                 document.write("</div>");
                                                 document.write(" <div class='card-content'>");
-                                                document.write("<span class='card-title activator grey-text text-darken-4'> "+productos[i][0] +" <i class='material-icons right'>more_vert</i></span>");
+                                                 document.write("<span class='card-title activator grey-text text-darken-4'> "+productos[i][0] +" <i class='material-icons right'>more_vert</i></span>");
                                                 document.write("<p><a class='teal-text'> $"+productos[i][3]+" </a></p>");
                                                 document.write("<p><a class='row col l5' id='Stock-"+productos[i][0]+"' class='teal-text'> Stock :"+productos[i][2]+" </a>");
+                                                document.write("<div class='row' ></div>");
+                                                document.write("<div class='col s3 m4' ></div>");
                                                 document.write('<button class=" btn btn-large waves-effect button teal" id="Button--'+productos[i][0]+'" type="button" onclick ="bajarStock('+"\'"+productos[i][0]+"\'"+' );"   >-</button> <button class="btn btn-large waves-effect button teal" id="Button-'+productos[i][0]+'" type="button" onclick ="subirStock('+"\'"+productos[i][0]+"\'"+' );"   >+</button></p>');
                                                 document.write("</div>");
                                                 document.write(" <div class='card-reveal'>");
