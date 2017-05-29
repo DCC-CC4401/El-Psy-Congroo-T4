@@ -32,13 +32,13 @@ function crearFormulario() {
 
 
     if(tipo==2){
-        var HTMLhoraIni='<i class="material-icons prefix">alarm</i>'+
-								  '<input name="horaIni" id="icon_prefix" type="date" class="validate">'+
-								  '<label for="icon_prefix">Hora inicial</label>';
+        var HTMLhoraIni='<div class="label" style="margin-left: 1%; margin-bottom: 3%;">Hora de Inicio</div>' +
+			'<i class="material-icons prefix">alarm</i>'+
+								  '<input name="horaIni" id="icon_prefix" type="time" class="validate" value="00:00">';
 
-        var HTMLhoraFin='<i class="material-icons prefix">alarm</i>'+
-								   '<input name="horaFin" id="icon_telephone" type="date" class="validate">'+
-                                   '<label for="icon_telephone">Hora final</label>';
+        var HTMLhoraFin='<div class="label" style="margin-left: 1%; margin-bottom: 3%;">Hora de Término</div>' +
+			'<i class="material-icons prefix">alarm</i>'+
+								   '<input name="horaFin" id="icon_telephone" type="time" class="validate" value="00:00">';
 
         document.getElementById('divHoraIni').innerHTML=HTMLhoraIni;
         document.getElementById('divHoraFin').innerHTML=HTMLhoraFin;}

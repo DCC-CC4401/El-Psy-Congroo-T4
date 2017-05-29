@@ -83,6 +83,7 @@
                            <!-- Subir un archivo -->
                            <div id="file-upload" class="section">
                                <div class="label">Cambiar por:</div>
+                               <i class="material-icons prefix">perm_media</i>
                                <input id="avatar" type="file" name="avatar">
                            </div>
                        </div>
@@ -94,14 +95,18 @@
 
                      <!-- Horas de atención -->
                     <div class="row">
-                        <div class="label" style="margin-top: %; margin-left: 1%; margin-bottom: 2%;">Horas de Atención</div>
+                        <div class="label" style="margin-left: 1%;">Horas de Atención</div>
                        <div class="input-field col s6 m6">
-                          <input placeholder="Hora de Inicio" value="" id="horaIni" name="horaIni" type="text" class="active validate" >
-                          <label for="horaIni">Hora de Inicio</label>
+                           <div class="label" style="margin-left: 1%;">Hora de Inicio</div>
+                           <i class="material-icons prefix">query_builder</i>
+                          <input  value="" id="horaIni" name="horaIni" type="time" class="active validate" >
+{#                          <label for="horaIni">Hora de Inicio</label>#}
                        </div>
                        <div class="input-field col s6 m6">
-                          <input placeholder="Hora de Término" value="" id="horaFin" name="horaFin" type="text" class="active validate" >
-                          <label for="horaFin">Hora de Término</label>
+                           <div class="label" style="margin-left: 1%;">Hora de Término</div>
+                           <i class="material-icons prefix">query_builder</i>
+                          <input placeholder="Hora de Término" value="" id="horaFin" name="horaFin" type="time" class="active validate" >
+{#                          <label for="horaFin">Hora de Término</label>#}
                        </div>
                     </div>
 
