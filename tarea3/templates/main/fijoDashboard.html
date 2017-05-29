@@ -79,7 +79,7 @@
     </nav>
 
 </head>
-<p></p>
+<p>{{ transacciones }}</p>
 <body>
 <div class="section">
           <div class="row">
@@ -92,8 +92,16 @@
     <div class="row"></div>
     <canvas id="myChart" width=600 height=300></canvas>
 </div></div>
-<script>
 
+
+<script>
+//variables
+var currentTime = new Date();
+alert(currentTime)
+var arreglo = {{ transacciones|safe }}
+alert(arreglo)
+
+//script del grafico
     var ctx = document.getElementById('myChart').getContext('2d');
 var myChart = new Chart(ctx, {
   type: 'bar',

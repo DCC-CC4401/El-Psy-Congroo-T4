@@ -15,6 +15,7 @@ from django.http import HttpResponse
 import simplejson
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.http import JsonResponse
+from django.core import serializers
 from django.views.decorators.csrf import csrf_exempt
 from multiselectfield import MultiSelectField
 from django.core.files.storage import default_storage
@@ -35,14 +36,25 @@ def fijoDashboard(request):
     print(request.POST)
     id = request.POST.get("fijoId")
     #id = str(id)
-    result=Transacciones.objects.filter(idVendedor=id).values('fecha').annotate(transaccionesHechas=Count('fecha'))
-    print(result)
+    result=Transacciones.objects.filter(idVendedor=id).values('fecha').annotate(conteo=Count('fecha'))
+    #temp_arr = JsonResponse(serializers.serialize('json', result), safe=False)
+    temp_arr = list(result)
+    arr = []
+    #print(temp_arr)
+    #print(result)
+    for element in temp_arr:
+        aux = []
+        aux.append(element['fecha'])
+        aux.append(element['conteo'])
+        arr.append(aux)
+    arr=simplejson.dumps(arr)
+    print(arr)
     #for t in Transacciones.objects.raw('SELECT * FROM transacciones'):
         #print(t.idVendedor)
        # print(t.precio)
        # print(str(t.fecha).split(' ', 1 )[0])
 
-    return render(request, 'main/fijoDashboard.html', {"transacciones":result})
+    return render(request, 'main/fijoDashboard.html', {"transacciones":arr})
 
 def adminEdit(request):
     print(request.POST)
