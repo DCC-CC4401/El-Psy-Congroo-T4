@@ -30,7 +30,7 @@
             <ul id="slide-out" class="side-nav fixed leftside-navigation ps-container ps-active-y">
                 <li>
                     <div class="userView">
-                    <i class="material-icons right grey-text text-lighten-2" style="position: absolute; bottom: -0.5em; right: 0.5em; padding: 0 0 !important;">settings</i> <!-- TODO darle funcionalidad-->
+                    <a href="{% url 'editarVendedor' %}"><i class="material-icons right grey-text text-lighten-2" style="position: absolute; bottom: -0.5em; right: 0.5em; padding: 0 0 !important;">settings</i></a> <!-- TODO darle funcionalidad-->
                   <div class="background" style="height:175px;">
                     <img src="../static/img/background4.png">
                   </div>
@@ -41,37 +41,16 @@
                 <li><div class="section"></div></li>
                 <li><a href="{% url 'logout' %}"><i class="material-icons">exit_to_app</i>Cerrar Sesión</a></li>
                 <li><div class="divider"></div></li>
+
+                <!-- Boton Activo -->>
                 <li><a class="subheader">Activo</a></li>
                 <li>
                     <div class="switch" style="margin-left: 80px;">
                         <label>
-                            No<input type="checkbox"><span class="lever"></span>Si <!-- TODO darle funcionalidad-->
+                            No<input type="checkbox" id="checkbox-estado"><span class="lever"></span>Si <!-- TODO darle funcionalidad-->
                         </label>
                     </div>
                 </li>
-
-                <!-- <li><a class="subheader">Filtros</a></li>
-                <li>
-                    <div class="switch" style="margin-left: 10px;">
-                        <label>
-                            <input type="checkbox"><span class="lever"></span>Sólo mostrar favoritos
-                        </label>
-                    </div>
-                </li>
-                <li>
-                    <div class="switch" style="margin-left: 10px;">
-                        <label>
-                            <input type="checkbox"><span class="lever"></span>Snacks
-                        </label>
-                    </div>
-                </li>
-                <li>
-                    <div class="switch" style="margin-left: 10px;">
-                        <label>
-                            <input type="checkbox"><span class="lever"></span>Almuerzos
-                        </label>
-                    </div>
-                </li> -->
             </ul>
         </div>
     </nav>
@@ -82,6 +61,81 @@
 
 {% block content %}
 {% endblock %}
+<script>
+    function EstadoActual() {
+        var estdoInicial = "{{ activo }}";
+        if (estdoInicial == "True") {
+            document.getElementById("checkbox-estado").checked = true;
+        } else {
+            document.getElementById("checkbox-estado").checked = false;
+        }
+    }
+</script>
+
+<script>
+    function switchActivo(){
+        var input = document.getElementById("checkbox-estado");
+        input.setAttribute("onChange" ,'handleChange(this);');
+        if ("{{activo}}" == "True") {
+            input.setAttribute("checked", true);
+        } else {
+            input.setAttribute("checked", false);
+        }
+    }
+</script>
+
+<script>
+    function handleChange(checkbox) {
+    if(checkbox.checked == true){
+         var datos ="id=" + "{{id}}"+"&estado=true";
+         document.getElementById("estado-desktop").classList.remove("red-text");
+         document.getElementById("estado-desktop").classList.add("light-green-text");
+         document.getElementById("estado-desktop").innerHTML = "Disponible";
+
+         document.getElementById("estado-movil").classList.remove("red-text");
+         document.getElementById("estado-movil").classList.add("light-green-text");
+         document.getElementById("estado-movil").innerHTML = "Disponible";
+         $.ajax({
+           url:{% url 'cambiarEstado' %},
+           type: "GET",
+           data: datos,
+           dataType: "json",
+
+           success: function(data) {
+           },
+           error:function(data) {
+               alert("error in getting from server")
+           },
+        });
+    }else{
+        var datos ="id=" + "{{id}}"+"&estado=false";
+        document.getElementById("estado-desktop").classList.remove("light-green-text");
+        document.getElementById("estado-desktop").classList.add("red-text");
+        document.getElementById("estado-desktop").innerHTML = "No Disponible";
+
+        document.getElementById("estado-movil").classList.remove("light-green-text");
+        document.getElementById("estado-movil").classList.add("red-text");
+        document.getElementById("estado-movil").innerHTML = "No Disponible";
+         $.ajax({
+           url:{% url 'cambiarEstado' %},
+           type: "GET",
+           data: datos,
+           dataType: "json",
+
+           success: function(data) {
+           },
+           error:function(data) {
+               alert("error in getting from server")
+           },
+        });
+   }
+}
+</script>
+
+ <script>
+    window.onload = EstadoActual();
+    window.onload = switchActivo();
+</script>
 
 </body>
 

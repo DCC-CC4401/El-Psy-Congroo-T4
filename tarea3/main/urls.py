@@ -13,6 +13,9 @@ urlpatterns = [
     url(r'^loggedin/', views.loggedin, name='loggedin'),
     url(r'^productoReq/', views.productoReq, name='productoReq'),
     url(r'^vistaVendedorPorAlumno/', views.vistaVendedorPorAlumno, name='vistaVendedorPorAlumno'),
+    url(r'^cambiarEstado/$', views.cambiarEstado,name='cambiarEstado'),
+    url(r'^editarVendedor/$', views.editarVendedor,name='editarVendedor'),
+    url(r'^editarDatos/$', views.editarDatos,name='editarDatos'),
     url(r'^inicioAlumno/', views.inicioAlumno, name='inicioAlumno'),
     url(r'^borrarUsuario/', views.borrarUsuario, name='borrarUsuario'),
     url(r'^borrarProducto/', views.borrarProducto, name='borrarProducto'),
@@ -27,4 +30,7 @@ urlpatterns = [
     url(r'^registerAdmin/$', views.registerAdmin,name='registerAdmin'),
     url(r'^getStock/$', views.getStock,name='getStock'),
     url(r'^verificarEmail/$', views.verificarEmail,name='verificarEmail'),
+    url(r'^adminEdit/$', views.adminEdit,name='adminEdit'),
+    url(r'^editarUsuarioAdmin/$', views.editarUsuarioAdmin,name='editarUsuarioAdmin'),
+    url(r'^loginAdmin/$', views.loginAdmin, name='loginAdmin'),
 ]
