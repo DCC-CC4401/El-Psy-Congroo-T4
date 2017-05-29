@@ -387,6 +387,21 @@
     }
 
     function bajarStock(id){
+        //crea la transaccion en la bdd
+         var datosTransaccion="nombre=" + id + "&" + "idUsuario=" + "{{id}}";
+        $.ajax({
+           url:{% url 'createTransaction' %},
+           type: "GET",
+           data: datosTransaccion,
+           dataType: "json",
+           success: function(data) {
+              //alert("funciono");
+           },
+           error:function(data) {
+               alert("error in getting from server");
+           },
+         });
+
          var datos ="op=resta&nombre=" + id;
          $.ajax({
            url:{% url 'getStock' %},
@@ -394,6 +409,7 @@
            data: datos,
            dataType: "json",
            success: function(data) {
+               //alert("tambien funciono")
                var nuevoStock = parseInt(data.stock);
                if (nuevoStock != 0){
                 nuevoStock -=1;
