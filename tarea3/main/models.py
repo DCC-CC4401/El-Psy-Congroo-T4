@@ -76,3 +76,14 @@ class Favoritos(models.Model):
 
     class Meta:
         db_table = 'Favoritos'
+
+
+class Imagen(models.Model):
+    id = models.AutoField(primary_key=True)
+    imagen = models.ImageField(upload_to='avatars')
+
+    def __str__(self):
+        return self.id
+
+    class Meta:
+        db_table = 'imagen'
