@@ -100,8 +100,7 @@
                   <div class="row"></div>
                   <div class="row"></div>
 
-
-                   <div class="col s10 offset-s1 center-align">
+                  <div class="col s10 offset-s1 center-align">
                       <form action="{% url 'signupAdmin' %}">
                         <button class="btn waves-effect waves-light" type="submit" name="action">
                         Agregar usuario
@@ -202,12 +201,17 @@
                       <!-- HTML con las formas de pago-->
                  </div>
              <div class="row"></div>
-             <div class="row"></div>
-             <div class="row"></div><div class="row"></div>
+             <div class='row'></div>
+
+                <label class='red-text text-accent-2 center-align' >
+                     <h6 style="text-align: center;" id="emailError" class="card-title flow-text text-darken-4"></h6>
+                </label>
+                <div class='row'></div>
+
                 <div class="row">
                     <div class='col s6'>
                         <div class='col s6 '>
-                        <button type="button" onclick ="guardarUsuario();" class=" btn-large waves-effect button teal">
+                        <button type="button" id="saveButton" onclick ="guardarUsuario();" class=" btn-large waves-effect button teal">
                             Guardar
                         <i class="material-icons right">send</i>
                     </button>
@@ -235,60 +239,74 @@
     $('select').material_select();
 });
 
+  //hitler did nothing wrong
+
       $("#type").change(function () {
-     var array = [];
-      if(document.getElementById('forma0').checked) {
-        array.push(document.getElementById('forma0').value);}
-      if(document.getElementById('forma1').checked) {
-        array.push(document.getElementById('forma1').value);}
-      if(document.getElementById('forma2').checked) {
-        array.push(document.getElementById('forma2').value);}
-      if(document.getElementById('forma3').checked) {
-        array.push(document.getElementById('forma3').value);}
+         //alert(tipoAnterior);
+          var tipo = document.getElementById('type').value;
+          //alert(tipo);
+          var array = [];
+          if (document.getElementById('forma0')!=null) {
+              if (document.getElementById('forma0').checked) {
+                  array.push(document.getElementById('forma0').value);
+              }
+              if (document.getElementById('forma1').checked) {
+                  array.push(document.getElementById('forma1').value);
+              }
+              if (document.getElementById('forma2').checked) {
+                  array.push(document.getElementById('forma2').value);
+              }
+              if (document.getElementById('forma3').checked) {
+                  array.push(document.getElementById('forma3').value);
+              }
+          }
 
 
-        var tipo = document.getElementById('type').value;
-            document.getElementById('formasDePago2').innerHTML="";
-            document.getElementById('divHoraIni').innerHTML="";
-            document.getElementById('divHoraFin').innerHTML="";
+          document.getElementById('formasDePago2').innerHTML = "";
+          document.getElementById('divHoraIni').innerHTML = "";
+          document.getElementById('divHoraFin').innerHTML = "";
 
-           if(tipo==2 || tipo== 3){
-               //formas de pago
-                var HTMLformasDePago = '<label for="formasDePago2">Seleccione sus formas de pago:</label>'+
-                                            '<div class="row"></div>'+
-                                            '<div class="row"></div>'+
-                                            '<p>'+
-                                            '<input type="checkbox" id="forma0" value="0"/>'+
-                                            '<label for="forma0">Efectivo</label>'+
-                                            '</p>'+
-                                            '<p>'+
-                                            '<input type="checkbox" id="forma1" value="1"/>'+
-                                            '<label for="forma1">Tarjeta de Crédito</label>'+
-                                            '</p>'+
-                                            '<p>'+
-                                            '<input type="checkbox" id="forma2" value="2"/>'+
-                                            '<label for="forma2">Tarjeta de Débito</label>'+
-                                            '</p>'+
-                                            '<p>'+
-                                            '<input type="checkbox" id="forma3" value="3"/>'+
-                                            '<label for="forma3">Tarjeta Junaeb</label>'+
-                                            '</p>';
-                document.getElementById('formasDePago2').innerHTML=HTMLformasDePago;}
+          if (tipo == 2 || tipo == 3) {
+              //formas de pago
+              var HTMLformasDePago = '<label for="formasDePago2">Seleccione sus formas de pago:</label>' +
+                  '<div class="row"></div>' +
+                  '<div class="row"></div>' +
+                  '<p>' +
+                  '<input type="checkbox" id="forma0" value="0"/>' +
+                  '<label for="forma0">Efectivo</label>' +
+                  '</p>' +
+                  '<p>' +
+                  '<input type="checkbox" id="forma1" value="1"/>' +
+                  '<label for="forma1">Tarjeta de Crédito</label>' +
+                  '</p>' +
+                  '<p>' +
+                  '<input type="checkbox" id="forma2" value="2"/>' +
+                  '<label for="forma2">Tarjeta de Débito</label>' +
+                  '</p>' +
+                  '<p>' +
+                  '<input type="checkbox" id="forma3" value="3"/>' +
+                  '<label for="forma3">Tarjeta Junaeb</label>' +
+                  '</p>';
+              document.getElementById('formasDePago2').innerHTML = HTMLformasDePago;
+          }
 
 
-            if(tipo==2){
-                var HTMLhoraIni='<i class="material-icons prefix">alarm</i>'+
-                                          '<input placeholder="Time begin" value="" name="horaIni" id="horaIni" type="text" class="active validate">';
+          if (tipo == 2) {
+              var HTMLhoraIni = '<i class="material-icons prefix">alarm</i>' +
+                  '<input placeholder="Time begin" value="" name="horaIni" id="horaIni" type="text" class="active validate">';
 
-                var HTMLhoraFin='<i class="material-icons prefix">alarm</i>'+
-                                           '<input placeholder="Time end" value="" name="horaFin" id="horaFin" type="text" class="active validate">';
+              var HTMLhoraFin = '<i class="material-icons prefix">alarm</i>' +
+                  '<input placeholder="Time end" value="" name="horaFin" id="horaFin" type="text" class="active validate">';
 
-                document.getElementById('divHoraIni').innerHTML=HTMLhoraIni;
-                document.getElementById('divHoraFin').innerHTML=HTMLhoraFin;}
+              document.getElementById('divHoraIni').innerHTML = HTMLhoraIni;
+              document.getElementById('divHoraFin').innerHTML = HTMLhoraFin;
+          }
 
-          for(var i=0;i<array.length;i++){
-          var forma="forma"+array[i];
-          document.getElementById(forma).checked =true;
+          if (document.getElementById('forma0')!=null) {
+              for (var i = 0; i < array.length; i++) {
+                  var forma = "forma" + array[i];
+                  document.getElementById(forma).checked = true;
+              }
       }
 
     });
@@ -416,6 +434,37 @@ function guardarUsuario(){
       }
 
 
+
+   formdata2 = new FormData();
+    jQuery("#email").on("change", function() {
+        //verificar si mail ya existe
+        var email = document.getElementById("email").value;
+        if (formdata2) {
+            formdata2.append("email", email);
+
+            jQuery.ajax({
+                url: {% url 'verificarEmail' %},
+                type: "POST",
+                data: formdata2,
+                processData: false,
+                contentType: false,
+                success:function(data){
+                    if(data.respuesta=="repetido"){
+                        document.getElementById("saveButton").disabled = true;
+                        document.getElementById("emailError").innerHTML = "Ese email no esta disponible";
+                    }
+                    else{
+                        document.getElementById("saveButton").disabled = false;
+                         document.getElementById("emailError").innerHTML = "";
+                    }
+
+                },
+                error:function(data) {
+               alert("error in getting from server");
+           }
+            });
+        }
+    });
   </script>
 {% endblock %}
 

@@ -39,9 +39,14 @@
             </div>
 
 
-              <div class='row'>{% csrf_token %}
-                <button type='submit' name='btn_login' class='col l6 offset-l3 btn btn-large waves-effect teal'>Iniciar sesión</button>
-              </div>
+               <div class="col s10 offset-s1 center-align">{% csrf_token %}
+                        <button class="btn waves-effect waves-light" type="submit" name="action">
+                        Iniciar sesión
+                    </button>
+                </div>
+
+            <div class="row"></div>
+              <div class="row"></div>
 
           </form>
         </div>
