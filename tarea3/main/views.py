@@ -9,7 +9,7 @@ from .models import Comida
 from .models import Favoritos
 import simplejson
 from django.views.decorators.csrf import ensure_csrf_cookie
-@ensure_csrf_cookie
+
 
 
 from django.http import JsonResponse
@@ -331,16 +331,7 @@ def vistaVendedorPorAlumnoSinLogin(request):
     return render(request, url, {"nombre": nombre, "tipo": tipo, "id": id,"avatar" : avatar, "listaDeProductos" :listaDeProductos, "formasDePago": formasDePago})
 
 
-def cambiarEstado(request):
-    if request.method == 'POST':
-        id_vendedor = int(request.POST.get("id"))
-        estado = bool(request.POST.get("estado"))
-        print(estado)
-        if estado == False:
-            Usuario.objects.get(id=id_vendedor).update(activo=False)
-        else:
-            Usuario.objects.filter(id=id_vendedor).update(activo=False)
-        # Usuario.save()
+
 
 
 def editarVendedor(request):
@@ -354,33 +345,67 @@ def editarVendedor(request):
             horarioIni = request.session['horarioIni']
             horarioFin = request.session['horarioFin']
             argumentos = {"nombre": nombre, "id": id, "horarioIni": horarioIni, "horarioFin": horarioFin,
-                          "avatar": avatar, "formasDePago": formasDePago}
+                          "avatar": avatar, "formasDePago": formasDePago, "tipo": tipo}
             url = 'main/editar-vendedor-fijo.html'
         elif (tipo == 3):
-            argumentos = {"nombre": nombre, "id": id, "avatar": avatar, "formasDePago": formasDePago}
+            argumentos = {"nombre": nombre, "id": id, "avatar": avatar, "formasDePago": formasDePago, "tipo": tipo}
             url = 'main/editar-vendedor-ambulante.html'
         return render(request, url, argumentos)
     else:
         return render(request, 'main/base.html', {})
 
 def editarDatos(request):
+    id_vendedor = request.POST.get("id_vendedor")
+    usuario = Usuario.objects.filter(id=id_vendedor)
+
     nombre = request.POST.get("nombre")
     tipo = request.POST.get("tipo")
-    horaInicial = request.POST.get("horaIni") # TODO poner en un if segun el tipo
-    horaFinal = request.POST.get("horaFin")
+
+    if (tipo == "2"):
+        horaInicial = request.POST.get("horaIni")
+        horaFinal = request.POST.get("horaFin")
+        print(tipo, horaInicial, horaFinal)
+        if (not(horaInicial is None)):
+            usuario.update(horarioIni=horaInicial)
+        if (not(horaFinal is None)):
+            usuario.update(horarioFin=horaFinal)
+
     avatar = request.FILES.get("avatar")
-    formasDePago =[]
+    formasDePago = ""
     if not (request.POST.get("formaDePago0") is None):
-        formasDePago.append(request.POST.get("formaDePago0"))
+        formasDePago += '0,'
     if not (request.POST.get("formaDePago1") is None):
-        formasDePago.append(request.POST.get("formaDePago1"))
+        formasDePago += '1,'
     if not (request.POST.get("formaDePago2") is None):
-        formasDePago.append(request.POST.get("formaDePago2"))
+        formasDePago += '2,'
     if not (request.POST.get("formaDePago3") is None):
-        formasDePago.append(request.POST.get("formaDePago3"))
-    usuarioNuevo = Usuario(nombre=nombre,email=email,tipo=tipo,contraseña=password,avatar=avatar,formasDePago=formasDePago,horarioIni=horaInicial,horarioFin=horaFinal)
-    usuarioNuevo.save()
-    return loginReq(request)
+        formasDePago += '3,'
+
+    if (nombre is not None):
+        usuario.update(nombre=nombre)
+    if (formasDePago != []):
+        usuario.update(formasDePago=formasDePago[:-1])
+    if (avatar is not None):
+        with default_storage.open('../media/avatars/' + str(avatar), 'wb+') as destination:
+            for chunk in avatar.chunks():
+                destination.write(chunk)
+        usuario.update(avatar='/avatars/'+ str(avatar))
+
+    print(tipo, type(tipo))
+
+    return JsonResponse({"respuesta" : "hola"})
+
+def inicioAlumno(request):
+    id = request.session['id']
+    vendedores =[]
+    # si son vendedores, crear lista de productos
+    for p in Usuario.objects.raw('SELECT * FROM usuario'):
+        if p.id == id:
+            avatar = p.avatar
+        if p.tipo == 2 or p.tipo == 3:
+            vendedores.append(p.id)
+    vendedoresJson = simplejson.dumps(vendedores)
+    return render(request, 'main/baseAlumno.html',{"id": id,"vendedores": vendedoresJson,"avatarSesion": avatar })
 
 @csrf_exempt
 def borrarProducto(request):
@@ -443,3 +468,19 @@ def cambiarFavorito(request):
                 Favoritos.objects.filter(idAlumno=request.session['id']).filter(idVendedor=favorito).delete()
                 respuesta = {"respuesta": "no"}
             return JsonResponse(respuesta)
+
+
+
+
+def cambiarEstado(request):
+    if request.method == 'GET':
+        if request.is_ajax():
+            estado = request.GET.get('estado')
+            id_vendedor = request.GET.get('id')
+            if estado == "true":
+                Usuario.objects.filter(id=id_vendedor).update(activo=True)
+            else:
+                Usuario.objects.filter(id=id_vendedor).update(activo=False)
+            data = {"estado": estado}
+            return JsonResponse(data)
+

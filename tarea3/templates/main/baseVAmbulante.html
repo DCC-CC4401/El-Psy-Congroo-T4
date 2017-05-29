@@ -45,42 +45,12 @@
                 <!-- Boton Activo -->>
                 <li><a class="subheader">Activo</a></li>
                 <li>
-                    <form method="post" action="{% url 'cambiarEstado' %}">
-                        <div class="switch" style="margin-left: 80px;" id="boton-activo">
-                            <input type="hidden" name="id" id="id" value={{ id }}>
-                            <input type="hidden" name="estado" id="estado" value="">
-                            <script>
-                                document.getElementById("estado").value = document.getElementById("boton-activo").checked;
-                            </script>
-                            <label>{% csrf_token %}
-                                No<input type="checkbox" onChange='this.form.submit()' id="checkbox-estado"><span class="lever"></span>Si <!-- TODO actualizar cambios con ajax-->
-                            </label>
-                        </div>
-                    </form>
-                </li>
-
-                <!-- <li><a class="subheader">Filtros</a></li>
-                <li>
-                    <div class="switch" style="margin-left: 10px;">
+                    <div class="switch" style="margin-left: 80px;">
                         <label>
-                            <input type="checkbox"><span class="lever"></span>Sólo mostrar favoritos
+                            No<input type="checkbox" id="checkbox-estado"><span class="lever"></span>Si <!-- TODO darle funcionalidad-->
                         </label>
                     </div>
                 </li>
-                <li>
-                    <div class="switch" style="margin-left: 10px;">
-                        <label>
-                            <input type="checkbox"><span class="lever"></span>Snacks
-                        </label>
-                    </div>
-                </li>
-                <li>
-                    <div class="switch" style="margin-left: 10px;">
-                        <label>
-                            <input type="checkbox"><span class="lever"></span>Almuerzos
-                        </label>
-                    </div>
-                </li> -->
             </ul>
         </div>
     </nav>
@@ -102,8 +72,69 @@
     }
 </script>
 
+<script>
+    function switchActivo(){
+        var input = document.getElementById("checkbox-estado");
+        input.setAttribute("onChange" ,'handleChange(this);');
+        if ("{{activo}}" == "True") {
+            input.setAttribute("checked", true);
+        } else {
+            input.setAttribute("checked", false);
+        }
+    }
+</script>
+
+<script>
+    function handleChange(checkbox) {
+    if(checkbox.checked == true){
+         var datos ="id=" + "{{id}}"+"&estado=true";
+         document.getElementById("estado-desktop").classList.remove("red-text");
+         document.getElementById("estado-desktop").classList.add("light-green-text");
+         document.getElementById("estado-desktop").innerHTML = "Disponible";
+
+         document.getElementById("estado-movil").classList.remove("red-text");
+         document.getElementById("estado-movil").classList.add("light-green-text");
+         document.getElementById("estado-movil").innerHTML = "Disponible";
+         $.ajax({
+           url:{% url 'cambiarEstado' %},
+           type: "GET",
+           data: datos,
+           dataType: "json",
+
+           success: function(data) {
+           },
+           error:function(data) {
+               alert("error in getting from server")
+           },
+        });
+    }else{
+        var datos ="id=" + "{{id}}"+"&estado=false";
+        document.getElementById("estado-desktop").classList.remove("light-green-text");
+        document.getElementById("estado-desktop").classList.add("red-text");
+        document.getElementById("estado-desktop").innerHTML = "No Disponible";
+
+        document.getElementById("estado-movil").classList.remove("light-green-text");
+        document.getElementById("estado-movil").classList.add("red-text");
+        document.getElementById("estado-movil").innerHTML = "No Disponible";
+         $.ajax({
+           url:{% url 'cambiarEstado' %},
+           type: "GET",
+           data: datos,
+           dataType: "json",
+
+           success: function(data) {
+           },
+           error:function(data) {
+               alert("error in getting from server")
+           },
+        });
+   }
+}
+</script>
+
  <script>
     window.onload = EstadoActual();
+    window.onload = switchActivo();
 </script>
 
 </body>
