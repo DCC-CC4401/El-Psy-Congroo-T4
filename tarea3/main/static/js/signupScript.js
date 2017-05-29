@@ -33,11 +33,11 @@ function crearFormulario() {
 
     if(tipo==2){
         var HTMLhoraIni='<i class="material-icons prefix">alarm</i>'+
-								  '<input name="horaIni" id="icon_prefix" type="text" class="validate">'+
+								  '<input name="horaIni" id="icon_prefix" type="date" class="validate">'+
 								  '<label for="icon_prefix">Hora inicial</label>';
 
         var HTMLhoraFin='<i class="material-icons prefix">alarm</i>'+
-								   '<input name="horaFin" id="icon_telephone" type="text" class="validate">'+
+								   '<input name="horaFin" id="icon_telephone" type="date" class="validate">'+
                                    '<label for="icon_telephone">Hora final</label>';
 
         document.getElementById('divHoraIni').innerHTML=HTMLhoraIni;

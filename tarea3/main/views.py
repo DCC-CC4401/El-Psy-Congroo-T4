@@ -67,6 +67,13 @@ def adminPOST(id,avatar,email,nombre,request):
     return render(request, 'main/baseAdmin.html', argumentos)
 
 
+def obtenerFavoritos(idVendedor):
+    favoritos = 0
+    for fila in Favoritos.objects.raw('SELECT * FROM favoritos WHERE idVendedor = "' + str(idVendedor) + '"'):
+        favoritos += 1
+    return favoritos
+
+
 def loginReq(request):
 
     #inicaliar variables
@@ -174,10 +181,12 @@ def loginReq(request):
             argumentos = {"nombre": nombre,  "tipo": tipo, "id": id,"vendedores": vendedoresJson, "avatarSesion": avatar}
         if (tipo == 2):
             request.session['listaDeProductos'] = str(listaDeProductos)
-            argumentos = {"nombre": nombre,  "tipo": tipo, "id": id,"horarioIni": horarioIni, "horarioFin" : horarioFin, "avatar" : avatar, "listaDeProductos" : listaDeProductos, "activo" : activo, "formasDePago" : formasDePago}
+            request.session['favoritos'] = obtenerFavoritos(id)
+            argumentos = {"nombre": nombre,  "tipo": tipo, "id": id,"horarioIni": horarioIni, "favoritos":obtenerFavoritos(id), "horarioFin" : horarioFin, "avatar" : avatar, "listaDeProductos" : listaDeProductos, "activo" : activo, "formasDePago" : formasDePago}
         if (tipo ==3):
             request.session['listaDeProductos'] = str(listaDeProductos)
-            argumentos ={"nombre": nombre,  "tipo": tipo, "id": id,"avatar" : avatar, "listaDeProductos" : listaDeProductos, "activo" : activo, "formasDePago" : formasDePago}
+            request.session['favoritos'] = obtenerFavoritos(id)
+            argumentos ={"nombre": nombre,  "tipo": tipo, "id": id,"avatar" : avatar, "favoritos":obtenerFavoritos(id), "listaDeProductos" : listaDeProductos, "activo" : activo, "formasDePago" : formasDePago}
 
         #enviar a vista respectiva de usuario
         return render(request, url, argumentos)
@@ -381,15 +390,16 @@ def editarVendedor(request):
         tipo = request.session['tipo']
         activo = request.session['activo']
         listaDeProductos = request.session['listaDeProductos']
+        favoritos = request.session['favoritos']
         if (tipo == 2):
             horarioIni = request.session['horarioIni']
             horarioFin = request.session['horarioFin']
             argumentos = {"nombre": nombre, "tipo": tipo, "id": id, "horarioIni": horarioIni, "horarioFin": horarioFin,
-                          "avatar": avatar, "listaDeProductos": listaDeProductos, "activo": activo, "formasDePago": formasDePago}
+                          "avatar": avatar, "listaDeProductos": listaDeProductos, "activo": activo, "formasDePago": formasDePago, "favoritos": favoritos}
             url = 'main/editar-vendedor-fijo.html'
         elif (tipo == 3):
             argumentos = {"nombre": nombre, "tipo": tipo, "id": id, "avatar": avatar, "listaDeProductos": listaDeProductos,
-                  "activo": activo, "formasDePago": formasDePago}
+                  "activo": activo, "formasDePago": formasDePago, "favoritos": favoritos}
             url = 'main/editar-vendedor-ambulante.html'
         return render(request, url, argumentos)
     else:
@@ -439,7 +449,6 @@ def editarDatos(request):
 
 
 def redirigirEditar(id_vendedor,request):
-    print(str(id_vendedor))
     for usr in Usuario.objects.raw('SELECT * FROM usuario WHERE id == "' + str(id_vendedor) +'"'):
         id = usr.id
         nombre = usr.nombre
@@ -450,6 +459,7 @@ def redirigirEditar(id_vendedor,request):
         formasDePago = usr.formasDePago
         horarioIni = usr.horarioIni
         horarioFin = usr.horarioFin
+        favoritos = obtenerFavoritos(id_vendedor)
 
         request.session['id'] = id
         request.session['nombre'] = nombre
@@ -459,6 +469,7 @@ def redirigirEditar(id_vendedor,request):
         request.session['activo'] = activo
         request.session['horarioIni'] = horarioIni
         request.session['horarioFin'] = horarioFin
+        request.session['favoritos'] = favoritos
 
         listaDeProductos = []
         i = 0
@@ -481,12 +492,12 @@ def redirigirEditar(id_vendedor,request):
             url = 'main/vendedor-fijo.html'
             argumentos = {"nombre": nombre, "tipo": tipo, "id": id, "horarioIni": horarioIni, "horarioFin": horarioFin,
                           "avatar": avatar, "listaDeProductos": listaDeProductos, "activo": activo,
-                          "formasDePago": formasDePago}
+                          "formasDePago": formasDePago, "favoritos": favoritos}
         elif (tipo == 3):
             url = 'main/vendedor-ambulante.html'
             argumentos = {"nombre": nombre, "tipo": tipo, "id": id, "avatar": avatar,
                           "listaDeProductos": listaDeProductos,
-                          "activo": activo, "formasDePago": formasDePago}
+                          "activo": activo, "formasDePago": formasDePago, "favoritos": favoritos}
         print("chao")
         return render(request, url, argumentos)
 

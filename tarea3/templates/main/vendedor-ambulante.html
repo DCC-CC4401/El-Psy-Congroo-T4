@@ -68,7 +68,7 @@
                                 <h4 class="card-title grey-text flow-text text-darken-4">Favoritos</h4>
                                 <!--<input type="checkbox"><span class="lever"></span>-->
                                 <h6><i class="material-icons amber-text" >grade</i>
-                                    <span class=" grey-text flow-text text-darken-4"style="font-size:24px; line-height:35px;">42</span>  <!-- TODO agregar favoritos desde el request -->
+                                    <span class=" grey-text flow-text text-darken-4"style="font-size:24px; line-height:35px;" id="favoritos-desktop"></span>
                                 </h6>
                             </label>
                         </div>
@@ -103,7 +103,7 @@
                             <p class="card-title grey-text flow-text text-darken-4" style="font-size: 1.3rem;">Favoritos</p>
                             <!--<input type="checkbox"><span class="lever"></span>-->
                             <h6><i class="material-icons amber-text">grade</i>
-                                <span class=" grey-text flow-text text-darken-4"style="font-size:22px; line-height:25px;">42</span>  <!-- TODO agregar favoritos desde el request -->
+                                <span class=" grey-text flow-text text-darken-4"style="font-size:22px; line-height:25px;" id="favoritos-movil"></span>
                             </h6>
                         </label>
                     </div>
@@ -308,7 +308,16 @@
     }
 </script>
 
+<script>
+    function Favoritos() {
+        var numeroFav = "{{ favoritos }}";
+        document.getElementById("favoritos-desktop").innerHTML = numeroFav;
+        document.getElementById("favoritos-movil").innerHTML = numeroFav;
+    }
+</script>
+
  <script>
+    window.onload = Favoritos();
     window.onload = ProfileImg();
     window.onload = EstadoVendedor();
     window.onload = FormasDePago();
