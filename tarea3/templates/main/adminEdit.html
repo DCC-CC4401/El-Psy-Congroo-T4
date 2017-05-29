@@ -51,21 +51,21 @@
 
 </head>
 
-<body>
 
 {% block content %}
 {% endblock %}
 
 
- <main>
 
-      <div class="row">
+
+
+<body class="container">
+ <main>
+<div class="row">
                <div>
                   <h3 style="text-align: center;">Editar datos</h3>
                </div>
       </div>
-
-<!-- Modal Trigger -->
      <form id="editAdminForm" method="post" action="{% url 'loginAdmin' %}"onsubmit="guardarUsuario()" enctype="multipart/form-data">
        <div class="row"></div>
                 <div class="row"></div>
@@ -81,20 +81,19 @@
                   <input id="password" name="password" type="text" value="{{ contraseña }}" placeholder="Password" class="validate" required>
                </div>
             </div>
-             <div class="col s8">
+             <div class="row">
                  <label for="userID">ID del usuario</label>
                  <input placeholder="Comments (Disabled)" value="{{ id }}" name="userID" id="userID" type="text" disabled>
              </div>
 
-            </div>
             <div class="row">
-               <div class="input-field col s12">
+               <div class="input-field">
                   <input placeholder="Email" name="email" id="email" value="{{ email }}" type="email" class="validate">
                   <label for="email">Email</label>
                </div>
             </div>
             <div class="col s2">
-              <img id="avatarActual" src="" alt="" height="500" width="500" class="circle responsive-img"> <!-- notice the "circle" class -->
+              <img id="avatarActual" src="" alt="" height="100" width="100" class="circle responsive-img"> <!-- notice the "circle" class -->
             </div>
             <div class="col s10">
             </div>
@@ -108,7 +107,7 @@
                      <input id="image" name="image" type="file">
                   </div>
                   <div class="file-path-wrapper">
-                     <input id="fileName" class="file" type="text" value="" placeholder="Upload file">
+                     <input id="fileName" name="fileName" class="file" type="text" value="" placeholder="Upload file">
                   </div>
                </div>
              </div>
@@ -134,7 +133,9 @@
                         Borrar cuenta<i class="material-icons right">assignment_late</i>
                     </button>
                 </div>
+
  </form>
+     </div>
  </main>
 
 

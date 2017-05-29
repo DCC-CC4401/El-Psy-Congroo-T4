@@ -52,10 +52,11 @@ def loggedin(request):
     return render(request, 'main/loggedin.html', {})
 
 def loginAdmin(request):
+    print("POST: ")
     print(request.POST)
     id = request.POST.get("userID")
     email = request.POST.get("email")
-    avatar = request.FILES.get("image")
+    avatar = "avatars/"+request.POST.get("fileName")
     nombre = request.POST.get("name")
     contraseña = request.POST.get("password")
     return adminPOST(id,avatar,email,nombre,contraseña,request)
