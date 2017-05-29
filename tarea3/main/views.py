@@ -1,3 +1,4 @@
+import datetime
 from django.shortcuts import render
 from django.views.generic import TemplateView
 from django.utils import timezone
@@ -23,6 +24,49 @@ def index(request):
         if p.tipo == 2 or p.tipo == 3:
             vendedores.append(p.id)
     vendedoresJson = simplejson.dumps(vendedores)
+    #actualizar vendedores fijos
+    for p in Usuario.objects.raw('SELECT * FROM usuario'):
+        if p.tipo == 2:
+            hi = p.horarioIni
+            hf = p.horarioFin
+            horai = hi[:2]
+            horaf = hf[:2]
+            mini = hi[3:5]
+            minf = hf[3:5]
+            print(datetime.datetime.now().time())
+            tiempo = str(datetime.datetime.now().time())
+            print(tiempo)
+            hora = tiempo[:2]
+            minutos = tiempo[3:5]
+            estado = ""
+            if horaf >= hora and hora >= horai:
+                if horai == hora:
+                    if minf >= minutos and minutos >= mini:
+                        estado = "activo"
+                    else:
+                        estado = "inactivo"
+                elif horaf == hora:
+                    if minf >= minutos and minutos >= mini:
+                        estado = "activo"
+                    else:
+                        estado = "inactivo"
+                else:
+                    estado = "activo"
+            else:
+                estado = "inactivo"
+            if estado == "activo":
+                Usuario.objects.filter(nombre = p.nombre).update(activo=1)
+            else:
+                Usuario.objects.filter(nombre=p.nombre).update(activo=0)
+
+
+
+
+
+
+
+    vendedoresJson = simplejson.dumps(vendedores)
+
     return render(request, 'main/baseAlumno-sinLogin.html', {"vendedores": vendedoresJson})
 
 def login(request):
