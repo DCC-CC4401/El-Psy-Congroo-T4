@@ -40,6 +40,7 @@
                 </li>
                 <li><div class="section"></div></li>
                 <li><a href="{% url 'logout' %}"><i class="material-icons">exit_to_app</i>Cerrar Sesión</a></li>
+                <li><a href="javascript:;" onclick="document.getElementById('ambulanteDashboard').submit();"><i class="material-icons">assessment</i>Datos de ventas</a></li>
                 <li><div class="divider"></div></li>
 
                 <!-- Boton Activo -->>
@@ -58,6 +59,12 @@
 </head>
 
 <body>
+
+
+ <form id="ambulanteDashboard" method="post" action="{% url 'ambulanteDashboard' %}">{% csrf_token %}
+                    <input value="{{ id }}" name="ambulanteId" id="ambulanteId" type="text" style="display:none;">
+ </form>
+
 
 {% block content %}
 {% endblock %}

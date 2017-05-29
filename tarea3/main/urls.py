@@ -35,6 +35,7 @@ urlpatterns = [
     url(r'^loginAdmin/$', views.loginAdmin, name='loginAdmin'),
     url(r'^createTransaction/$', views.createTransaction, name='createTransaction'),
     url(r'^fijoDashboard/$', views.fijoDashboard, name='fijoDashboard'),
+    url(r'^ambulanteDashboard/$', views.ambulanteDashboard, name='ambulanteDashboard'),
 
 
 ]

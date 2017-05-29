@@ -33,6 +33,7 @@ def index(request):
 def login(request):
     return render(request, 'main/login.html', {})
 
+
 def fijoDashboard(request):
     print(request.POST)
     id = request.POST.get("fijoId")
@@ -96,6 +97,71 @@ def fijoDashboard(request):
 
 
     return render(request, 'main/fijoDashboard.html', {"transacciones":transaccionesDiariasArr,"ganancias":gananciasDiariasArr,"productos":productosArr,"productosHoy":productosHoyArr,"productosPrecio":productosPrecioArr})
+
+def ambulanteDashboard(request):
+    print(request.POST)
+    id = request.POST.get("ambulanteId")
+    #id = str(id)
+
+
+    #transacciones hechas por hoy
+    transaccionesDiarias=Transacciones.objects.filter(idVendedor=id).values('fecha').annotate(conteo=Count('fecha'))
+    temp_transaccionesDiarias = list(transaccionesDiarias)
+    transaccionesDiariasArr = []
+    for element in temp_transaccionesDiarias:
+        aux = []
+        aux.append(element['fecha'])
+        aux.append(element['conteo'])
+        transaccionesDiariasArr.append(aux)
+    transaccionesDiariasArr=simplejson.dumps(transaccionesDiariasArr)
+    #print(transaccionesDiariasArr)
+
+    #ganancias de hoy
+    gananciasDiarias = Transacciones.objects.filter(idVendedor=id).values('fecha').annotate(ganancia=Sum('precio'))
+    temp_gananciasDiarias = list(gananciasDiarias)
+    gananciasDiariasArr = []
+    for element in temp_gananciasDiarias:
+        aux = []
+        aux.append(element['fecha'])
+        aux.append(element['ganancia'])
+        #print("AUX")
+        #print(aux)
+        gananciasDiariasArr.append(aux)
+    gananciasDiariasArr = simplejson.dumps(gananciasDiariasArr)
+    #print(gananciasDiariasArr)
+
+
+    #todos los productos del vendedor
+    productos = Comida.objects.filter(idVendedor=id).values('nombre','precio')
+    temp_productos = list(productos)
+    productosArr = []
+    productosPrecioArr = []
+    for element in temp_productos:
+        aux = []
+        productosArr.append(element['nombre'])
+        aux.append(element['nombre'])
+        aux.append(element['precio'])
+        productosPrecioArr.append(aux)
+    productosArr = simplejson.dumps(productosArr)
+    productosPrecioArr = simplejson.dumps(productosPrecioArr)
+    print(productosPrecioArr)
+
+    #productos vendidos hoy con su cantidad respectiva
+    fechaHoy = str(timezone.now()).split(' ', 1)[0]
+    productosHoy = Transacciones.objects.filter(idVendedor=id,fecha=fechaHoy).values('nombreComida').annotate(conteo=Count('nombreComida'))
+    temp_productosHoy = list(productosHoy)
+    productosHoyArr = []
+    for element in temp_productosHoy:
+        aux = []
+        aux.append(element['nombreComida'])
+        aux.append(element['conteo'])
+        productosHoyArr.append(aux)
+    productosHoyArr = simplejson.dumps(productosHoyArr)
+    #print(productosHoyArr)
+
+
+    return render(request, 'main/ambulanteDashboard.html', {"transacciones":transaccionesDiariasArr,"ganancias":gananciasDiariasArr,"productos":productosArr,"productosHoy":productosHoyArr,"productosPrecio":productosPrecioArr})
+
 
 def adminEdit(request):
     print(request.POST)
