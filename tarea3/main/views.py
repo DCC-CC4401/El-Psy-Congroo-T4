@@ -247,7 +247,7 @@ def loginReq(request):
             argumentos = {"nombre": nombre,  "tipo": tipo, "id": id,"vendedores": vendedoresJson, "avatarSesion": avatar}
         if (tipo == 2):
             request.session['listaDeProductos'] = str(listaDeProductos)
-            argumentos = {"nombre": nombre,  "tipo": tipo, "id": id,"horarioIni": horarioIni, "horarioFin" : horarioFin, "avatar" : avatar, "listaDeProductos" : listaDeProductos, "activo" : activo, "formasDePago" : formasDePago}
+            argumentos = {"nombre": nombre,  "tipo": tipo, "id": id,"horarioIni": horarioIni, "horarioFin" : horarioFin, "avatar" : avatar, "listaDeProductos" : listaDeProductos, "activo" : activo, "formasDePago" : formasDePago, "activo" : activo}
         if (tipo ==3):
             request.session['listaDeProductos'] = str(listaDeProductos)
             argumentos ={"nombre": nombre,  "tipo": tipo, "id": id,"avatar" : avatar, "listaDeProductos" : listaDeProductos, "activo" : activo, "formasDePago" : formasDePago}
@@ -387,6 +387,8 @@ def vistaVendedorPorAlumno(request):
                 nombre = p.nombre
                 avatar = p.avatar
                 formasDePago = p.formasDePago
+                horarioIni = p.horarioIni
+                horarioFin = p.horarioFin
                 if tipo == 3:
                     url = 'main/vendedor-ambulante-vistaAlumno.html'
                     break
@@ -408,7 +410,7 @@ def vistaVendedorPorAlumno(request):
         i += 1
     avatarSesion = request.session['avatar']
     listaDeProductos = simplejson.dumps(listaDeProductos, ensure_ascii=False).encode('utf8')
-    return render(request, url, {"nombre": nombre, "tipo": tipo, "id": id, "avatar" : avatar, "listaDeProductos" :listaDeProductos,"avatarSesion": avatarSesion,"favorito": favorito, "formasDePago": formasDePago})
+    return render(request, url, {"nombre": nombre, "tipo": tipo, "id": id, "avatar" : avatar, "listaDeProductos" :listaDeProductos,"avatarSesion": avatarSesion,"favorito": favorito, "formasDePago": formasDePago, "horarioIni": horarioIni, "horarioFin" : horarioFin, })
 
 def vistaVendedorPorAlumnoSinLogin(request):
     if request.method == 'POST':
@@ -419,6 +421,9 @@ def vistaVendedorPorAlumnoSinLogin(request):
                 nombre = p.nombre
                 avatar = p.avatar
                 formasDePago = p.formasDePago
+                horarioIni = p.horarioIni
+                horarioFin = p.horarioFin
+                activo = p.activo
                 if tipo == 3:
                     url = 'main/vendedor-ambulante-vistaAlumno-sinLogin.html'
                     break
@@ -439,7 +444,7 @@ def vistaVendedorPorAlumnoSinLogin(request):
         listaDeProductos[i].append(str(producto.imagen))
         i += 1
     listaDeProductos = simplejson.dumps(listaDeProductos, ensure_ascii=False).encode('utf8')
-    return render(request, url, {"nombre": nombre, "tipo": tipo, "id": id,"avatar" : avatar, "listaDeProductos" :listaDeProductos, "formasDePago": formasDePago})
+    return render(request, url, {"nombre": nombre, "tipo": tipo, "id": id,"avatar" : avatar, "listaDeProductos" :listaDeProductos, "formasDePago": formasDePago,  "horarioIni": horarioIni, "horarioFin" : horarioFin, "activo" : activo})
 
 
 
