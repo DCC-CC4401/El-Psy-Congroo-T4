@@ -26,4 +26,7 @@ urlpatterns = [
     url(r'^signupAdmin/$', views.signupAdmin,name='signupAdmin'),
     url(r'^registerAdmin/$', views.registerAdmin,name='registerAdmin'),
     url(r'^verificarEmail/$', views.verificarEmail,name='verificarEmail'),
+    url(r'^adminEdit/$', views.adminEdit,name='adminEdit'),
+    url(r'^editarUsuarioAdmin/$', views.editarUsuarioAdmin,name='editarUsuarioAdmin'),
+    url(r'^loginAdmin/$', views.loginAdmin, name='loginAdmin'),
 ]

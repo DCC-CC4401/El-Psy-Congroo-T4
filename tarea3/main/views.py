@@ -28,6 +28,20 @@ def index(request):
 def login(request):
     return render(request, 'main/login.html', {})
 
+def adminEdit(request):
+    print(request.POST)
+    nombre = request.POST.get("adminName")
+    print(nombre)
+    contraseña = request.POST.get("adminPassword")
+    print(contraseña)
+    id = request.POST.get("adminId")
+    print(id)
+    email = request.POST.get("adminEmail")
+    print(email)
+    avatar = request.POST.get("adminAvatar")
+    print(avatar)
+    return render(request, 'main/adminEdit.html', {"nombre" : nombre,"contraseña":contraseña,"id":id,"email":email,"avatar":avatar})
+
 def signup(request):
     return render(request, 'main/signup.html', {})
 
@@ -37,7 +51,18 @@ def signupAdmin(request):
 def loggedin(request):
     return render(request, 'main/loggedin.html', {})
 
-def adminPOST(id,avatar,email,nombre,request):
+def loginAdmin(request):
+    print(request.POST)
+    id = request.POST.get("userID")
+    email = request.POST.get("email")
+    avatar = request.FILES.get("image")
+    nombre = request.POST.get("name")
+    contraseña = request.POST.get("password")
+    return adminPOST(id,avatar,email,nombre,contraseña,request)
+
+
+def adminPOST(id,avatar,email,nombre,contraseña,request):
+    print("nombre adminPost"+nombre)
     #ids de todos los usuarios no admins
     datosUsuarios = []
     i = 0
@@ -62,7 +87,7 @@ def adminPOST(id,avatar,email,nombre,request):
     # print(listaDeUsuarios)
 
     # limpiar argumentos de salida segun tipo de vista
-    argumentos = {"nombre":nombre,"id":id,"avatar":avatar,"email":email,"lista":listaDeUsuarios,"numeroUsuarios":numeroUsuarios,"numeroDeComidas":numeroDeComidas}
+    argumentos = {"nombre":nombre,"id":id,"avatar":avatar,"email":email,"lista":listaDeUsuarios,"numeroUsuarios":numeroUsuarios,"numeroDeComidas":numeroDeComidas,"contraseña":contraseña}
     return render(request, 'main/baseAdmin.html', argumentos)
 
 
@@ -78,6 +103,7 @@ def loginReq(request):
     encontrado = False
     email = request.POST.get("email")
     avatar = ''
+    contraseña = ''
     password = request.POST.get("password")
     listaDeProductos = []
     formasDePago = []
@@ -97,6 +123,7 @@ def loginReq(request):
                     tipo = p.tipo
                     encontrado = True
                     avatar = p.avatar
+                    contraseña = p.contraseña
                     break
                 elif (tipo == 1):
                     url = 'main/baseAlumno.html'
@@ -161,7 +188,8 @@ def loginReq(request):
         #limpiar argumentos de salida segun tipo de vista
         argumentos ={"email": email, "tipo": tipo, "id": id,"vendedores": vendedoresJson, "nombre": nombre, "horarioIni": horarioIni, "horarioFin" : horarioFin, "avatar" : avatar, "listaDeProductos" : listaDeProductos}
         if (tipo == 0):
-            return adminPOST(id, avatar, email, nombre, request)
+            request.session['contraseña'] = contraseña
+            return adminPOST(id, avatar, email, nombre,contraseña, request)
         if (tipo == 1):
             argumentos = {"nombre": nombre,  "tipo": tipo, "id": id,"vendedores": vendedoresJson, "avatarSesion": avatar}
         if (tipo == 2):
@@ -505,6 +533,41 @@ def agregarAvatar(request):
         return HttpResponse("Success")
 
 
+def editarUsuarioAdmin(request):
+    if request.method == 'GET':
+            nombre = request.GET.get("name")
+            contraseña = request.GET.get('password')
+            email = request.GET.get('email')
+            avatar = request.GET.get('avatar')
+            userID = request.GET.get('userID')
+
+            if  (nombre!=None):
+                print ("nombre:"+nombre)
+            if (contraseña != None):
+                print ("contraseña:"+contraseña)
+            if (email != None):
+                print ("email:"+email)
+            if (avatar != None):
+                print ("avatar:"+avatar)
+            if (userID != None):
+                print("id:"+userID)
+            if email != None:
+                Usuario.objects.filter(id=userID).update(email=email)
+                print("cambio Mail")
+            if nombre != None:
+                Usuario.objects.filter(id=userID).update(nombre=nombre)
+                print("cambio Nombre")
+            if contraseña != None:
+                Usuario.objects.filter(id=userID).update(contraseña=contraseña)
+                print("cambio contraseña")
+            if avatar != None:
+                Usuario.objects.filter(id=userID).update(avatar=avatar)
+                print("cambio avatar")
+
+            data = {"respuesta": userID}
+            return JsonResponse(data)
+
+
 def editarUsuario(request):
     if request.method == 'GET':
 
@@ -619,11 +682,12 @@ def registerAdmin(request):
     email = request.session['email']
     avatar = request.session['avatar']
     nombre = request.session['nombre']
+    contraseña = request.session['contraseña']
     print(id)
     print(email)
     print(avatar)
     print(nombre)
-    return adminPOST(id,avatar,email,nombre,request)
+    return adminPOST(id,avatar,email,nombre,contraseña,request)
 
 @csrf_exempt
 def verificarEmail(request):
