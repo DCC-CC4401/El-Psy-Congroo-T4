@@ -60,16 +60,18 @@
                         <p class="medium-small flow-text grey-text" id="medios-pago-desktop"></p>
                     </div>
 
+                    <!-- Favoritos -->
                     <div class="col s3 l2 hide-on-med-and-down center-align">
                         <div class="switch" style="margin-left: 10px;">
                             <label>
                                 <h4 class="card-title grey-text flow-text text-darken-4">Favorito</h4>
                                 <h6><i class="material-icons amber-text" >grade</i></h6>
-                                <div id = "favorito">
+                                <div id = "favorito-desktop">
                                 </div>
                             </label>
                         </div>
                     </div>
+
                 </div>
             </div>
 
@@ -78,32 +80,36 @@
               <div class = "row show-on-medium-and-down hide-on-med-and-up"></div>
             <div class = "row show-on-medium-and-down hide-on-med-and-up"></div>
             <div class="row show-on-medium-and-down hide-on-med-and-up">
-                <div class="col s3 m2 offset-s2">
+                <div class="col s2 m2 offset-s1">
                         <h4 class="card-title grey-text flow-text text-darken-4">{{nombre}}</h4>
                         <p class="medium-small flow-text grey-text">&ensp;Vendedor Ambulante</p>
 {#                        <p class="flow-text text-darken-4" style="font-size: 0.88rem;">#}
 {#                            &ensp;Horario: <a class="light-green-text">12:30-14:15</a>#}
 {#                        </p>#}
-                         <div class="col s3 l2 hide-on-med-and-down center-align">
-                        <div class="switch" style="margin-left: 10px;">
-                            <label>
-                                <h4 class="card-title grey-text flow-text text-darken-4">Favorito</h4>
-                                <h6><i class="material-icons amber-text" >grade</i></h6>
-                                <input type="checkbox"><span class="lever"></span>
-                            </label>
-                        </div>
-                    </div>
+
                     </div>
                  <!-- Estado -->
-                <div class="col s3 m2 l12 offset-s1">
+                <div class="col s2 m2 l12 offset-s1">
                     <p class="flow-text text-darken-4">Estado</p>
                     <p class="" id="estado-movil"></p>
                 </div>
 
                 <!-- Formas de pago -->
-                <div class="col s3 m2 l12 offset-s1"> <!--offset-s2-->
+                <div class="col s2 m2 l12 offset-s1"> <!--offset-s2-->
                     <p class=" grey-text flow-text text-darken-4" style="font-size: 1.3rem;">Formas de pago</p>
                     <p class="medium-small flow-text grey-text" id="medios-pago-movil"></p>
+                </div>
+
+                <!-- Favorito -->
+                <div class="col s1 m1 l12"> <!--offset-s2-->
+                    <div class="switch" style="margin-left: 10px;">
+                        <label>
+                            <h4 class="card-title grey-text flow-text text-darken-4">Favorito</h4>
+                            <h6><i class="material-icons amber-text" style="margin-left: 150%">grade</i></h6>
+                            <div id = "favorito-movil">
+                            </div>
+                        </label>
+                    </div>
                 </div>
 
                 <!--<div class="col s3 offset-s2 offset-l10">
@@ -179,7 +185,7 @@
 
 <script>
     function switchFavorito(){
-        var div = document.getElementById("favorito");
+        var div = document.getElementById("favorito-desktop");
         var input = document.createElement("input");
         input.setAttribute("type" ,'checkbox' );
         input.setAttribute("onchange" ,'handleChange(this);');
@@ -190,6 +196,18 @@
         var span = document.createElement("span");
         span.setAttribute("class","lever");
         div.appendChild(span);
+
+        var div2 = document.getElementById("favorito-movil");
+        var input2 = document.createElement("input");
+        input2.setAttribute("type" ,'checkbox' );
+        input2.setAttribute("onchange" ,'handleChange(this);');
+        if ("{{favorito}}" == '1'){
+            input2.setAttribute("checked",true);
+        }
+        div2.appendChild(input2);
+        var span2 = document.createElement("span");
+        span2.setAttribute("class","lever");
+        div2.appendChild(span2);
     }
 </script>
 <script>
@@ -225,6 +243,7 @@
    }
 }
 </script>
+
 
 <script>
     function ProfileImg() {

@@ -88,8 +88,12 @@
             </div>
 
             <!-- Info del vendedor movil -->
+            <div class = "row show-on-medium-and-down hide-on-med-and-up"></div>
+            <div class = "row show-on-medium-and-down hide-on-med-and-up"></div>
+            <div class = "row show-on-medium-and-down hide-on-med-and-up"></div>
+            <div class = "row show-on-medium-and-down hide-on-med-and-up"></div>
             <div class="row show-on-medium-and-down hide-on-med-and-up">
-                <div class="col s4 offset-s2">
+                <div class="col s2 m2 offset-s1">
 
                     <!-- Nombre -->
                     <h4 class="card-title grey-text flow-text text-darken-4">{{nombre}}</h4>
@@ -102,28 +106,30 @@
                         &ensp;Horario: <a class="light-green-text">{{horarioIni}} - {{horarioFin}}</a>
                     </p>
 
-                    <!-- Favoritos -->
-                    <div class="switch" style="margin-left: 10px;">
-                        <label>
-                            <p class="card-title grey-text flow-text text-darken-4" style="font-size: 1.3rem;">Favoritos</p>
-                            <!--<input type="checkbox"><span class="lever"></span>-->
-                            <h6><i class="material-icons amber-text">grade</i>
-                                <span class=" grey-text flow-text text-darken-4"style="font-size:22px; line-height:25px;" id="favoritos-movil"></span>
-                            </h6>
-                        </label>
-                    </div>
+
                 </div>
 
                 <!-- Estado -->
-                <div class="col s3 m2 l12 offset-s1">
+                <div class="col s2 m2 l12 offset-s1">
                     <p class="flow-text text-darken-4">Estado</p>
                     <p class="" id="estado-movil"></p>
                 </div>
 
                 <!-- Formas de pago -->
-                <div class="col s3 m2 l12 offset-s1"> <!--offset-s2-->
+                <div class="col s2 m2 l12 offset-s1"> <!--offset-s2-->
                     <p class=" grey-text flow-text text-darken-4" style="font-size: 1.3rem;">Formas de pago</p>
                     <p class="medium-small flow-text grey-text" id="medios-pago-movil"></p>
+                </div>
+
+                <!-- Favoritos -->
+                <div class="col s1 m1 l12">
+                    <label>
+                        <p class="card-title grey-text flow-text text-darken-4" style="font-size: 1.3rem;">Favoritos</p>
+                        <!--<input type="checkbox"><span class="lever"></span>-->
+                        <h6><i class="material-icons amber-text" style="margin-left: 80%">grade</i>
+                            <span class=" grey-text flow-text text-darken-4"style="margin-left: 100%;font-size:22px; line-height:25px;" id="favoritos-movil"></span>
+                        </h6>
+                    </label>
                 </div>
 
                 <!--<div class="col s3 offset-s2 offset-l10">

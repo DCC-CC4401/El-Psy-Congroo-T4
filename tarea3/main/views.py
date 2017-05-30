@@ -318,6 +318,7 @@ def loginReq(request):
                     tipo = p.tipo
                     encontrado = True
                     avatar = p.avatar
+
                     break
                 elif (tipo == 2):
                     url = 'main/vendedor-fijo.html'
@@ -384,7 +385,7 @@ def loginReq(request):
             request.session['contraseña'] = contraseña
             return adminPOST(id, avatar, email, nombre,contraseña, request)
         if (tipo == 1):
-            argumentos = {"nombre": nombre,  "tipo": tipo, "id": id,"vendedores": vendedoresJson, "avatarSesion": avatar}
+            argumentos = {"nombresesion": nombre,  "tipo": tipo, "id": id,"vendedores": vendedoresJson, "avatarSesion": avatar}
         if (tipo == 2):
             request.session['listaDeProductos'] = str(listaDeProductos)
             request.session['favoritos'] = obtenerFavoritos(id)
@@ -552,7 +553,7 @@ def vistaVendedorPorAlumno(request):
         i += 1
     avatarSesion = request.session['avatar']
     listaDeProductos = simplejson.dumps(listaDeProductos, ensure_ascii=False).encode('utf8')
-    return render(request, url, {"nombre": nombre, "tipo": tipo, "id": id, "avatar" : avatar, "listaDeProductos" :listaDeProductos,"avatarSesion": avatarSesion,"favorito": favorito, "formasDePago": formasDePago, "horarioIni": horarioIni, "horarioFin" : horarioFin, })
+    return render(request, url, {"nombre": nombre, "nombresesion":request.session['nombre'], "tipo": tipo, "id": id, "avatar" : avatar, "listaDeProductos" :listaDeProductos,"avatarSesion": avatarSesion,"favorito": favorito, "formasDePago": formasDePago, "horarioIni": horarioIni, "horarioFin" : horarioFin, })
 
 def vistaVendedorPorAlumnoSinLogin(request):
     if request.method == 'POST':
@@ -723,7 +724,7 @@ def inicioAlumno(request):
         if p.tipo == 2 or p.tipo == 3:
             vendedores.append(p.id)
     vendedoresJson = simplejson.dumps(vendedores)
-    return render(request, 'main/baseAlumno.html',{"id": id,"vendedores": vendedoresJson,"avatarSesion": avatar })
+    return render(request, 'main/baseAlumno.html',{"id": id,"vendedores": vendedoresJson,"avatarSesion": avatar, "nombresesion": request.session['nombre']})
 
 @csrf_exempt
 def borrarProducto(request):
