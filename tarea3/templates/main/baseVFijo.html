@@ -40,6 +40,8 @@
                 </li>
                 <li><div class="section"></div></li>
                 <li><a href="{% url 'logout' %}"><i class="material-icons">exit_to_app</i>Cerrar Sesión</a></li>
+                <li><a href="javascript:;" onclick="document.getElementById('fijoDashboard').submit();"><i class="material-icons">assessment</i>Datos de ventas</a></li>
+
                 <!--<li><a href=""><i class="material-icons">exit_to_app</i>Cerrar Sesión</a></li>-->
                 <!--<li><div class="divider"></div></li>
                 <li><a class="subheader">Activo</a></li>
@@ -79,6 +81,10 @@
 </head>
 
 <body>
+
+ <form id="fijoDashboard" method="post" action="{% url 'fijoDashboard' %}">{% csrf_token %}
+                    <input value="{{ id }}" name="fijoId" id="fijoId" type="text" style="display:none;">
+ </form>
 
 {% block content %}
 {% endblock %}

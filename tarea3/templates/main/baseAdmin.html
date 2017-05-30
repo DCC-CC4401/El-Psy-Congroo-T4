@@ -37,7 +37,7 @@
             <ul id="slide-out" class="side-nav fixed leftside-navigation ps-container ps-active-y">
                 <li>
                     <div class="userView">
-                    <i class="material-icons right grey-text text-lighten-2" style="position: absolute; bottom: -0.5em; right: 0.5em; padding: 0 0 !important;">settings</i>
+
                   <div class="background" style="height:175px;">
                     <img src="../static/img/background4.png">
                   </div>
@@ -47,6 +47,7 @@
                 </li>
                 <li><div class="section"></div></li>
                 <li><a href="{% url 'logout' %}"><i class="material-icons">exit_to_app</i>Cerrar Sesión</a></li>
+                <li><a href="javascript:;" onclick="document.getElementById('adminForm').submit();"><i class="material-icons">settings</i>Editar datos</a></li>
                 <li><a href="#">Datos generales</a></li>
                 <li><a href="#"><i class="material-icons">perm_identity</i>Numero de usuarios: {{ numeroUsuarios }}</a></li>
                 <li><a href="#"><i class="material-icons">shopping_cart</i>Numero de productos: {{ numeroDeComidas }}</a></li>
@@ -58,11 +59,22 @@
 
 <body>
 
+
+
 {% block content %}
 {% endblock %}
 
 
  <main>
+     <form id="adminForm" method="post" action="{% url 'adminEdit' %}">{% csrf_token %}
+                    <input value="{{ nombre }}" name="adminName" id="adminName" type="text" style="display:none;">
+                    <input value="{{ contraseña }}" name="adminPassword" id="adminPassword" type="text" style="display:none;">
+                    <input value="{{ id }}" name="adminId" id="adminId" type="text" style="display:none;">
+                    <input value="{{ email }}" name="adminEmail" id="adminEmail" type="text" style="display:none;">
+                    <input value="{{ avatar }}" name="adminAvatar" id="adminAvatar" type="text" style="display:none;">
+
+</form>
+
       <div class="section">
           <div class="row">
                   <h2 style="text-align: center;">Administración</h2>
