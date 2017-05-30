@@ -803,6 +803,7 @@ def editarProducto(request):
             if nuevoNombre != "":
                 if Comida.objects.filter(nombre=nuevoNombre).exists():
                     data = {"respuesta": "repetido"}
+                    return JsonResponse(data)
                 else:
                     Comida.objects.filter(nombre=nombreOriginal).update(nombre=nuevoNombre)
 
