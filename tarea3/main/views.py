@@ -620,6 +620,9 @@ def editarVendedor(request):
 
 @csrf_exempt
 def editarDatos(request):
+
+
+
     id_vendedor = request.POST.get("id_vendedor")
     usuario = Usuario.objects.filter(id=id_vendedor)
 
@@ -634,7 +637,40 @@ def editarDatos(request):
             usuario.update(horarioIni=horaInicial)
         if (not(horaFinal is None)):
             usuario.update(horarioFin=horaFinal)
-
+            # actualizar vendedores fijos
+        for p in Usuario.objects.raw('SELECT * FROM usuario'):
+            if p.tipo == 2:
+                hi = p.horarioIni
+                hf = p.horarioFin
+                horai = hi[:2]
+                horaf = hf[:2]
+                mini = hi[3:5]
+                minf = hf[3:5]
+                print(datetime.datetime.now().time())
+                tiempo = str(datetime.datetime.now().time())
+                print(tiempo)
+                hora = tiempo[:2]
+                minutos = tiempo[3:5]
+                estado = ""
+                if horaf >= hora and hora >= horai:
+                    if horai == hora:
+                        if minf >= minutos and minutos >= mini:
+                            estado = "activo"
+                        else:
+                            estado = "inactivo"
+                    elif horaf == hora:
+                        if minf >= minutos and minutos >= mini:
+                            estado = "activo"
+                        else:
+                            estado = "inactivo"
+                    else:
+                        estado = "activo"
+                else:
+                    estado = "inactivo"
+                if estado == "activo":
+                    Usuario.objects.filter(nombre=p.nombre).update(activo=1)
+                else:
+                    Usuario.objects.filter(nombre=p.nombre).update(activo=0)
     avatar = request.FILES.get("avatar")
     formasDePago = ""
     if not (request.POST.get("formaDePago0") is None) and request.POST.get("formaDePago0")!="":
@@ -817,7 +853,7 @@ def editarPerfilAlumno(request):
             vendedor = Usuario.objects.filter(id =fav.idVendedor).get()
             nombre = vendedor.nombre
             nombres.append(nombre)
-    return render(request,'main/editar-perfil-alumno.html',{"id": id, "avatarSesion": avatar,"nombre": nombre,"favoritos": favoritos, "nombres": nombres})
+    return render(request,'main/editar-perfil-alumno.html',{"id": id, "avatarSesion": avatar,"nombre": nombre,"favoritos": favoritos, "nombres": nombres, "nombresesion":request.session['nombre']})
 
 
 def procesarPerfilAlumno(request):
