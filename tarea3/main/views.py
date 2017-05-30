@@ -749,11 +749,6 @@ def editarProducto(request):
             nuevaDescripcion = request.POST.get('descripcion')
             nuevaCategoria = (request.POST.get('categoria'))
             nuevaImagen = request.FILES.get("comida")
-            if nuevoNombre != "":
-                if Comida.objects.filter(nombre=nuevoNombre).exists():
-                    data = {"respuesta": "repetido"}
-                    return JsonResponse(data)
-                Comida.objects.filter(nombre=nombreOriginal).update(nombre=nuevoNombre)
             if nuevoPrecio != "" :
                    Comida.objects.filter(nombre=nombreOriginal).update(precio=int(nuevoPrecio))
             if nuevoStock != "" :
@@ -768,6 +763,12 @@ def editarProducto(request):
                     for chunk in nuevaImagen.chunks():
                         destination.write(chunk)
                 Comida.objects.filter(nombre =nombreOriginal).update(imagen='/productos/'+filename)
+
+            if nuevoNombre != "":
+                if Comida.objects.filter(nombre=nuevoNombre).exists():
+                    data = {"respuesta": "repetido"}
+                else:
+                    Comida.objects.filter(nombre=nombreOriginal).update(nombre=nuevoNombre)
 
             data = {"respuesta" : nombreOriginal}
             return JsonResponse(data)

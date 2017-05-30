@@ -213,13 +213,13 @@
                                                 document.write("<div class='modal-footer'>");
 
                                                 //guardar cambios
-                                                document.write("<div class='col s6 m6 l6'>");
-                                                document.write('<div class="row"> <button type="button" onclick ="guardarProducto(form'+i+');" class=" btn-large waves-effect button teal" >Guardar cambios<i class="material-icons right">send</i></button> </div>');
+                                                document.write("<div class='col s6 m5 l4'>");
+                                                document.write('<div class="row"> <button type="button" onclick ="guardarProducto(form'+i+');" class=" btn-large waves-effect button teal" >Guardar cambios</button> </div>');
                                                 document.write("</form></div>");
 
                                                 //eliminar producto
-                                                document.write("<div class='col s4 m4 l4'>");
-                                                document.write('<div class="row"> <button  type="button" onclick ="eliminarProducto('+"\'"+productos[i][0]+"\'"+');" class="btn-large waves-effect button teal" >Eliminar producto<i class="material-icons right">send</i></button> </div>');
+                                                document.write("<div class='col s4 m6 l4 offset-s1'>");
+                                                document.write('<div class="row"> <button  type="button" onclick ="eliminarProducto('+"\'"+productos[i][0]+"\'"+');" class="btn-large waves-effect button teal" >Eliminar producto</button> </div>');
                                                 document.write("</div>");
                                                 //salir
                                                 document.write("<a href='#!' class='modal-action modal-close waves-effect waves-green btn-flat'><i class='large material-icons'>close</i></a>");
@@ -253,7 +253,6 @@
                                                 document.write("<li>Categoria: "+productos[i][1]+" </li>");
                                                 document.write("<li>Stock: "+productos[i][2]+" </li>");
                                                 document.write("<li>Descripcion: "+productos[i][4]+" </li>");
-                                                document.write("<li><p class= 'left-align'><a class='waves-effect waves-light' href=#>Editar</a></p></li>");
                                                 document.write("<li> <p class='right-align'><a class='waves-effect waves-light' href='#modal"+(i+1)+"'>Ver imagen</a></p></li>");
                                                 document.write(" </ul></div></div></div></div>");
                                             }
