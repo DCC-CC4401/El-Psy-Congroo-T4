@@ -34,10 +34,10 @@ function crearFormulario(INtipo) {
 
     if(tipo==2){
         var HTMLhoraIni='<i class="material-icons prefix">alarm</i>'+
-								  '<input placeholder="Time begin" value="" name="horaIni" id="horaIni" type="text" class="active validate">';
+								  '<input name="horaIni" id="horaIni" type="time" class="active validate" value="00:00">';
 
         var HTMLhoraFin='<i class="material-icons prefix">alarm</i>'+
-								   '<input placeholder="Time end" value="" name="horaFin" id="horaFin" type="text" class="active validate">';
+								   '<input name="horaFin" id="horaFin" type="time" class="active validate" value="00:00">';
 
         document.getElementById('divHoraIni').innerHTML=HTMLhoraIni;
         document.getElementById('divHoraFin').innerHTML=HTMLhoraFin;}
