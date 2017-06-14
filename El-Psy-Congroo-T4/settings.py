@@ -55,7 +55,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'tarea3.urls'
+ROOT_URLCONF = 'El-Psy-Congroo-T4.urls'
 
 MEDIA_ROOT = "main/static/media/"
 
@@ -76,7 +76,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'tarea3.wsgi.application'
+WSGI_APPLICATION = 'El-Psy-Congroo-T4.wsgi.application'
 
 
 # Database
