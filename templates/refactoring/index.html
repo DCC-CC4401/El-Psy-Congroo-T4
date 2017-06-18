@@ -1,0 +1,41 @@
+{% extends 'refactoring/base.html' %}
+{% load staticfiles %}
+
+{% block filtros_content %}
+    <li><a class="subheader">Filtros</a></li>
+    {% if userDj.is_authenticated %}
+        {% if user.tipo == 1 %}
+            <li>
+                <div class="switch" style="margin-left: 10px;">
+                    <label>
+                        <input type="checkbox"><span class="lever"></span>Sólo mostrar favoritos
+                    </label>
+                </div>
+            </li>
+        {%  endif %}
+    {% endif %}
+    <li>
+        <div class="switch" style="margin-left: 10px;">
+            <label>
+                <input type="checkbox"><span class="lever"></span>Snacks
+            </label>
+        </div>
+    </li>
+    <li>
+        <div class="switch" style="margin-left: 10px;">
+            <label>
+                <input type="checkbox"><span class="lever"></span>Almuerzos
+            </label>
+        </div>
+    </li>
+{%  endblock %}
+
+
+{% block content %}
+    <div class='row'>
+        <div class = "col s12 m12 l12">
+            <img class='activator responsive-img right' src="{% static 'img/mapa.png' %}" alt="Planets" usemap="#vendedoresMap">
+        </div>
+    </div>
+
+{% endblock %}

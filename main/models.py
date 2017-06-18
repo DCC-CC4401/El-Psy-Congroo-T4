@@ -5,9 +5,6 @@ from django.utils.formats import get_format
 
 from main.choices import *
 
-# Create your models here
-
-
 class Usuario(models.Model):
     usuario = models.OneToOneField(User, verbose_name='Usuario', related_name='usuario')
     nombre = models.CharField(max_length=200)

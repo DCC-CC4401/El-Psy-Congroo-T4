@@ -1,7 +1,10 @@
+from django.conf import settings
 from django.conf.urls import url
+from django.conf.urls.static import static
 from main import views
+
 urlpatterns = [
-    url(r'^$', views.index, name='index'),
+    #url(r'^$', views.index, name='index'),
     url(r'^login/$', views.login,name='login'),
     url(r'^signup/$', views.signup,name='signup'),
     url(r'^loginReq/',views.loginReq, name = 'loginReq'),
@@ -37,5 +40,13 @@ urlpatterns = [
     url(r'^fijoDashboard/$', views.fijoDashboard, name='fijoDashboard'),
     url(r'^ambulanteDashboard/$', views.ambulanteDashboard, name='ambulanteDashboard'),
 
-
+    #--------------------------- Refactoring ----------------------------#
+    #url(r'^', views.indexR, name='indexR'),
+    url(r'^$', views.index, name='index'),
+    # ajax request to change vendedor active status
+    url(r'^ajax/change_active/$', views.change_active, name='change_active'),
+    # ajax request to add fav to user
+    url(r'^ajax/add_favorite/$', views.add_favorite, name='add_favorite'),
 ]
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

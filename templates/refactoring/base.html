@@ -1,0 +1,117 @@
+{% load staticfiles %}
+
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/css/materialize.min.css">
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+
+    <!--Import jQuery before materialize.js-->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script type="text/javascript" src="{% static 'fb.js' %}"></script>
+
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/js/materialize.min.js"></script>
+    <script src="http://materializecss.com/templates/starter-template/js/init.js"></script>
+
+    {% load static %}
+
+    <script>
+        $(function () {
+            $('.button-collapse').sideNav();
+        });
+    </script>
+</head>
+
+<body>
+<nav class="top-nav">
+    <div class="nav-wrapper teal lighten-1">
+        <a href="#" class="brand-logo right"><img style="max-height: 65px!important;  padding: 8px 0!important;" class="circle" src="{% static 'img/logo.png' %}"></a>
+        <div class="navbar-fixed">
+            <a href="#" data-activates="slide-out"
+               class="left button-collapse btn-floating btn-large waves-effect waves-light"><i
+                    class="material-icons">menu</i></a>
+            <a class="center page-title"></a>
+        </div>
+        <ul id="slide-out" class="side-nav fixed leftside-navigation ps-container ps-active-y">
+            <li>
+                <div class="userView">
+                    {% if userDj.is_authenticated %}
+                        <a href="{% url 'profile_edit' %}">
+                            <i class="material-icons right grey-text text-lighten-2"
+                               style="position: absolute; bottom: -0.5em; right: 0.5em; padding: 0 0 !important;">
+                                settings
+                            </i>
+                        </a>
+                    {% endif %}
+                    <div class="background" style="height:175px;">
+                        <img src="{% static 'img/background4.png' %}">
+                    </div>
+                    {% if userDj.is_authenticated %}
+                        <a href="#!user"><img style="margin-top: 16%;" class="circle"
+                                              src="/media/{{ user.avatar }}"></a>
+                        <a href="#!name"><span style="margin-left: 5%;" class="white-text name">{{ user.username }}</span></a>
+                    {% else %}
+                        <a href="#!user"><img style="margin-top: 16%;" class="circle"
+                                              src="{% static 'img/AvatarPenguin.png' %}"></a>
+                        <a href="#!name"><span style="margin-left: 5%;" class="white-text name">Invitado</span></a>
+                    {% endif %}
+                </div>
+            </li>
+
+            {% block side_content %}
+                {% if userDj.is_authenticated %}
+                    {% if user.tipo == 1 %}
+                        <li><a href="{% url 'indexR' %}"><i class="material-icons">home</i>Inicio</a></li>
+                    {% else %}
+                         <li><a href="{% url 'vendedorprofilepage' %}"><i class="material-icons">home</i>Inicio</a></li>
+                    {% endif %}
+                    <li><a href="{% url 'logout' %}"><i class="material-icons">exit_to_app</i>Cerrar Sesión</a></li>
+                {% else %}
+                    <li><a href="{% url 'login' %}"><i class="material-icons">account_circle</i>Iniciar Sesión</a></li>
+                    <li><a href="{% url 'register' %}"><i class="material-icons">input</i>Registrarse</a></li>
+                {% endif %}
+                <li><div class="divider"></div></li>
+
+                {% block filtros_content %}
+                {%  endblock %}
+                {% if userDj.is_authenticated %}
+                {% if user.tipo == 3 %}
+                    <li><a class="subheader">Activo</a></li>
+                    <li>
+                        <script>
+                            $("#activo").change(function () {
+                                $.ajax({
+                                    url: '{% url "change_active" %}',
+                                    success: function(data) {
+                                        window.location.reload();
+                                    }
+                                })
+                            });
+                        </script>
+                        <div class="switch" style="margin-left: 80px;">
+                            <label>
+                                {% if estado == 'Activo' %}
+                                    No<input id="activo" type="checkbox" checked><span class="lever"></span>Si
+                                {% else %}
+                                    No<input id="activo" type="checkbox"><span class="lever"></span>Si
+                                {% endif %}
+                            </label>
+                        </div>
+                    </li>
+                {% endif %}
+                {% endif %}
+          {% endblock %}
+        </ul>
+    </div>
+</nav>
+{% block content %}
+{% endblock %}
+</body>
+</html>

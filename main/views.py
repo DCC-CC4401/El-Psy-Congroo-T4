@@ -6,60 +6,55 @@ from django.db.models import Count
 from django.db.models import Sum
 from django.http import HttpResponse
 from django.http import JsonResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 
-from .forms import GestionProductosForm
-from .forms import LoginForm
-from .forms import editarProductosForm
 from .models import *
 
-
-# Create your views here.
-def index(request):
-    vendedores = []
-    # lista de vendedores
-    for p in Usuario.objects.raw('SELECT * FROM usuario'):
-        if p.tipo == 2 or p.tipo == 3:
-            vendedores.append(p.id)
-    vendedoresJson = simplejson.dumps(vendedores)
-    # actualizar vendedores fijos
-    for p in Usuario.objects.raw('SELECT * FROM usuario'):
-        if p.tipo == 2:
-            hi = p.horarioIni
-            hf = p.horarioFin
-            horai = hi[:2]
-            horaf = hf[:2]
-            mini = hi[3:5]
-            minf = hf[3:5]
-            tiempo = str(datetime.datetime.now().time())
-            hora = tiempo[:2]
-            minutos = tiempo[3:5]
-            estado = ""
-            if horaf >= hora and hora >= horai:
-                if horai == hora:
-                    if minf >= minutos and minutos >= mini:
-                        estado = "activo"
-                    else:
-                        estado = "inactivo"
-                elif horaf == hora:
-                    if minf >= minutos and minutos >= mini:
-                        estado = "activo"
-                    else:
-                        estado = "inactivo"
-                else:
-                    estado = "activo"
-            else:
-                estado = "inactivo"
-            if estado == "activo":
-                Usuario.objects.filter(nombre=p.nombre).update(activo=1)
-            else:
-                Usuario.objects.filter(nombre=p.nombre).update(activo=0)
-
-    vendedoresJson = simplejson.dumps(vendedores)
-
-    return render(request, 'main/baseAlumno-sinLogin.html', {"vendedores": vendedoresJson})
+# def index(request):
+#     vendedores = []
+#     # lista de vendedores
+#     for p in Usuario.objects.raw('SELECT * FROM usuario'):
+#         if p.tipo == 2 or p.tipo == 3:
+#             vendedores.append(p.id)
+#     vendedoresJson = simplejson.dumps(vendedores)
+#     # actualizar vendedores fijos
+#     for p in Usuario.objects.raw('SELECT * FROM usuario'):
+#         if p.tipo == 2:
+#             hi = p.horarioIni
+#             hf = p.horarioFin
+#             horai = hi[:2]
+#             horaf = hf[:2]
+#             mini = hi[3:5]
+#             minf = hf[3:5]
+#             tiempo = str(datetime.datetime.now().time())
+#             hora = tiempo[:2]
+#             minutos = tiempo[3:5]
+#             estado = ""
+#             if horaf >= hora and hora >= horai:
+#                 if horai == hora:
+#                     if minf >= minutos and minutos >= mini:
+#                         estado = "activo"
+#                     else:
+#                         estado = "inactivo"
+#                 elif horaf == hora:
+#                     if minf >= minutos and minutos >= mini:
+#                         estado = "activo"
+#                     else:
+#                         estado = "inactivo"
+#                 else:
+#                     estado = "activo"
+#             else:
+#                 estado = "inactivo"
+#             if estado == "activo":
+#                 Usuario.objects.filter(nombre=p.nombre).update(activo=1)
+#             else:
+#                 Usuario.objects.filter(nombre=p.nombre).update(activo=0)
+#
+#     vendedoresJson = simplejson.dumps(vendedores)
+#
+#     return render(request, 'main/baseAlumno-sinLogin.html', {"vendedores": vendedoresJson})
 
 
 def login(request):
@@ -272,56 +267,56 @@ def loginReq(request):
     activo = False
 
     # buscar vendedor en base de datos
-    MyLoginForm = LoginForm(request.POST)
-    if MyLoginForm.is_valid():
-        vendedores = []
-        for p in Usuario.objects.raw('SELECT * FROM usuario'):
-            if p.contraseña == password and p.email == email:
+    #MyLoginForm = LoginForm(request.POST)
+    #if MyLoginForm.is_valid():
+    vendedores = []
+    for p in Usuario.objects.raw('SELECT * FROM usuario'):
+        if p.contraseña == password and p.email == email:
+            tipo = p.tipo
+            nombre = p.nombre
+            if (tipo == 0):
+                url = 'main/baseAdmin.html'
+                id = p.id
                 tipo = p.tipo
-                nombre = p.nombre
-                if (tipo == 0):
-                    url = 'main/baseAdmin.html'
-                    id = p.id
-                    tipo = p.tipo
-                    encontrado = True
-                    avatar = p.avatar
-                    contraseña = p.contraseña
-                    break
-                elif (tipo == 1):
-                    url = 'main/baseAlumno.html'
-                    id = p.id
-                    avatar = p.avatar
-                    tipo = p.tipo
-                    encontrado = True
-                    avatar = p.avatar
+                encontrado = True
+                avatar = p.avatar
+                contraseña = p.contraseña
+                break
+            elif (tipo == 1):
+                url = 'main/baseAlumno.html'
+                id = p.id
+                avatar = p.avatar
+                tipo = p.tipo
+                encontrado = True
+                avatar = p.avatar
 
-                    break
-                elif (tipo == 2):
-                    url = 'main/vendedor-fijo.html'
-                    id = p.id
-                    tipo = p.tipo
-                    encontrado = True
-                    horarioIni = p.horarioIni
-                    horarioFin = p.horarioFin
-                    request.session['horarioIni'] = horarioIni
-                    request.session['horarioFin'] = horarioFin
-                    avatar = p.avatar
-                    activo = p.activo
-                    formasDePago = p.formasDePago
-                    request.session['formasDePago'] = formasDePago
-                    request.session['activo'] = activo
-                    break
-                elif (tipo == 3):
-                    url = 'main/vendedor-ambulante.html'
-                    id = p.id
-                    tipo = p.tipo
-                    encontrado = True
-                    avatar = p.avatar
-                    activo = p.activo
-                    formasDePago = p.formasDePago
-                    request.session['formasDePago'] = formasDePago
-                    request.session['activo'] = activo
-                    break
+                break
+            elif (tipo == 2):
+                url = 'main/vendedor-fijo.html'
+                id = p.id
+                tipo = p.tipo
+                encontrado = True
+                horarioIni = p.horarioIni
+                horarioFin = p.horarioFin
+                request.session['horarioIni'] = horarioIni
+                request.session['horarioFin'] = horarioFin
+                avatar = p.avatar
+                activo = p.activo
+                formasDePago = p.formasDePago
+                request.session['formasDePago'] = formasDePago
+                request.session['activo'] = activo
+                break
+            elif (tipo == 3):
+                url = 'main/vendedor-ambulante.html'
+                id = p.id
+                tipo = p.tipo
+                encontrado = True
+                avatar = p.avatar
+                activo = p.activo
+                formasDePago = p.formasDePago
+                request.session['formasDePago'] = formasDePago
+                request.session['activo'] = activo
+                break
 
         # si no se encuentra el usuario, se retorna a pagina de login
         if encontrado == False:
@@ -467,17 +462,17 @@ def productoReq(request):
             if tipo == 2:
                 path = "main/baseVFijo.html"
                 url = "main/vendedor-fijo.html"
-            Formulario = GestionProductosForm(request.POST)
-            if Formulario.is_valid():
-                producto = Comida()
-                producto.idVendedor = id
-                producto.nombre = request.POST.get("nombre")
-                producto.imagen = request.FILES.get("comida")
-                producto.precio = request.POST.get("precio")
-                producto.stock = request.POST.get("stock")
-                producto.descripcion = request.POST.get("descripcion")
-                producto.categorias = request.POST.get("categoria")
-                producto.save()
+            #Formulario = GestionProductosForm(request.POST)
+            # if Formulario.is_valid():
+            #     producto = Comida()
+            #     producto.idVendedor = id
+            #     producto.nombre = request.POST.get("nombre")
+            #     producto.imagen = request.FILES.get("comida")
+            #     producto.precio = request.POST.get("precio")
+            #     producto.stock = request.POST.get("stock")
+            #     producto.descripcion = request.POST.get("descripcion")
+            #     producto.categorias = request.POST.get("categoria")
+            #     producto.save()
             else:
                 return render(request, 'main/agregar-productos.html',
                               {"path": path, "respuesta": "¡Ingrese todos los datos!"})
@@ -767,7 +762,7 @@ def borrarProducto(request):
 def editarProducto(request):
     if request.method == 'POST':
         if request.is_ajax():
-            form = editarProductosForm(data=request.POST, files=request.FILES)
+            #form = editarProductosForm(data=request.POST, files=request.FILES)
             nombreOriginal = request.POST.get("nombreOriginal")
             nuevoNombre = request.POST.get('nombre')
             nuevoPrecio = (request.POST.get('precio'))
@@ -897,8 +892,8 @@ def borrarUsuario(request):
 def agregarAvatar(request):
     if request.is_ajax() or request.method == 'FILES':
         imagen = request.FILES.get("image")
-        nuevaImagen = Imagen(imagen=imagen)
-        nuevaImagen.save()
+        #nuevaImagen = Imagen(imagen=imagen)
+        #nuevaImagen.save()
         return HttpResponse("Success")
 
 
@@ -1054,3 +1049,29 @@ def createTransaction(request):
     transaccionNueva = Transacciones(idVendedor=idVendedor, precio=precio, nombreComida=nombreProducto)
     transaccionNueva.save()
     return JsonResponse({"transaccion": "realizada"})
+
+#------------------------- Refactoring -------------------------#
+
+def index(request):
+    userDj = request.user
+    if  not userDj.is_authenticated():
+        return render(request, 'refactoring/index.html', {'userDj': userDj})
+    user = Usuario.objects.get(usuario=userDj)
+    return render(request, 'refactoring/index.html', {'user': user, 'userDj': userDj})
+
+def change_active(request):
+    #vendedor = Vendedor.objects.get(name=request.user)
+    #vendedor.activo = not vendedor.activo
+    #vendedor.save()
+    return HttpResponse("")
+
+def add_favorite(request):
+    # user = Comprador.objects.get(nombre=request.user)
+    # vendedor = Vendedor.objects.get(name=request.GET.get('vendedor', None))
+    # if (vendedor in user.favoritos.all()):
+    #     user.favoritos.remove(vendedor)
+    # else:
+    #     user.favoritos.add(vendedor)
+    # user.save()
+    # vendedor.users.all().count()
+    return HttpResponse("")
