@@ -13,11 +13,7 @@ from django.views.decorators.csrf import csrf_exempt
 from .forms import GestionProductosForm
 from .forms import LoginForm
 from .forms import editarProductosForm
-from .models import Comida
-from .models import Favoritos
-from .models import Imagen
-from .models import Transacciones
-from .models import Usuario
+from .models import *
 
 
 # Create your views here.
