@@ -20,12 +20,11 @@ class Usuario(models.Model):
 
 
 class Vendedor(models.Model):
+    usuario = models.OneToOneField(Usuario, related_name='usuario_relacionado')
     nombre = models.CharField(max_length=200)
     avatar = models.ImageField(upload_to='avatars')
     activo = models.BooleanField(default=False)
     formasDePago = models.ManyToManyField('FormasDePago', related_name='formasDePago')
-    horarioIni = models.CharField(max_length=200, blank=True, null=True)
-    horarioFin = models.CharField(max_length=200, blank=True, null=True)
 
     def __str__(self):
         return self.nombre
@@ -33,6 +32,19 @@ class Vendedor(models.Model):
     class Meta:
         verbose_name = 'Vendedor'
         verbose_name_plural = 'Vendedores'
+
+
+class VendedorFijo(models.Model):
+    vendedor = models.OneToOneField(Vendedor, related_name='vendedor_relacionado')
+    horarioIni = models.CharField(max_length=200, blank=True, null=True)
+    horarioFin = models.CharField(max_length=200, blank=True, null=True)
+
+    def __str__(self):
+        return self.vendedor.nombre
+
+    class Meta:
+        verbose_name_plural = 'Vendedores fijos'
+        verbose_name = 'Vendedor fijo'
 
 
 class FormasDePago(models.Model):
