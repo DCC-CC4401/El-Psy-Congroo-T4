@@ -1,50 +1,68 @@
 from django import forms
 
-from main.models import Usuario
+from main.models import Usuario, Vendedor
 
 
-class SignUpForm(forms.Form):
-    account_type = forms.ChoiceField(label='Tipo de Usuario',
-                                     choices=[(1, "Alumno"), (2, "Vendedor Ambulante"), (3, "Vendedor Fijo")])
-    fullname = forms.CharField(label='Ingresa tu nombre')
-    email = forms.EmailField(label='E-mail', widget=forms.EmailInput)
-    password = forms.CharField(label='Ingresa tu contraseña', widget=forms.PasswordInput)
-    password_check = forms.CharField(label='Repite tu contraseña', widget=forms.PasswordInput)
+class Formulario_Registro(forms.Form):
+    tipo_cuenta = forms.ChoiceField(label='Tipo de Usuario',
+                                    choices=[(1, "Alumno"), (2, "Vendedor Ambulante"), (3, "Vendedor Fijo")])
+    tipo = forms.ChoiceField(required=False)
+    nombre = forms.CharField(label='Ingresa tu nombre')
+    correo = forms.EmailField(label='E-mail', widget=forms.EmailInput)
+    contrasena = forms.CharField(label='Ingresa tu contraseña', widget=forms.PasswordInput)
+    chequeo_contrasena = forms.CharField(label='Repite tu contraseña', widget=forms.PasswordInput)
 
-    opening_time = forms.TimeField(label='Hora de apertura', widget=forms.TimeInput(), required=False, initial='8:00')
-    closing_time = forms.TimeField(label='Hora de cierre', widget=forms.TimeInput(), required=False, initial='18:00')
+    hora_inicio = forms.TimeField(label='Hora de apertura', widget=forms.TimeInput(), required=False, initial='8:00')
+    hora_fin = forms.TimeField(label='Hora de cierre', widget=forms.TimeInput(), required=False, initial='18:00')
 
     # falta agregar pagos
 
-    def clean_password_check(self):
-        if 'password' in self.cleaned_data:
-            password = self.cleaned_data['password']
-            password_check = self.cleaned_data['password_check']
-            if password == password_check:
-                return password_check
+    def limpiar_contrasena(self):
+        if 'contrasena' in self.cleaned_data:
+            contrasena = self.cleaned_data['password']
+            chequeo_contrasena = self.cleaned_data['password_check']
+            if contrasena == chequeo_contrasena:
+                return chequeo_contrasena
         raise forms.ValidationError('Las contraseñas no coinciden')
 
-    # cambiar a inglés?
     class Meta:
         model = Usuario
         fields = ('tipo', 'nombre')
 
 
-class LoginForm(forms.Form):
-    email = forms.EmailField(label='Ingresa tu e-mail', widget=forms.EmailInput)
-    password = forms.CharField(label='Ingresa tu contraseña', widget=forms.PasswordInput())
+class Formulario_Ingreso(forms.Form):
+    correo = forms.EmailField(label='Ingresa tu e-mail', widget=forms.EmailInput)
+    contrasena = forms.CharField(label='Ingresa tu contraseña', widget=forms.PasswordInput())
 
 
-class ProfileUpdateForm(forms.ModelForm):
-    email = forms.EmailField(label='Ingresa tu e-mail', widget=forms.EmailInput)
+class Formulario_Actualizar_Perfil(forms.ModelForm):
+    correo = forms.EmailField(label='Ingresa tu e-mail', widget=forms.EmailInput)
     # pagos
-    opening_time = forms.TimeField(label='Hora de apertura', widget=forms.TimeInput(), required=False)
-    closing_time = forms.TimeField(label='Hora de cierre', widget=forms.TimeInput(), required=False)
-    # avatar
-    password = forms.CharField(label='Contraseña', widget=forms.PasswordInput)
+    hora_inicio = forms.TimeField(label='Hora de apertura', widget=forms.TimeInput(), required=False)
+    hora_cierre = forms.TimeField(label='Hora de cierre', widget=forms.TimeInput(), required=False)
+    imagen = forms.ImageField(label='Avatar', widget=forms.FileInput, required=False, initial=None)
+    contrasena = forms.CharField(label='Contraseña', widget=forms.PasswordInput)
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        if self.user is not None:
+            inicial = 0
+            final = 0
+            if self.user.groups.filter(name='vendedor_fijo').exists():
+                inicial = Vendedor.objects.values_list('horario_inicio', flat=True).get(name=self.user.username)
+                final = Vendedor.objects.values_list('horario_fin', flat=True).get(name=self.user.username)
+
+            kwargs.update(initial={'email': self.user.email,
+                                   'horainicial': inicial,
+                                   'horafinal': final})
+        super(Formulario_Actualizar_Perfil, self).__init__(*args, **kwargs)
+
+    class Meta:
+        model = Usuario
+        exclude = ('username', 'date_joined')
 
 
-class GestionProductosForm(forms.Form):
+class Formulario_Gestion_Producto(forms.Form):
     idVendedor = 0
     nombre = forms.CharField(max_length=200)
     categoria = forms.IntegerField()
@@ -53,5 +71,5 @@ class GestionProductosForm(forms.Form):
     precio = forms.IntegerField()
 
 
-class editarProductosForm(forms.Form):
+class Formulario_Editar_Producto(forms.Form):
     foto = forms.FileField()
