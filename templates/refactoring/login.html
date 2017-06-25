@@ -1,4 +1,4 @@
-{% extends 'main/base.html' %}
+{% extends 'refactoring/base.html' %}
 {% load staticfiles %}
 
 {% block content %}
@@ -30,7 +30,7 @@
               <div class='input-field col s12'>
                 <input class='validate' type='password' name='password' id='password' />
 
-                <label style="text-align: center;" for='id_password1'>Ingresa tu contraseña</label>
+                <label style="text-align: center;" for='id_contrasena'>Ingresa tu contraseña</label>
               </div>
               <label style='float: right;'>
                   <a class='red-text text-accent-2' href='#!'><b>¿Olvidaste tu contraseña?</b></a>
@@ -46,7 +46,7 @@
           </form>
         </div>
       </div>
-      <div style="text-align: center;"><a class="grey-text">¿Aún no tienes cuenta?</a> <a href="{% url 'register' %}"> Regístrate</a></div>
+      <div style="text-align: center;"><a class="grey-text">¿Aún no tienes cuenta?</a> <a href="{% url 'signup' %}"> Regístrate</a></div>
 
 
     <div class="section"></div>

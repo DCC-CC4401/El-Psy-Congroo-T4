@@ -1,15 +1,21 @@
 import datetime
 
 import simplejson
+from django.contrib import auth
+from django.contrib.auth import authenticate
 from django.core.files.storage import default_storage
+from django.db import IntegrityError
 from django.db.models import Count
 from django.db.models import Sum
 from django.http import HttpResponse
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.utils import timezone
+from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
+from main.utils import *
+from .forms import *
 from .models import *
 
 # def index(request):
@@ -57,8 +63,8 @@ from .models import *
 #     return render(request, 'main/baseAlumno-sinLogin.html', {"vendedores": vendedoresJson})
 
 
-def login(request):
-    return render(request, 'main/login.html', {})
+#def login(request):
+ #   return render(request, 'main/login.html', {})
 
 
 def fijoDashboard(request):
@@ -393,8 +399,8 @@ def gestionproductos(request):
     return render(request, 'main/agregar-productos.html', {"path": path})
 
 
-def vendedorprofilepage(request):
-    return render(request, 'main/vendedor-profile-page.html', {})
+# def vendedorprofilepage(request):
+#     return render(request, 'main/vendedor-profile-page.html', {})
 
 
 def formView(request):
@@ -415,36 +421,36 @@ def formView(request):
         return render(request, 'main/base.html', {})
 
 
-def logout(request):
-    try:
-        del request.session['id']
-    except:
-        pass
-    return index(request)
+# def logout(request):
+#     try:
+#         del request.session['id']
+#     except:
+#         pass
+#     return index(request)
 
 
-def register(request):
-    tipo = request.POST.get("tipo")
-    nombre = request.POST.get("nombre")
-    email = request.POST.get("email")
-    password = request.POST.get("password")
-    horaInicial = request.POST.get("horaIni")
-    horaFinal = request.POST.get("horaFin")
-    avatar = request.FILES.get("avatar")
-    print(avatar)
-    formasDePago = []
-    if not (request.POST.get("formaDePago0") is None):
-        formasDePago.append(request.POST.get("formaDePago0"))
-    if not (request.POST.get("formaDePago1") is None):
-        formasDePago.append(request.POST.get("formaDePago1"))
-    if not (request.POST.get("formaDePago2") is None):
-        formasDePago.append(request.POST.get("formaDePago2"))
-    if not (request.POST.get("formaDePago3") is None):
-        formasDePago.append(request.POST.get("formaDePago3"))
-    usuarioNuevo = Usuario(nombre=nombre, email=email, tipo=tipo, contraseña=password, avatar=avatar,
-                           formasDePago=formasDePago, horarioIni=horaInicial, horarioFin=horaFinal)
-    usuarioNuevo.save()
-    return loginReq(request)
+# def register(request):
+#     tipo = request.POST.get("tipo")
+#     nombre = request.POST.get("nombre")
+#     email = request.POST.get("email")
+#     password = request.POST.get("password")
+#     horaInicial = request.POST.get("horaIni")
+#     horaFinal = request.POST.get("horaFin")
+#     avatar = request.FILES.get("avatar")
+#     print(avatar)
+#     formasDePago = []
+#     if not (request.POST.get("formaDePago0") is None):
+#         formasDePago.append(request.POST.get("formaDePago0"))
+#     if not (request.POST.get("formaDePago1") is None):
+#         formasDePago.append(request.POST.get("formaDePago1"))
+#     if not (request.POST.get("formaDePago2") is None):
+#         formasDePago.append(request.POST.get("formaDePago2"))
+#     if not (request.POST.get("formaDePago3") is None):
+#         formasDePago.append(request.POST.get("formaDePago3"))
+#     usuarioNuevo = Usuario(nombre=nombre, email=email, tipo=tipo, contraseña=password, avatar=avatar,
+#                            formasDePago=formasDePago, horarioIni=horaInicial, horarioFin=horaFinal)
+#     usuarioNuevo.save()
+#     return loginReq(request)
 
 
 def productoReq(request):
@@ -1051,6 +1057,22 @@ def createTransaction(request):
     return JsonResponse({"transaccion": "realizada"})
 
 #------------------------- Refactoring -------------------------#
+def getProductos(vendedor):
+    productos = Comida.objects.filter(vendedor=vendedor).all()
+    listaProductos = []
+
+    for p in productos:
+        listaProductos.append(p)
+        # item = {
+        #     'nombre': p.nombre,
+        #     'stock': p.stock,
+        #     'categoria': Categorias.__getitem__(p.categoria-1)[1],
+        #     'descripcion': p.descripcion,
+        #     'precio': p.precio,
+        #     'foto': p.foto,
+        # }
+        # productoList.append(item)
+    return listaProductos
 
 def index(request):
     userDj = request.user
@@ -1059,19 +1081,189 @@ def index(request):
     user = Usuario.objects.get(usuario=userDj)
     return render(request, 'refactoring/index.html', {'user': user, 'userDj': userDj})
 
+class Login(View):
+    @staticmethod
+    def get(request):
+        form = Formulario_Ingreso()
+        return render(request, 'refactoring/login.html', {'form': form})
+
+    def post(self, request):
+        form = Formulario_Ingreso(request.POST)
+        if not form.is_valid():
+            self.get(request)
+        email = request.POST['email']
+        password = request.POST['password']
+        username = User.objects.get(email=email.lower()).username
+        user = authenticate(username=username, password=password)
+        if user is None:
+            return render(request, 'refactoring/login.html', {
+                'login_message': 'Nombre de Usuario o Contraseña incorrecto', 'form': form, })
+        if user.is_active:
+            auth.login(request, user)
+            usuario = Usuario.objects.get(usuario=user)
+            tipo = usuario.tipo
+            if tipo == 1:  # alumno
+                return redirect('index')
+            else:  # vendedor
+                #vendedor = Vendedor.objects.get(usuario=usuario)
+                return redirect('vendedorprofilepage', vendedor=usuario)
+        return render(request, 'refactoring/login.html', {})
+
+class SignUp(View):
+
+    def get(self, request):
+        form = Formulario_Registro()
+        return render(request, 'refactoring/signup.html', {'form': form})
+
+    def post(self, request):
+        form = Formulario_Registro(request.POST, request.FILES)
+        if form.is_valid():
+            try:
+                tipo = form.cleaned_data['tipo_cuenta']
+                crear_usuario(tipo, form)
+                return render(request, 'refactoring/login.html', {
+                    'message': 'Cuenta creada satisfactoriamente', 'form': form, })
+            except IntegrityError:
+                return render(request, 'refactoring/signup.html', {'message': 'El usuario ya esta en uso', 'form': form})
+            except KeyError as e:
+                return render(request, 'refactoring/signup.html', {'message': e.args[0], 'form': form})
+        else:
+            form = Formulario_Registro()
+            return render(request, 'refactoring/signup.html', {'form': form})
+
+def vendedorprofilepage(request, vendedor):
+
+    vendedorUser = Vendedor.objects.get(nombre=vendedor)
+    user = request.user
+    favorito = False
+    usuario = Usuario.objects.get(usuario=user)
+    tipo = usuario.tipo
+    metodospago = ''
+    favs = 0
+    if user.is_authenticated:
+        if tipo == 1:
+            if vendedorUser in usuario.favoritos:
+                favorito = True
+        else:
+            for fav in Favoritos.objects.all():
+                if fav.vendedor == vendedorUser:
+                    favs += 1
+            for m in vendedorUser.formasDePago.all():
+                metodospago += m.forma + ' '
+            now = datetime.datetime.now().time()
+            if vendedorUser.usuario.tipo == 2:
+                if now > vendedorUser.horarioIni and now < vendedorUser.horarioFin:
+                    vendedorUser.activo = True
+                    vendedorUser.save()
+    data = {
+        'userDj': user,
+        'user': usuario,
+        'vendedor': vendedorUser,
+        'vendedor_estado': 'Activo' if vendedorUser.activo else 'Inactivo',
+        'vendedor_tipo': 'Vendedor fijo' if vendedorUser.usuario.tipo == 2 else 'Vendedor ambulante',
+        'vendedor_metodospago': metodospago,
+        'productos': getProductos(vendedorUser),
+        'favorito': favorito,
+        'vendedor_numero_favs': favs,
+    }
+    return render(request, 'refactoring/vendedor-profile-page.html', data)
+
+class EditarPerfil(View):
+
+    def get(self, request):
+        form = Formulario_Actualizar_Perfil()
+        if not request.user.is_authenticated():
+            return redirect('index')
+        if request.user.usuario.tipo != 1:
+            usuario = request.user.usuario
+            vendedor = Vendedor.objects.get(usuario=usuario)
+            return render(request, 'refactoring/editar-perfil.html', {'form': form, 'userDj': request.user,
+                                                                      'user': usuario, 'vendedor': vendedor})
+        return render(request, 'refactoring/editar-perfil.html', {'form': form, 'userDj': request.user,
+                                                                  'user': request.user.usuario})
+
+    def post(self, request):
+        form = Formulario_Actualizar_Perfil(request.POST, request.FILES)
+        if not request.user.is_authenticated() or not form.is_valid():
+            return self.get(request)
+        user = User.objects.get(username=request.user)
+
+        if user.check_password(form.cleaned_data['contrasena']):
+            editar_usuario(user, form)
+            if user.usuario.tipo == 1:
+                return redirect('index')
+            else:
+                vendedor = Vendedor.objects.get(usuario=request.user.usuario.vendedor)
+                return redirect('vendedorprofilepage', vendedor=vendedor)
+        return render(request, 'refactoring/editar-perfil.html', {'form': form})
+
+class AgregarProducto(View):
+
+    def get(self, request):
+        form = Formulario_Producto()
+        if request.user.usuario.tipo != 1:
+            usuario = request.user.usuario
+            vendedor = Vendedor.objects.get(usuario=usuario)
+            return render(request, 'refactoring/agregar-productos.html', {'form': form, 'userDj': request.user,
+                                                                      'user': usuario, 'vendedor': vendedor})
+        return render(request, 'refactoring/agregar-productos.html', {'form': form, 'userDj': request.user,
+                                                                      'user': request.user.usuario})
+    def post(self, request):
+        form = Formulario_Producto(request.POST, request.FILES)
+        if form.is_valid():
+            vendedor = Vendedor.objects.get(usuario=request.user.usuario)
+            agregar_producto(vendedor, form)
+            return redirect('vendedorprofilepage', vendedor=vendedor)
+        else:
+            form = Formulario_Producto()
+            return render(request, 'refactoring/agregar-productos.html', {'form': form})
+
+class EditarProducto(View):
+
+    def get(self, request, nombre, vendedor):
+        producto_inicial = Comida.objects.all().filter(nombre=nombre).first()
+        form = Formulario_Producto(instance=producto_inicial)
+        if request.user.usuario.tipo != 1:
+            usuario = request.user.usuario
+            vendedor = Vendedor.objects.get(usuario=usuario)
+            return render(request, 'refactoring/editar-productos.html', {'form': form, 'userDj': request.user,
+                                                                      'user': usuario, 'vendedor': vendedor})
+        return render(request, 'refactoring/editar-productos.html', {'form': form, 'userDj': request.user,
+                                                                      'user': request.user.usuario})
+    def post(self, request, nombre, vendedor):
+        producto_inicial = Comida.objects.all().filter(nombre=nombre).first()
+        form = Formulario_Producto(request.POST, request.FILES)
+        if form.is_valid():
+            vendedor = Vendedor.objects.get(usuario=request.user.usuario)
+            editar_producto(producto_inicial, form)
+            return redirect('vendedorprofilepage', vendedor=vendedor)
+        else:
+            form = Formulario_Producto()
+            return render(request, 'refactoring/editar-productos.html', {'form': form, 'userDj': request.user,
+                                                                          'user': request.user.usuario, 'vendedor': vendedor})
+def productos_delete(request, nombre, vendedor):
+    producto = Comida.objects.all().filter(nombre=nombre).first()
+    producto.delete()
+    return redirect('vendedorprofilepage', vendedor=vendedor)
+
+def logout(request):
+    auth.logout(request)
+    return redirect('index')
+
 def change_active(request):
-    #vendedor = Vendedor.objects.get(name=request.user)
-    #vendedor.activo = not vendedor.activo
-    #vendedor.save()
+    usuario = Usuario.objects.get(usuario=request.user)
+    vendedor = Vendedor.objects.get(usuario=usuario)
+    vendedor.activo = not vendedor.activo
+    vendedor.save()
     return HttpResponse("")
 
 def add_favorite(request):
-    # user = Comprador.objects.get(nombre=request.user)
-    # vendedor = Vendedor.objects.get(name=request.GET.get('vendedor', None))
-    # if (vendedor in user.favoritos.all()):
-    #     user.favoritos.remove(vendedor)
-    # else:
-    #     user.favoritos.add(vendedor)
-    # user.save()
-    # vendedor.users.all().count()
+    user = Usuario.objects.get(nombre=request.user)
+    vendedor = Vendedor.objects.get(nombre=request.GET.get('vendedor', None))
+    if (vendedor in user.favoritos.all()):
+        user.favoritos.remove(vendedor)
+    else:
+        user.favoritos.add(vendedor)
+    user.save()
+    vendedor.users.all().count()
     return HttpResponse("")

@@ -1,21 +1,22 @@
 from django import forms
 
-from main.models import Usuario, Vendedor
+from main.models import *
 
 
 class Formulario_Registro(forms.Form):
     tipo_cuenta = forms.ChoiceField(label='Tipo de Usuario',
-                                    choices=[(1, "Alumno"), (2, "Vendedor Ambulante"), (3, "Vendedor Fijo")])
+                                    choices=[(1, "Alumno"), (2, "Vendedor Fijo"), (3, "Vendedor Ambulante")])
     tipo = forms.ChoiceField(required=False)
     nombre = forms.CharField(label='Ingresa tu nombre')
-    correo = forms.EmailField(label='E-mail', widget=forms.EmailInput)
+    email = forms.EmailField(label='E-mail', widget=forms.EmailInput)
     contrasena = forms.CharField(label='Ingresa tu contraseña', widget=forms.PasswordInput)
     chequeo_contrasena = forms.CharField(label='Repite tu contraseña', widget=forms.PasswordInput)
 
     hora_inicio = forms.TimeField(label='Hora de apertura', widget=forms.TimeInput(), required=False, initial='8:00')
     hora_fin = forms.TimeField(label='Hora de cierre', widget=forms.TimeInput(), required=False, initial='18:00')
 
-    # falta agregar pagos
+    pagos = forms.ModelMultipleChoiceField(queryset=FormasDePago.objects.all(), required=False,
+                                           initial=FormasDePago.objects.none())
 
     def limpiar_contrasena(self):
         if 'contrasena' in self.cleaned_data:
@@ -27,7 +28,7 @@ class Formulario_Registro(forms.Form):
 
     class Meta:
         model = Usuario
-        fields = ('tipo', 'nombre')
+        fields = ('tipo', 'nombre','avatar')
 
 
 class Formulario_Ingreso(forms.Form):
@@ -35,12 +36,13 @@ class Formulario_Ingreso(forms.Form):
     contrasena = forms.CharField(label='Ingresa tu contraseña', widget=forms.PasswordInput())
 
 
-class Formulario_Actualizar_Perfil(forms.ModelForm):
-    correo = forms.EmailField(label='Ingresa tu e-mail', widget=forms.EmailInput)
-    # pagos
+class Formulario_Actualizar_Perfil(forms.Form):
+    email = forms.EmailField(label='Ingresa tu e-mail', widget=forms.EmailInput)
+    pagos = forms.ModelMultipleChoiceField(queryset=FormasDePago.objects.all(), required=False,
+                                           initial=FormasDePago.objects.none())
     hora_inicio = forms.TimeField(label='Hora de apertura', widget=forms.TimeInput(), required=False)
-    hora_cierre = forms.TimeField(label='Hora de cierre', widget=forms.TimeInput(), required=False)
-    imagen = forms.ImageField(label='Avatar', widget=forms.FileInput, required=False, initial=None)
+    hora_fin = forms.TimeField(label='Hora de cierre', widget=forms.TimeInput(), required=False)
+    avatar = forms.ImageField(label='Avatar', widget=forms.FileInput, required=False, initial=None)
     contrasena = forms.CharField(label='Contraseña', widget=forms.PasswordInput)
 
     def __init__(self, *args, **kwargs):
@@ -48,13 +50,13 @@ class Formulario_Actualizar_Perfil(forms.ModelForm):
         if self.user is not None:
             inicial = 0
             final = 0
-            if self.user.groups.filter(name='vendedor_fijo').exists():
-                inicial = Vendedor.objects.values_list('horario_inicio', flat=True).get(name=self.user.username)
-                final = Vendedor.objects.values_list('horario_fin', flat=True).get(name=self.user.username)
+            if self.user.usuario.tipo == 2:
+                inicial = Vendedor.objects.values_list('horario_inicio', flat=True).get(nombre=self.user.username)
+                final = Vendedor.objects.values_list('horario_fin', flat=True).get(nombre=self.user.username)
 
             kwargs.update(initial={'email': self.user.email,
-                                   'horainicial': inicial,
-                                   'horafinal': final})
+                                   'hora_inicio': inicial,
+                                   'hora_fin': final})
         super(Formulario_Actualizar_Perfil, self).__init__(*args, **kwargs)
 
     class Meta:
@@ -65,11 +67,14 @@ class Formulario_Actualizar_Perfil(forms.ModelForm):
 class Formulario_Gestion_Producto(forms.Form):
     idVendedor = 0
     nombre = forms.CharField(max_length=200)
-    categoria = forms.IntegerField()
+    categorias = forms.IntegerField()
     descripcion = forms.CharField(max_length=500)
     stock = forms.IntegerField()
     precio = forms.IntegerField()
 
-
-class Formulario_Editar_Producto(forms.Form):
-    foto = forms.FileField()
+class Formulario_Producto(forms.ModelForm):
+    class Meta:
+        model = Comida
+        fields = ('nombre', 'precio', 'stock', 'categorias', 'descripcion', 'imagen')
+# class Formulario_Editar_Producto(forms.Form):
+#     foto = forms.FileField()

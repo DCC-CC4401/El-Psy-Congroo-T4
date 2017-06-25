@@ -1,0 +1,95 @@
+{% extends 'refactoring/base.html' %}
+{% load i18n %}
+{% load staticfiles %}
+
+{% block content %}
+<script>
+$(document).ready(function() {
+    $('select').material_select();
+});
+</script>
+
+<div class="section"></div>
+  <main>
+      <div class="section"></div>
+
+      <h5 class="teal-text" style="text-align: center;">Editar Información</h5>
+      <div class="section"></div>
+
+      <div class="container">
+        <div class="z-depth-1 grey lighten-4 row" style="margin-left: 5%; margin-right: 5%; padding: 32px 48px 0px 48px; border: 1px solid #EEE;">
+
+          <form class="col s12 m12" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class='row'>
+              <div class='col s12 m12'>
+              </div>
+            </div>
+
+            <div class='row'>
+              <div class='input-field col s12 m12'>
+                {{ form.email }}
+                <label style="text-align: center" for='id_email'>Ingresar e-mail nuevo</label>
+              </div>
+            </div>
+
+              {% if userDj.usuario.tipo == 2 %}
+
+              <div class="row">
+                <div class="col s12">
+                  <div class="row">
+                    <div class="input-field col s6">
+                      <i class="material-icons prefix">alarm</i>
+                        {{form.hora_inicio}}
+                        <label for="id_hora_inicio">Hora inicial</label>
+                    </div>
+                    <div class="input-field col s6">
+                      <i class="material-icons prefix">alarm</i>
+                      {{form.hora_fin}}
+                      <label for="id_hora_fin">Hora final</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {% endif %}
+
+            {% if userDj.usuario.tipo == 2 or userDj.usuario.tipo == 3 %}
+            <div class='row'>
+              <div class='input-field col s12 m12'>
+                Seleccione sus formas de pago:
+                <div>
+                      {{ form.pagos }}
+                </div>
+              </div>
+            </div>
+            {% endif %}
+              <div>
+                  Cambiar avatar:
+              </div>
+
+                <div class="input-field col s12 l6">
+                  {{ form.avatar }}
+                </div>
+
+            <div class='row'>
+              <div class='input-field col s12 m12'>
+                {{ form.contrasena }}
+                <label style="text-align: center" for='id_contrasena'>Para confirmar, ingresa tu contraseña</label>
+              </div>
+            </div>
+
+              <div class='row'>
+                <button type='submit' name='btn_login' class='col l6 offset-l3 btn btn-large waves-effect teal'>Guardar cambios</button>
+              </div>
+
+          </form>
+        </div>
+      </div>
+
+    <div class="section"></div>
+    <div class="section"></div>
+  </main>
+
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.1/jquery.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/js/materialize.min.js"></script>
+{% endblock %}

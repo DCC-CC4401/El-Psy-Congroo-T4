@@ -43,7 +43,7 @@
             <li>
                 <div class="userView">
                     {% if userDj.is_authenticated %}
-                        <a href="{% url 'profile_edit' %}">
+                        <a href="{% url 'editar_perfil' %}">
                             <i class="material-icons right grey-text text-lighten-2"
                                style="position: absolute; bottom: -0.5em; right: 0.5em; padding: 0 0 !important;">
                                 settings
@@ -54,12 +54,17 @@
                         <img src="{% static 'img/background4.png' %}">
                     </div>
                     {% if userDj.is_authenticated %}
-                        <a href="#!user"><img style="margin-top: 16%;" class="circle"
+                        {% if user.tipo != 1 %}
+                             <a href="#!user"><img style="margin-top: 16%;" class="circle"
+                                              src="/media/{{ vendedor.avatar }}"></a>
+                        {% else %}
+                            <a href="#!user"><img style="margin-top: 16%;" class="circle"
                                               src="/media/{{ user.avatar }}"></a>
-                        <a href="#!name"><span style="margin-left: 5%;" class="white-text name">{{ user.username }}</span></a>
+                        {% endif %}
+                        <a href="#!name"><span style="margin-left: 5%;" class="white-text name">{{ userDj.username }}</span></a>
                     {% else %}
                         <a href="#!user"><img style="margin-top: 16%;" class="circle"
-                                              src="{% static 'img/AvatarPenguin.png' %}"></a>
+                                              src="{% static 'img/../../media/AvatarPenguin.png' %}"></a>
                         <a href="#!name"><span style="margin-left: 5%;" class="white-text name">Invitado</span></a>
                     {% endif %}
                 </div>
@@ -68,45 +73,19 @@
             {% block side_content %}
                 {% if userDj.is_authenticated %}
                     {% if user.tipo == 1 %}
-                        <li><a href="{% url 'indexR' %}"><i class="material-icons">home</i>Inicio</a></li>
-                    {% else %}
-                         <li><a href="{% url 'vendedorprofilepage' %}"><i class="material-icons">home</i>Inicio</a></li>
+                        <li><a href="{% url 'index' %}"><i class="material-icons">home</i>Inicio</a></li>
                     {% endif %}
                     <li><a href="{% url 'logout' %}"><i class="material-icons">exit_to_app</i>Cerrar Sesión</a></li>
                 {% else %}
                     <li><a href="{% url 'login' %}"><i class="material-icons">account_circle</i>Iniciar Sesión</a></li>
-                    <li><a href="{% url 'register' %}"><i class="material-icons">input</i>Registrarse</a></li>
+                    <li><a href="{% url 'signup' %}"><i class="material-icons">input</i>Registrarse</a></li>
                 {% endif %}
                 <li><div class="divider"></div></li>
 
                 {% block filtros_content %}
                 {%  endblock %}
-                {% if userDj.is_authenticated %}
-                {% if user.tipo == 3 %}
-                    <li><a class="subheader">Activo</a></li>
-                    <li>
-                        <script>
-                            $("#activo").change(function () {
-                                $.ajax({
-                                    url: '{% url "change_active" %}',
-                                    success: function(data) {
-                                        window.location.reload();
-                                    }
-                                })
-                            });
-                        </script>
-                        <div class="switch" style="margin-left: 80px;">
-                            <label>
-                                {% if estado == 'Activo' %}
-                                    No<input id="activo" type="checkbox" checked><span class="lever"></span>Si
-                                {% else %}
-                                    No<input id="activo" type="checkbox"><span class="lever"></span>Si
-                                {% endif %}
-                            </label>
-                        </div>
-                    </li>
-                {% endif %}
-                {% endif %}
+                {% block activo_content %}
+                {%  endblock %}
           {% endblock %}
         </ul>
     </div>

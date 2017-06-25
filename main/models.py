@@ -11,6 +11,7 @@ class Usuario(models.Model):
     nombre = models.CharField(max_length=200)
     tipo = models.IntegerField(default=1, choices=TiposUsuarios)
     avatar = models.ImageField(default='AvatarEstudiante3.png')
+    favoritos = models.ManyToManyField('Vendedor', related_name="favs", blank=True)
 
     def __str__(self):
         return self.nombre
@@ -25,8 +26,11 @@ class Vendedor(models.Model):
     nombre = models.CharField(max_length=200)
     activo = models.BooleanField(default=False)
     formasDePago = models.ManyToManyField('FormasDePago', related_name='formasDePago')
-    horarioIni = models.CharField(max_length=200, blank=True, null=True)
-    horarioFin = models.CharField(max_length=200, blank=True, null=True)
+    horarioIni = models.TimeField(u'Horario de inicio', null=True)
+    horarioFin = models.TimeField(u'Horario fin', null=True)
+    # horarioIni = models.CharField(max_length=200, blank=True, null=True)
+    # horarioFin = models.CharField(max_length=200, blank=True, null=True)
+    avatar = models.ImageField(default='AvatarVendedor5.png')
 
     def __str__(self):
         return self.nombre
@@ -53,7 +57,9 @@ class Comida(models.Model):
     descripcion = models.CharField(max_length=500)
     stock = models.PositiveSmallIntegerField(default=0)
     precio = models.PositiveSmallIntegerField(default=0)
-    imagen = models.ImageField(default='AvatarVendedor5.png')
+    imagen = models.ImageField(default='rice.png')
+    vendedor = models.ForeignKey('Vendedor', related_name='vendedor_respectivo',
+                                 blank=True, null=True)
 
     def __str__(self):
         return self.nombre
@@ -64,11 +70,14 @@ class Comida(models.Model):
 
 
 class Favoritos(models.Model):
-    idAlumno = models.IntegerField()
-    idVendedor = models.IntegerField()
+    usuario = models.ForeignKey('Usuario', related_name="usuario_fav")
+    vendedor = models.ForeignKey('Vendedor', related_name="vendedor_fav")
+    # idAlumno = models.IntegerField()
+    # idVendedor = models.IntegerField()
 
     def __str__(self):
-        return self.idAlumno
+        return self.usuario
+        #return self.idAlumno
 
     class Meta:
         verbose_name = 'Favorito'

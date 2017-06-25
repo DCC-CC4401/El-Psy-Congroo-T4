@@ -1,0 +1,128 @@
+{% extends 'refactoring/base.html' %}
+{% load staticfiles %}
+{% load i18n %}
+
+{% block content %}
+<script>
+$(document).ready(function() {
+    $('select').material_select();
+});
+</script>
+
+<div class="section"></div>
+  <main>
+      <div class="section"></div>
+
+      <h5 class="teal-text" style="text-align: center;">¡Regístrate!</h5>
+      <div class="section"></div>
+
+      <div class="container">
+        <div class="z-depth-1 grey lighten-4 row" style="margin-left: 5%; margin-right: 5%; padding: 32px 48px 0px 48px; border: 1px solid #EEE;">
+
+          <form class="col s12 m12" method="post" action="">
+              {% csrf_token %}
+            <div class='row'>
+              <div class='col s12 m12'>
+              </div>
+            </div>
+
+              <div class="input-field col s12 m12">
+                {{ form.tipo_cuenta }}
+                <label>Tipo de Usuario</label>
+              </div>
+
+            <div class='row'>
+              <div class='input-field col s12 m12'>
+                {{ form.nombre }}
+                <label style="text-align: center" for='id_nombre'>Ingresa tu nombre</label>
+              </div>
+            </div>
+
+            <div class="row">
+                <div class='input-field col s12 m12'>
+                    {{ form.email }}
+                    <label style="text-align: center" for='id_email'>Ingresa tu e-mail</label>
+                </div>
+            </div>
+
+            <div id="options">
+                  <div class="row" id="fijo">
+                      Seleccione su horario de atención:
+                    <div class="col s12">
+                      <div class="row">
+                        <div class="input-field col s6">
+                          <i class="material-icons prefix">alarm</i>
+                          {{ form.hora_inicio }}
+                          <label for="id_hora_inicio">Hora inicial</label>
+                        </div>
+                        <div class="input-field col s6">
+                          <i class="material-icons prefix">alarm</i>
+                          {{ form.hora_fin }}
+                          <label for="id_hora_fin">Hora final</label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                <div class='row' id="ambulante">
+                  <div class='input-field col s12 m12'>
+                    Seleccione sus formas de pago:
+                    {{ form.pagos }}
+                  </div>
+                </div>
+            </div>
+
+            <div class='row'>
+              <div class='input-field col s12 m12'>
+                {{ form.contrasena }}
+                <label style="text-align: center" for='id_contrasena'>Ingresa tu contraseña</label>
+              </div>
+            </div>
+
+            <div class='row'>
+              <div class='input-field col s12 m12'>
+                {{ form.chequeo_contrasena }}
+                <label style="text-align: center" for='id_chequeo_contrasena'>Repite tu contraseña</label>
+              </div>
+            </div>
+
+              <div class='row'>
+                <button type='submit' name='btn_login' class='col l6 offset-l3 btn btn-large waves-effect teal'>Registrarse</button>
+              </div>
+
+          </form>
+        </div>
+      </div>
+        <div style="text-align: center;"><a class="grey-text"> ¿Ya tienes una cuenta? </a></a><a href="{% url 'login' %}">
+            Inicia sesión</a>
+        </div>
+
+
+    <div class="section"></div>
+    <div class="section"></div>
+  </main>
+
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.1/jquery.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/js/materialize.min.js"></script>
+  <script type="text/javascript">
+    $('#options div').hide();
+    $('#id_tipo_cuenta').change(refresh_inputs);
+    refresh_inputs();
+    function refresh_inputs() {
+        var name = $('#id_tipo_cuenta').attr('name');
+        var val = $('#id_tipo_cuenta').val();
+        console.log(val);
+        if (val.localeCompare("3") == 0) {
+          $('#options div').show();
+          $('#fijo').hide();
+        }
+        if (val.localeCompare("2") == 0) {
+          $('#options div').show();
+        }
+        if (val.localeCompare("1") == 0) {
+          $('#options div').hide();
+        }
+    }
+  </script>
+
+{% endblock %}

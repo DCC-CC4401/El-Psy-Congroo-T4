@@ -5,12 +5,12 @@ TiposUsuarios = (
         (3, 'ambulante'),
 )
 
-FormasDePago = (
-        (0, 'Efectivo'),
-        (1, 'Tarjeta de Crédito'),
-        (2, 'Tarjeta de Débito'),
-        (3, 'Tarjeta Junaeb'),
-)
+# Formas_Pago = (
+#         (0, 'Efectivo'),
+#         (1, 'Tarjeta de Crédito'),
+#         (2, 'Tarjeta de Débito'),
+#         (3, 'Tarjeta Junaeb'),
+# )
 
 Categorias = (
         (0, 'Cerdo'),
