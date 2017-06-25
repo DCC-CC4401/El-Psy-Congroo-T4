@@ -55,11 +55,11 @@
                     </div>
                     {% if userDj.is_authenticated %}
                         {% if user.tipo != 1 %}
-                             <a href="#!user"><img style="margin-top: 16%;" class="circle"
-                                              src="/media/{{ vendedor.avatar }}"></a>
+                            <a href="#!user"><img style="margin-top: 16%;" class="circle"
+                                                  src="/media/{{ vendedor.avatar }}"></a>
                         {% else %}
                             <a href="#!user"><img style="margin-top: 16%;" class="circle"
-                                              src="/media/{{ user.avatar }}"></a>
+                                                  src="/media/{{ user.avatar }}"></a>
                         {% endif %}
                         <a href="#!name"><span style="margin-left: 5%;" class="white-text name">{{ userDj.username }}</span></a>
                     {% else %}
@@ -86,7 +86,7 @@
                 {%  endblock %}
                 {% block activo_content %}
                 {%  endblock %}
-          {% endblock %}
+            {% endblock %}
         </ul>
     </div>
 </nav>

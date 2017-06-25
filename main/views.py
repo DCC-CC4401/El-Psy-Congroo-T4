@@ -1063,15 +1063,6 @@ def getProductos(vendedor):
 
     for p in productos:
         listaProductos.append(p)
-        # item = {
-        #     'nombre': p.nombre,
-        #     'stock': p.stock,
-        #     'categoria': Categorias.__getitem__(p.categoria-1)[1],
-        #     'descripcion': p.descripcion,
-        #     'precio': p.precio,
-        #     'foto': p.foto,
-        # }
-        # productoList.append(item)
     return listaProductos
 
 def index(request):
@@ -1097,7 +1088,7 @@ class Login(View):
         user = authenticate(username=username, password=password)
         if user is None:
             return render(request, 'refactoring/login.html', {
-                'login_message': 'Nombre de Usuario o Contraseña incorrecto', 'form': form, })
+                'message': 'Nombre de Usuario o Contraseña incorrecto', 'form': form, })
         if user.is_active:
             auth.login(request, user)
             usuario = Usuario.objects.get(usuario=user)
