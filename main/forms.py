@@ -15,7 +15,8 @@ class Formulario_Registro(forms.Form):
     hora_inicio = forms.TimeField(label='Hora de apertura', widget=forms.TimeInput(), required=False, initial='8:00')
     hora_fin = forms.TimeField(label='Hora de cierre', widget=forms.TimeInput(), required=False, initial='18:00')
 
-    pagos = forms.MultipleChoiceField(widget=forms.SelectMultiple(), required=False, initial=FormasDePago.objects.none())
+    pagos = forms.ModelMultipleChoiceField(queryset=FormasDePago.objects.all(), widget=forms.SelectMultiple(),
+                                           required=False, initial=FormasDePago.objects.none())
 
     def limpiar_contrasena(self):
         if 'contrasena' in self.cleaned_data:
