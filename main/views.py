@@ -10,13 +10,13 @@ from django.db.models import Sum
 from django.http import HttpResponse
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
-from django.utils import timezone
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
 from main.utils import *
 from .forms import *
 from .models import *
+
 
 # def index(request):
 #     vendedores = []
@@ -63,8 +63,8 @@ from .models import *
 #     return render(request, 'main/baseAlumno-sinLogin.html', {"vendedores": vendedoresJson})
 
 
-#def login(request):
- #   return render(request, 'main/login.html', {})
+# def login(request):
+#   return render(request, 'main/login.html', {})
 
 
 def fijoDashboard(request):
@@ -94,7 +94,6 @@ def fijoDashboard(request):
         gananciasDiariasArr.append(aux)
     gananciasDiariasArr = simplejson.dumps(gananciasDiariasArr)
 
-
     # todos los productos del vendedor
     productos = Comida.objects.filter(idVendedor=id).values('nombre', 'precio')
     temp_productos = list(productos)
@@ -121,7 +120,6 @@ def fijoDashboard(request):
         aux.append(element['conteo'])
         productosHoyArr.append(aux)
     productosHoyArr = simplejson.dumps(productosHoyArr)
-
 
     return render(request, 'main/fijoDashboard.html',
                   {"transacciones": transaccionesDiariasArr, "ganancias": gananciasDiariasArr,
@@ -155,7 +153,6 @@ def ambulanteDashboard(request):
         gananciasDiariasArr.append(aux)
     gananciasDiariasArr = simplejson.dumps(gananciasDiariasArr)
 
-
     # todos los productos del vendedor
     productos = Comida.objects.filter(idVendedor=id).values('nombre', 'precio')
     temp_productos = list(productos)
@@ -182,7 +179,6 @@ def ambulanteDashboard(request):
         aux.append(element['conteo'])
         productosHoyArr.append(aux)
     productosHoyArr = simplejson.dumps(productosHoyArr)
-
 
     return render(request, 'main/ambulanteDashboard.html',
                   {"transacciones": transaccionesDiariasArr, "ganancias": gananciasDiariasArr,
@@ -273,8 +269,8 @@ def loginReq(request):
     activo = False
 
     # buscar vendedor en base de datos
-    #MyLoginForm = LoginForm(request.POST)
-    #if MyLoginForm.is_valid():
+    # MyLoginForm = LoginForm(request.POST)
+    # if MyLoginForm.is_valid():
     vendedores = []
     for p in Usuario.objects.raw('SELECT * FROM usuario'):
         if p.contraseña == password and p.email == email:
@@ -468,7 +464,7 @@ def productoReq(request):
             if tipo == 2:
                 path = "main/baseVFijo.html"
                 url = "main/vendedor-fijo.html"
-            #Formulario = GestionProductosForm(request.POST)
+            # Formulario = GestionProductosForm(request.POST)
             # if Formulario.is_valid():
             #     producto = Comida()
             #     producto.idVendedor = id
@@ -768,7 +764,7 @@ def borrarProducto(request):
 def editarProducto(request):
     if request.method == 'POST':
         if request.is_ajax():
-            #form = editarProductosForm(data=request.POST, files=request.FILES)
+            # form = editarProductosForm(data=request.POST, files=request.FILES)
             nombreOriginal = request.POST.get("nombreOriginal")
             nuevoNombre = request.POST.get('nombre')
             nuevoPrecio = (request.POST.get('precio'))
@@ -898,8 +894,8 @@ def borrarUsuario(request):
 def agregarAvatar(request):
     if request.is_ajax() or request.method == 'FILES':
         imagen = request.FILES.get("image")
-        #nuevaImagen = Imagen(imagen=imagen)
-        #nuevaImagen.save()
+        # nuevaImagen = Imagen(imagen=imagen)
+        # nuevaImagen.save()
         return HttpResponse("Success")
 
 
@@ -1056,7 +1052,8 @@ def createTransaction(request):
     transaccionNueva.save()
     return JsonResponse({"transaccion": "realizada"})
 
-#------------------------- Refactoring -------------------------#
+
+# ------------------------- Refactoring -------------------------#
 def getProductos(vendedor):
     productos = Comida.objects.filter(vendedor=vendedor).all()
     listaProductos = []
@@ -1065,12 +1062,14 @@ def getProductos(vendedor):
         listaProductos.append(p)
     return listaProductos
 
+
 def index(request):
     userDj = request.user
-    if  not userDj.is_authenticated():
+    if not userDj.is_authenticated():
         return render(request, 'refactoring/index.html', {'userDj': userDj})
     user = Usuario.objects.get(usuario=userDj)
     return render(request, 'refactoring/index.html', {'user': user, 'userDj': userDj})
+
 
 class Login(View):
     @staticmethod
@@ -1096,12 +1095,12 @@ class Login(View):
             if tipo == 1:  # alumno
                 return redirect('index')
             else:  # vendedor
-                #vendedor = Vendedor.objects.get(usuario=usuario)
+                # vendedor = Vendedor.objects.get(usuario=usuario)
                 return redirect('vendedorprofilepage', vendedor=usuario)
         return render(request, 'refactoring/login.html', {})
 
-class SignUp(View):
 
+class SignUp(View):
     def get(self, request):
         form = Formulario_Registro()
         return render(request, 'refactoring/signup.html', {'form': form})
@@ -1115,15 +1114,16 @@ class SignUp(View):
                 return render(request, 'refactoring/login.html', {
                     'message': 'Cuenta creada satisfactoriamente', 'form': form, })
             except IntegrityError:
-                return render(request, 'refactoring/signup.html', {'message': 'El usuario ya esta en uso', 'form': form})
+                return render(request, 'refactoring/signup.html',
+                              {'message': 'El usuario ya esta en uso', 'form': form})
             except KeyError as e:
                 return render(request, 'refactoring/signup.html', {'message': e.args[0], 'form': form})
         else:
             form = Formulario_Registro()
             return render(request, 'refactoring/signup.html', {'form': form})
 
-def vendedorprofilepage(request, vendedor):
 
+def vendedorprofilepage(request, vendedor):
     vendedorUser = Vendedor.objects.get(nombre=vendedor)
     user = request.user
     favorito = False
@@ -1159,8 +1159,8 @@ def vendedorprofilepage(request, vendedor):
     }
     return render(request, 'refactoring/vendedor-profile-page.html', data)
 
-class EditarPerfil(View):
 
+class EditarPerfil(View):
     def get(self, request):
         form = Formulario_Actualizar_Perfil()
         if not request.user.is_authenticated():
@@ -1188,17 +1188,18 @@ class EditarPerfil(View):
                 return redirect('vendedorprofilepage', vendedor=vendedor)
         return render(request, 'refactoring/editar-perfil.html', {'form': form})
 
-class AgregarProducto(View):
 
+class AgregarProducto(View):
     def get(self, request):
         form = Formulario_Producto()
         if request.user.usuario.tipo != 1:
             usuario = request.user.usuario
             vendedor = Vendedor.objects.get(usuario=usuario)
             return render(request, 'refactoring/agregar-productos.html', {'form': form, 'userDj': request.user,
-                                                                      'user': usuario, 'vendedor': vendedor})
+                                                                          'user': usuario, 'vendedor': vendedor})
         return render(request, 'refactoring/agregar-productos.html', {'form': form, 'userDj': request.user,
                                                                       'user': request.user.usuario})
+
     def post(self, request):
         form = Formulario_Producto(request.POST, request.FILES)
         if form.is_valid():
@@ -1209,8 +1210,8 @@ class AgregarProducto(View):
             form = Formulario_Producto()
             return render(request, 'refactoring/agregar-productos.html', {'form': form})
 
-class EditarProducto(View):
 
+class EditarProducto(View):
     def get(self, request, nombre, vendedor):
         producto_inicial = Comida.objects.all().filter(nombre=nombre).first()
         form = Formulario_Producto(instance=producto_inicial)
@@ -1218,9 +1219,10 @@ class EditarProducto(View):
             usuario = request.user.usuario
             vendedor = Vendedor.objects.get(usuario=usuario)
             return render(request, 'refactoring/editar-productos.html', {'form': form, 'userDj': request.user,
-                                                                      'user': usuario, 'vendedor': vendedor})
+                                                                         'user': usuario, 'vendedor': vendedor})
         return render(request, 'refactoring/editar-productos.html', {'form': form, 'userDj': request.user,
-                                                                      'user': request.user.usuario})
+                                                                     'user': request.user.usuario})
+
     def post(self, request, nombre, vendedor):
         producto_inicial = Comida.objects.all().filter(nombre=nombre).first()
         form = Formulario_Producto(request.POST, request.FILES)
@@ -1231,15 +1233,20 @@ class EditarProducto(View):
         else:
             form = Formulario_Producto()
             return render(request, 'refactoring/editar-productos.html', {'form': form, 'userDj': request.user,
-                                                                          'user': request.user.usuario, 'vendedor': vendedor})
+                                                                         'user': request.user.usuario,
+                                                                         'vendedor': vendedor})
+
+
 def productos_delete(request, nombre, vendedor):
     producto = Comida.objects.all().filter(nombre=nombre).first()
     producto.delete()
     return redirect('vendedorprofilepage', vendedor=vendedor)
 
+
 def logout(request):
     auth.logout(request)
     return redirect('index')
+
 
 def change_active(request):
     usuario = Usuario.objects.get(usuario=request.user)
@@ -1247,6 +1254,7 @@ def change_active(request):
     vendedor.activo = not vendedor.activo
     vendedor.save()
     return HttpResponse("")
+
 
 def add_favorite(request):
     user = Usuario.objects.get(nombre=request.user)

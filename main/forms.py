@@ -15,8 +15,7 @@ class Formulario_Registro(forms.Form):
     hora_inicio = forms.TimeField(label='Hora de apertura', widget=forms.TimeInput(), required=False, initial='8:00')
     hora_fin = forms.TimeField(label='Hora de cierre', widget=forms.TimeInput(), required=False, initial='18:00')
 
-    pagos = forms.ModelMultipleChoiceField(queryset=FormasDePago.objects.all(), required=False,
-                                           initial=FormasDePago.objects.none())
+    pagos = forms.MultipleChoiceField(widget=forms.SelectMultiple(), required=False, initial=FormasDePago.objects.none())
 
     def limpiar_contrasena(self):
         if 'contrasena' in self.cleaned_data:
@@ -28,7 +27,7 @@ class Formulario_Registro(forms.Form):
 
     class Meta:
         model = Usuario
-        fields = ('tipo', 'nombre','avatar')
+        fields = ('tipo', 'nombre', 'avatar')
 
 
 class Formulario_Ingreso(forms.Form):
@@ -72,9 +71,10 @@ class Formulario_Gestion_Producto(forms.Form):
     stock = forms.IntegerField()
     precio = forms.IntegerField()
 
+
 class Formulario_Producto(forms.ModelForm):
     class Meta:
         model = Comida
         fields = ('nombre', 'precio', 'stock', 'categorias', 'descripcion', 'imagen')
-# class Formulario_Editar_Producto(forms.Form):
-#     foto = forms.FileField()
+        # class Formulario_Editar_Producto(forms.Form):
+        #     foto = forms.FileField()
