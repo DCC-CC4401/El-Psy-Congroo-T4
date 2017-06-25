@@ -9,15 +9,14 @@ def crear_usuario(tipo, form):
     if tipo == "3":  # ambulante)
         usuarioAmbulante = Vendedor(usuario=usuario, nombre=form.cleaned_data['nombre'])
         usuarioAmbulante.save()
-        usuarioAmbulante.formasDePago.add(form.cleaned_data['pagos'])
-        usuarioAmbulante.save()
+        usuarioAmbulante.formasDePago = form.cleaned_data['pagos']
+
     if tipo == "2":  # fijo
         usuarioFijo = Vendedor(usuario=usuario, nombre=form.cleaned_data['nombre'],
                                horarioIni=form.cleaned_data['hora_inicio'],
                                horarioFin=form.cleaned_data['hora_fin'])
         usuarioFijo.save()
-        usuarioFijo.formasDePago.add(form.cleaned_data['pagos'])
-        usuarioFijo.save()
+        usuarioFijo.formasDePago = form.cleaned_data['pagos']
 
 def editar_usuario(user, form):
     user.email = form.cleaned_data['email']
