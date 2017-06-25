@@ -32,10 +32,40 @@
 
 
 {% block content %}
-    <div class='row'>
-        <div class = "col s12 m12 l12">
-            <img class='activator responsive-img right' src="{% static 'img/mapa.png' %}" alt="Planets" usemap="#vendedoresMap">
-        </div>
-    </div>
+	<div id="map"></div>
+    <script>
+      function initMap() {
+        var infoWindow;
+        var beau850 = {lat: -33.457785, lng: -70.663808};
+        var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 19,
+          center: beau850
+        });
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(function(position) {
+            var pos = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude
+            }
+            map.setCenter(pos);
+          }, function() {
+            handleLocationError(true, infoWindow, map.getCenter());
+          });
+        } else {
+          // Browser doesn't support Geolocation
+          handleLocationError(false, infoWindow, map.getCenter());
+        }
+      }
+      function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+        infoWindow.setPosition(pos);
+        infoWindow.setContent(browserHasGeolocation ?
+                              'Error: The Geolocation service failed.' :
+                              'Error: Your browser doesn\'t support geolocation.');
+        infoWindow.open(map);
+      }
+    </script>
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBV7ElkwQIJ2v6YG9fhXsbxbHNZzfoO9L8&callback=initMap">
+    </script>
 
 {% endblock %}

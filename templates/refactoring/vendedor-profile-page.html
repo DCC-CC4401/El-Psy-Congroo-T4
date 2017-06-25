@@ -17,21 +17,53 @@
                 </div>
                 <script>
                     $("#activo").change(function () {
-                        $.ajax({
-                            url: '{% url "change_active" %}',
-                            success: function(data) {
-                                window.location.reload();
+                        var lat = 0;
+                        var lng = 0;
+                        if (navigator.geolocation) {
+                            navigator.geolocation.getCurrentPosition(changePosition, changeActive);
+                            function changePosition(position) {
+                                lng = position.coords.longitude;
+                                lat = position.coords.latitude;
+                                $.ajax({
+                                    url: '{% url "change_active" %}',
+                                    data: {
+                                        'lat': lat,
+                                        'long': lng
+                                    },
+                                    dataType: 'json',
+                                    complete: function() {
+                                        window.location.reload();
+                                    }
+                                });
                             }
-                        })
+                            function changeActive(err) {
+                                $.ajax({
+                                    url: '{% url "change_active" %}',
+                                    success: function () {
+                                        window.location.reload();
+                                    }
+                                })
+                            }
+                        } else {
+                            $.ajax({
+                                url: '{% url "change_active" %}',
+                                success: function () {
+                                    window.location.reload();
+                                }
+                            })
+                        }
                     });
                 </script>
             </li>
         {% endif %}
     {% endif %}
-{%  endblock %}
+{% endblock %}
 
 {% block content %}
     <main>
+        <script>
+
+        </script>
         <div class="container">
             <div id="profile-page-header" class="card">
                 <div class="card-image waves-effect waves-block waves-light">
@@ -39,22 +71,26 @@
                 </div>
                 <div class="row hide-on-small-and-down">
                     <a class="card-profile-image-large">
-                        <img style="margin-top: 20%;" src="/media/{{ vendedor.avatar }}" alt="profile image" class="circle z-depth-2 responsive-img activator">
+                        <img style="margin-top: 20%;" src="/media/{{ vendedor.avatar }}" alt="profile image"
+                             class="circle z-depth-2 responsive-img activator">
                     </a>
                 </div>
                 <div class="row show-on-small hide-on-med-and-up">
                     <a class="card-profile-image-small">
-                        <img src="/media/{{ vendedor.avatar }}" alt="profile image" class="circle z-depth-2 responsive-img activator">
+                        <img src="/media/{{ vendedor.avatar }}" alt="profile image"
+                             class="circle z-depth-2 responsive-img activator">
                     </a>
                 </div>
                 <div class="card-content s12">
                     <div class="row">
                         <div class="col s3 offset-s2 hide-on-med-and-down">
-                            <h4 class="card-title grey-text flow-text text-darken-4 center-align">{{vendedor.nombre }}</h4>
+                            <h4 class="card-title grey-text flow-text text-darken-4 center-align">{{ vendedor.nombre }}</h4>
                             <p class="medium-small flow-text grey-text center-align">&emsp;{{ vendedor_tipo }}</p>
                             {% if vendedor_tipo == 'Vendedor fijo' %}
                                 <p class="flow-text text-darken-4 center-align" style="font-size: 0.88rem;">
-                                    &emsp;&emsp;Horario: <a class="light-green-text center-align">{{ vendedor.horarioIni }} - {{ vendedor.horarioFin }}</a>
+                                    &emsp;&emsp;Horario: <a
+                                        class="light-green-text center-align">{{ vendedor.horarioIni }}
+                                    - {{ vendedor.horarioFin }}</a>
                                 </p>
                             {% endif %}
                         </div>
@@ -63,7 +99,8 @@
                             <p class="medium-small flow-text light-green-text">{{ vendedor_estado }}</p>
                         </div>
                         <div class="col s3 l2 hide-on-med-and-down center-align">
-                            <h8 class=" grey-text flow-text text-darken-4" style="font-size: 1.3rem;">Formas de pago</h8>
+                            <h8 class=" grey-text flow-text text-darken-4" style="font-size: 1.3rem;">Formas de pago
+                            </h8>
                             <p class="medium-small flow-text grey-text">{{ vendedor_metodospago }}</p>
                         </div>
                         {% if userDj.is_authenticated %}
@@ -72,8 +109,9 @@
                                     <label>
                                         <h4 class="card-title grey-text flow-text text-darken-4">Favorito</h4>
                                         {% if vendedor.usuario.usuario.id == userDj.id %}
-                                            <h6><i class="material-icons amber-text" >grade</i>
-                                                <span class=" grey-text flow-text text-darken-4"style="font-size:24px; line-height:35px;">{{ vendedor_numero_favs }}</span>
+                                            <h6><i class="material-icons amber-text">grade</i>
+                                                <span class=" grey-text flow-text text-darken-4"
+                                                      style="font-size:24px; line-height:35px;">{{ vendedor_numero_favs }}</span>
                                             </h6>
                                         {% else %}
                                             {% if favorito %}
@@ -89,7 +127,8 @@
                     </div>
                     {% if vendedor.usuario.usuario.id == userDj.id %}
                         <div class="col s3 l2 hide-on-med-and-down right-align">
-                            <a href="{% url 'editar_perfil' %}" class="btn-floating activator waves-effect waves-light darken-2">
+                            <a href="{% url 'editar_perfil' %}"
+                               class="btn-floating activator waves-effect waves-light darken-2">
                                 <i class="material-icons">mode_edit</i>
                             </a>
                         </div>
@@ -102,17 +141,20 @@
                         <p class="medium-small flow-text grey-text">&ensp;{{ vendedor_tipo }}</p>
                         {% if vendedor_tipo == 'Vendedor fijo' %}
                             <p class="flow-text text-darken-4" style="font-size: 0.88rem;">
-                                &ensp;Horario: <a class="light-green-text">{{ vendedor.horarioIni }} - {{ vendedor.horarioFin }}</a>
+                                &ensp;Horario: <a class="light-green-text">{{ vendedor.horarioIni }}
+                                - {{ vendedor.horarioFin }}</a>
                             </p>
                         {% endif %}
 
                         {% if userDj.is_authenticated %}
                             <div class="switch" style="margin-left: 10px;">
                                 <label>
-                                    <h4 class="card-title grey-text flow-text text-darken-4" style="font-size: 1.3rem;">Favorito</h4>
+                                    <h4 class="card-title grey-text flow-text text-darken-4" style="font-size: 1.3rem;">
+                                        Favorito</h4>
                                     {% if vendedor.usuario.usuario.id == userDj.id %}
-                                        <h6><i class="material-icons amber-text" >grade</i>
-                                            <span class=" grey-text flow-text text-darken-4"style="font-size:24px; line-height:35px;">{{ vendedor_numero_favs }}</span>
+                                        <h6><i class="material-icons amber-text">grade</i>
+                                            <span class=" grey-text flow-text text-darken-4"
+                                                  style="font-size:24px; line-height:35px;">{{ vendedor_numero_favs }}</span>
                                         </h6>
                                     {% else %}
                                         {% if favorito %}
@@ -137,7 +179,8 @@
 
                     {% if vendedor.usuario.usuario.id == userDj.id %}
                         <div class="col s4 offset-s8 right-align">
-                            <a href="{% url 'editar_perfil' %}" class="btn-floating activator waves-effect waves-light darken-2">
+                            <a href="{% url 'editar_perfil' %}"
+                               class="btn-floating activator waves-effect waves-light darken-2">
                                 <i class="material-icons">mode_edit</i>
                             </a>
                         </div>
@@ -158,18 +201,22 @@
                                             <div class="container">
                                                 <div class="card z-depth-1">
                                                     <div class="teal lighten-2 card-image waves-effect waves-block waves-light">
-                                                        <img class="activator responsive-img center-block"  style="max-width: 30%; margin-top:20px; margin-bottom:20px;" src="/media/{{ p.imagen }}">
+                                                        <img class="activator responsive-img center-block"
+                                                             style="max-width: 30%; margin-top:20px; margin-bottom:20px;"
+                                                             src="/media/{{ p.imagen }}">
                                                     </div>
                                                     {% if vendedor.usuario.usuario.id == userDj.id %}
                                                         <div class="col m4 offset-s8 right-align">
-                                                            <a href="{% url 'editar_producto' nombre=p.nombre vendedor=vendedor %}" class="btn-floating activator waves-effect waves-light darken-2">
+                                                            <a href="{% url 'editar_producto' nombre=p.nombre vendedor=vendedor %}"
+                                                               class="btn-floating activator waves-effect waves-light darken-2">
                                                                 <i class="material-icons ">mode_edit</i>
                                                             </a>
                                                         </div>
                                                     {% endif %}
                                                     <div class="card-content">
                                                         <div class="row ">
-                                                            <span class="card-title activator grey-text text-darken-4">{{ p.nombre }}<i class="material-icons right">more_vert</i></span>
+                                                            <span class="card-title activator grey-text text-darken-4">{{ p.nombre }}<i
+                                                                    class="material-icons right">more_vert</i></span>
 
                                                             <p><a class="teal-text">${{ p.precio }}</a></p>
 
@@ -181,38 +228,53 @@
                                                                 <p>Editar stock: </p>
                                                                 <div class="right">
                                                                     <a onclick="bajarStock({{ p.id }})"
-                                                                       class="waves-effect waves-light col m3 red-text text-accent-2" style="font-size: 32px; font-weight: 600; padding: 0 1.7rem!important; text-align: center"><i class="material-icons left">remove_circle</i></a>
-                                                                    <p class="col m4" style="text-align: center"><a id="stock_{{ p.id }}"
-                                                                                                                    class="teal-text"
-                                                                                                                    style="font-size: 16px;">{{ p.stock }}</a>
+                                                                       class="waves-effect waves-light col m3 red-text text-accent-2"
+                                                                       style="font-size: 32px; font-weight: 600; padding: 0 1.7rem!important; text-align: center"><i
+                                                                            class="material-icons left">remove_circle</i></a>
+                                                                    <p class="col m4" style="text-align: center"><a
+                                                                            id="stock_{{ p.id }}"
+                                                                            class="teal-text"
+                                                                            style="font-size: 16px;">{{ p.stock }}</a>
                                                                     </p>
                                                                     <a onclick="subirStock({{ p.id }})"
-                                                                       class="waves-effect waves-light col m3 red-text text-accent-2" style="font-size: 32px; font-weight: 600; padding: 0 1.7rem!important; text-align: center"><i class="material-icons right">add_circle</i></a>
+                                                                       class="waves-effect waves-light col m3 red-text text-accent-2"
+                                                                       style="font-size: 32px; font-weight: 600; padding: 0 1.7rem!important; text-align: center"><i
+                                                                            class="material-icons right">add_circle</i></a>
                                                                 </div>
                                                             </div>
 
-                                                            <p><a class="red-text right" href="{% url 'eliminar_producto' nombre=p.nombre vendedor=vendedor %}">Eliminar</a></p>
+                                                            <p><a class="red-text right"
+                                                                  href="{% url 'eliminar_producto' nombre=p.nombre vendedor=vendedor %}">Eliminar</a>
+                                                            </p>
                                                         {% endif %}
 
                                                         <div id="{{ p.id }}" class="modal">
                                                             <div class="modal-content">
-                                                                <img class="activator responsive-img center-block" src="/media/{{ p.imagen }}">
+                                                                <img class="activator responsive-img center-block"
+                                                                     src="/media/{{ p.imagen }}">
                                                             </div>
                                                             <div class="modal-footer">
-                                                                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat"><i class="large material-icons">close</i></a>
+                                                                <a href="#!"
+                                                                   class="modal-action modal-close waves-effect waves-green btn-flat"><i
+                                                                        class="large material-icons">close</i></a>
                                                             </div>
                                                         </div>
                                                     </div>
                                                     <div class="card-reveal">
-                                                        <span class="card-title grey-text text-darken-4">{{ p.nombre }}<i class="material-icons right">close</i></span>
+                                                        <span class="card-title grey-text text-darken-4">{{ p.nombre }}<i
+                                                                class="material-icons right">close</i></span>
                                                         <ul>
-                                                            <li>Precio: <a class="green-text light-green-text">${{ p.precio }}</a></li>
+                                                            <li>Precio: <a
+                                                                    class="green-text light-green-text">${{ p.precio }}</a>
+                                                            </li>
                                                             <li>Categoria: {{ p.categoria }}</li>
                                                             <li>Stock: {{ p.stock }} </li>
                                                             <br>
                                                             <li>Descripción: {{ p.descripcion }}
                                                                 <div class="row">
-                                                                    <p class="right-align col m6"><a class="waves-effect waves-light" href="#{{ p.id }}">Ver imagen</a></p>
+                                                                    <p class="right-align col m6"><a
+                                                                            class="waves-effect waves-light"
+                                                                            href="#{{ p.id }}">Ver imagen</a></p>
                                                                 </div>
                                                             </li>
 
@@ -228,7 +290,8 @@
                     </div>
                     {% if vendedor.usuario.usuario.id == userDj.id %}
                         <div class='row'>
-                            <a class='col l5 offset-l4 btn btn-large waves-effect button teal' href="{% url 'agregar_producto' %}">Agregar Producto</a>
+                            <a class='col l5 offset-l4 btn btn-large waves-effect button teal'
+                               href="{% url 'agregar_producto' %}">Agregar Producto</a>
                         </div>
                     {% endif %}
                 </div>
@@ -237,56 +300,56 @@
     </main>
 
     <script>
-        function subirStock(id){
-            let datos ="op=suma&nombre=" + id;
+        function subirStock(id) {
+            let datos = "op=suma&nombre=" + id;
             $.ajax({
                 url:{% url 'getStock' %},
                 type: "GET",
                 data: datos,
                 dataType: "json",
-                success: function(data) {
+                success: function (data) {
                     let nuevoStock = parseInt(data.stock);
-                    nuevoStock +=1;
-                    document.getElementById("Stock-"+id).innerHTML = "Stock: "+nuevoStock;
-                    document.getElementById("Button-"+id).setAttribute("onclick",'subirStock('+"\'"+id+"\'"+' );');
+                    nuevoStock += 1;
+                    document.getElementById("Stock-" + id).innerHTML = "Stock: " + nuevoStock;
+                    document.getElementById("Button-" + id).setAttribute("onclick", 'subirStock(' + "\'" + id + "\'" + ' );');
                 },
-                error:function(data) {
+                error: function (data) {
                     alert("error in getting from server");
                 },
             });
         }
-        function bajarStock(id){
+        function bajarStock(id) {
             //crea la transaccion en la bdd
-            let datosTransaccion="nombre=" + id + "&" + "idUsuario=" + "{{id}}";
+            let datosTransaccion = "nombre=" + id + "&" + "idUsuario=" + "{{id}}";
             $.ajax({
                 url:{% url 'createTransaction' %},
                 type: "GET",
                 data: datosTransaccion,
                 dataType: "json",
-                success: function(data) {
+                success: function (data) {
                     //alert("funciono");
                 },
-                error:function(data) {
+                error: function (data) {
                     alert("error in getting from server");
                 },
             });
             //restar en la bdd
-            let datos ="op=resta&nombre=" + id;
+            let datos = "op=resta&nombre=" + id;
             $.ajax({
                 url:{% url 'getStock' %},
                 type: "GET",
                 data: datos,
                 dataType: "json",
-                success: function(data) {
+                success: function (data) {
                     //alert("tambien funciono");
                     let nuevoStock = parseInt(data.stock);
-                    if (nuevoStock != 0){
-                        nuevoStock -=1;
+                    if (nuevoStock != 0) {
+                        nuevoStock -= 1;
                     }
-                    document.getElementById("Stock-"+id).innerHTML = "Stock: "+nuevoStock;
-                    document.getElementById("Button--"+id).setAttribute("onclick",'bajarStock('+"\'"+id+"\'"+' );');
+                    document.getElementById("Stock-" + id).innerHTML = "Stock: " + nuevoStock;
+                    document.getElementById("Button--" + id).setAttribute("onclick", 'bajarStock(' + "\'" + id + "\'" + ' );');
                 },
-                error:function(data) {
+                error: function (data) {
                     alert("error in getting from server");
                 },
             });

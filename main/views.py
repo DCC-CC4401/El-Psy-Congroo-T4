@@ -1125,7 +1125,6 @@ class SignUp(View):
             return render(request, 'refactoring/signup.html', {'form': form})
 
 
-
 def vendedorprofilepage(request, vendedor):
     vendedorUser = Vendedor.objects.get(nombre=vendedor)
     user = request.user
@@ -1254,6 +1253,11 @@ def logout(request):
 def change_active(request):
     usuario = Usuario.objects.get(usuario=request.user)
     vendedor = Vendedor.objects.get(usuario=usuario)
+    lat = request.GET.get('lat', None)
+    lng = request.GET.get('long', None)
+    if lat is not None and lng is not None:
+        vendedor.lat = request.GET.get('lat', None)
+        vendedor.long = request.GET.get('long', None)
     vendedor.activo = not vendedor.activo
     vendedor.save()
     return HttpResponse("")
