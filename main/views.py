@@ -1074,10 +1074,12 @@ def index(request):
 class Login(View):
     @staticmethod
     def get(request):
+        print('login1')
         form = Formulario_Ingreso()
         return render(request, 'refactoring/login.html', {'form': form})
 
     def post(self, request):
+        print('login')
         form = Formulario_Ingreso(request.POST)
         if not form.is_valid():
             self.get(request)
@@ -1087,7 +1089,7 @@ class Login(View):
         user = authenticate(username=username, password=password)
         if user is None:
             return render(request, 'refactoring/login.html', {
-                'message': 'Nombre de Usuario o Contraseña incorrecto', 'form': form, })
+                'error': 'Usuario o contraseña invalidos', 'form': form, })
         if user.is_active:
             auth.login(request, user)
             usuario = Usuario.objects.get(usuario=user)
@@ -1095,9 +1097,9 @@ class Login(View):
             if tipo == 1:  # alumno
                 return redirect('index')
             else:  # vendedor
-                # vendedor = Vendedor.objects.get(usuario=usuario)
+                print('vendedor')
                 return redirect('vendedorprofilepage', vendedor=usuario)
-        return render(request, 'refactoring/login.html', {})
+        return render(request, 'refactoring/login.html', {'form': form})
 
 
 class SignUp(View):
@@ -1111,16 +1113,17 @@ class SignUp(View):
             try:
                 tipo = form.cleaned_data['tipo_cuenta']
                 crear_usuario(tipo, form)
-                return render(request, 'refactoring/login.html', {
-                    'message': 'Cuenta creada satisfactoriamente', 'form': form, })
+                return redirect('login')
+
             except IntegrityError:
                 return render(request, 'refactoring/signup.html',
-                              {'message': 'El usuario ya esta en uso', 'form': form})
+                              {'mensage': 'El usuario ya esta en uso', 'form': form})
             except KeyError as e:
                 return render(request, 'refactoring/signup.html', {'message': e.args[0], 'form': form})
         else:
             form = Formulario_Registro()
             return render(request, 'refactoring/signup.html', {'form': form})
+
 
 
 def vendedorprofilepage(request, vendedor):
