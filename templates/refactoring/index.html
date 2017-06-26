@@ -41,19 +41,71 @@
                 zoom: 19,
                 center: beau850
             });
-            var number = 0;
+            var markers = [];
+            var infoWindows = [];
+            var info = '';
+            var estado = 'Activo';
+            var pagos = '';
+            var menu = '';
+            var horario = '';
             {% for vendedor in vendedores %}
-                var marker = new google.maps.Marker({
+                markers.push(new google.maps.Marker({
                     position: {lat: {{ vendedor.lat }}, lng: {{ vendedor.long }}},
                     map: map
+                }));
+                {% if vendedor.activo %}
+                    estado = 'Activo';
+                {% else %}
+                    estado = 'Inactivo';
+                {% endif %}
+                pagos = '';
+                {% for forma in vendedor.formasDePago.all %}
+                    {% if forloop.last %}
+                        pagos += '{{ forma.forma }}.';
+                    {% else %}
+                        pagos += '{{ forma.forma }}, ';
+                    {% endif %}
+                {% endfor %}
+                menu = '';
+                {% for item in vendedor.vendedor_respectivo.all %}
+                    {% if forloop.last %}
+                        menu += '{{ item.nombre }}.';
+                    {% else %}
+                        menu += '{{ item.nombre }}, ';
+                    {% endif %}
+                {% endfor %}
+                horario = '';
+                {% if vendedor.usuario.tipo == 2 %}
+                    horario = '<p><i>Horario:</i> {{ vendedor.horarioIni }} - {{ vendedor.horarioFin }}</p>';
+                {% endif %}
+                info = '<div id="content">' +
+                    '<div id="siteNotice">' +
+                    '</div>' +
+                    '<div><p style="float: left;"><img src="/media/{{ vendedor.avatar }}" width="50" hspace="10"></p>' +
+                    '<h4>{{ vendedor.nombre }}</h4></div>' +
+                    '<p style="color:#029500;">' + estado + '</p>' +
+                    '<div id="bodyContent">' +
+                    '<p><i>Menú:</i> ' + menu + '</p>' + horario +
+                    '<p><i>Formas de pago:</i> ' + pagos + '</p>' +
+                    '<p style="text-align: right;">' +
+                    '<a href="{% url 'vendedorprofilepage' vendedor=vendedor %}">Ver detalles»</a></p>' +
+                    '</div>' +
+                    '</div>';
+                infoWindows.push(new google.maps.InfoWindow({
+                    content: info,
+                    maxWidth: 400
+                }));
+                markers[{{ forloop.counter0 }}].addListener('click', function () {
+                    infoWindows[{{ forloop.counter0 }}].open(map, markers[{{ forloop.counter0 }}]);
                 });
             {% endfor %}
+
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(function (position) {
                     var pos = {
                         lat: position.coords.latitude,
                         lng: position.coords.longitude
-                    }
+                    };
                     map.setCenter(pos);
                 }, function () {
                     handleLocationError(true, infoWindow, map.getCenter());
