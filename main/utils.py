@@ -1,4 +1,7 @@
+import datetime
+
 from main.models import *
+
 
 def crear_usuario(tipo, form):
     user = User.objects.create_user(username=form.cleaned_data['nombre'],
@@ -17,6 +20,7 @@ def crear_usuario(tipo, form):
                                lat=form.cleaned_data['latitud'], long=form.cleaned_data['longitud'])
         usuarioFijo.save()
         usuarioFijo.formasDePago = form.cleaned_data['pagos']
+
 
 def editar_usuario(user, form):
     avatar = form.cleaned_data['avatar']
@@ -67,17 +71,29 @@ def editar_producto(producto_inicial, form):
         producto.imagen = form.cleaned_data['imagen']
     producto.save()
 
+
 def getVendedores():
     vendedores = Vendedor.objects.all()
     vendedorList = []
-
     for v in vendedores:
-        vendedorList.append(v)
+        if v.usuario.tipo == 2:
+            actualizar_actividad(v)
+            vendedorList.append(v)
+        if v.activo:
+            vendedorList.append(v)
     return vendedorList
+
 
 def getVendedoresFavoritos(user):
     favoritos = Favoritos.objects.filter(usuario=user)
     favoritosList = []
     for f in favoritos:
-            favoritosList.append(f.vendedor)
+        favoritosList.append(f.vendedor)
     return favoritosList
+
+
+def actualizar_actividad(vendedor):
+    now = datetime.datetime.now().time()
+    if vendedor.horarioIni < now < vendedor.horarioFin:
+        vendedor.activo = True
+        vendedor.save()
