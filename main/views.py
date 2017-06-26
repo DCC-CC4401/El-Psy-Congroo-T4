@@ -18,55 +18,6 @@ from .forms import *
 from .models import *
 
 
-# def index(request):
-#     vendedores = []
-#     # lista de vendedores
-#     for p in Usuario.objects.raw('SELECT * FROM usuario'):
-#         if p.tipo == 2 or p.tipo == 3:
-#             vendedores.append(p.id)
-#     vendedoresJson = simplejson.dumps(vendedores)
-#     # actualizar vendedores fijos
-#     for p in Usuario.objects.raw('SELECT * FROM usuario'):
-#         if p.tipo == 2:
-#             hi = p.horarioIni
-#             hf = p.horarioFin
-#             horai = hi[:2]
-#             horaf = hf[:2]
-#             mini = hi[3:5]
-#             minf = hf[3:5]
-#             tiempo = str(datetime.datetime.now().time())
-#             hora = tiempo[:2]
-#             minutos = tiempo[3:5]
-#             estado = ""
-#             if horaf >= hora and hora >= horai:
-#                 if horai == hora:
-#                     if minf >= minutos and minutos >= mini:
-#                         estado = "activo"
-#                     else:
-#                         estado = "inactivo"
-#                 elif horaf == hora:
-#                     if minf >= minutos and minutos >= mini:
-#                         estado = "activo"
-#                     else:
-#                         estado = "inactivo"
-#                 else:
-#                     estado = "activo"
-#             else:
-#                 estado = "inactivo"
-#             if estado == "activo":
-#                 Usuario.objects.filter(nombre=p.nombre).update(activo=1)
-#             else:
-#                 Usuario.objects.filter(nombre=p.nombre).update(activo=0)
-#
-#     vendedoresJson = simplejson.dumps(vendedores)
-#
-#     return render(request, 'main/baseAlumno-sinLogin.html', {"vendedores": vendedoresJson})
-
-
-# def login(request):
-#   return render(request, 'main/login.html', {})
-
-
 def fijoDashboard(request):
     id = request.POST.get("fijoId")
     # id = str(id)
@@ -417,38 +368,6 @@ def formView(request):
         return render(request, 'main/base.html', {})
 
 
-# def logout(request):
-#     try:
-#         del request.session['id']
-#     except:
-#         pass
-#     return index(request)
-
-
-# def register(request):
-#     tipo = request.POST.get("tipo")
-#     nombre = request.POST.get("nombre")
-#     email = request.POST.get("email")
-#     password = request.POST.get("password")
-#     horaInicial = request.POST.get("horaIni")
-#     horaFinal = request.POST.get("horaFin")
-#     avatar = request.FILES.get("avatar")
-#     print(avatar)
-#     formasDePago = []
-#     if not (request.POST.get("formaDePago0") is None):
-#         formasDePago.append(request.POST.get("formaDePago0"))
-#     if not (request.POST.get("formaDePago1") is None):
-#         formasDePago.append(request.POST.get("formaDePago1"))
-#     if not (request.POST.get("formaDePago2") is None):
-#         formasDePago.append(request.POST.get("formaDePago2"))
-#     if not (request.POST.get("formaDePago3") is None):
-#         formasDePago.append(request.POST.get("formaDePago3"))
-#     usuarioNuevo = Usuario(nombre=nombre, email=email, tipo=tipo, contraseña=password, avatar=avatar,
-#                            formasDePago=formasDePago, horarioIni=horaInicial, horarioFin=horaFinal)
-#     usuarioNuevo.save()
-#     return loginReq(request)
-
-
 def productoReq(request):
     horarioIni = 0
     horarioFin = 0
@@ -464,17 +383,6 @@ def productoReq(request):
             if tipo == 2:
                 path = "main/baseVFijo.html"
                 url = "main/vendedor-fijo.html"
-            # Formulario = GestionProductosForm(request.POST)
-            # if Formulario.is_valid():
-            #     producto = Comida()
-            #     producto.idVendedor = id
-            #     producto.nombre = request.POST.get("nombre")
-            #     producto.imagen = request.FILES.get("comida")
-            #     producto.precio = request.POST.get("precio")
-            #     producto.stock = request.POST.get("stock")
-            #     producto.descripcion = request.POST.get("descripcion")
-            #     producto.categorias = request.POST.get("categoria")
-            #     producto.save()
             else:
                 return render(request, 'main/agregar-productos.html',
                               {"path": path, "respuesta": "¡Ingrese todos los datos!"})
@@ -1232,7 +1140,6 @@ class AgregarProducto(View):
 
 
 class EditarProducto(View):
-
     def get(self, request, pid):
         usuario = Usuario.objects.get(usuario=request.user)
         vendedor = Vendedor.objects.get(usuario=usuario)
