@@ -41,7 +41,7 @@ urlpatterns = [
     url(r'^ambulanteDashboard/$', views.ambulanteDashboard, name='ambulanteDashboard'),
 
     #--------------------------- Refactoring ----------------------------#
-    url(r'^$', views.index, name='index'),
+    url(r'^$', views.index.as_view(), name='index'),
     url(r'^login/$', views.Login.as_view(),name='login'),
     url(r'^logout$', views.logout, name='logout'),
     url(r'^signup/$', views.SignUp.as_view(),name='signup'),

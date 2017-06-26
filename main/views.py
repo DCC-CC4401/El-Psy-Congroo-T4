@@ -1063,14 +1063,25 @@ def getProductos(vendedor):
     return listaProductos
 
 
-def index(request):
-    userDj = request.user
-    if not userDj.is_authenticated():
-        return render(request, 'refactoring/index.html', {'userDj': userDj, 'vendedores': getVendedores()})
-    user = Usuario.objects.get(usuario=userDj)
-    return render(request, 'refactoring/index.html', {'user': user, 'userDj': userDj,
-                                                      'vendedores': getVendedores(),
-                                                      'vendedores_favoritos': getVendedoresFavoritos(user)})
+class index(View):
+    @staticmethod
+    def get(request):
+        userDj = request.user
+        if not userDj.is_authenticated():
+            return render(request, 'refactoring/index.html', {'userDj': userDj, 'vendedores': getVendedores(),
+                                                              'form': form_filtros()})
+        user = Usuario.objects.get(usuario=userDj)
+        return render(request, 'refactoring/index.html', {'user': user, 'userDj': userDj,
+                                                          'vendedores': getVendedores(),
+                                                          'vendedores_favoritos': getVendedoresFavoritos(user),
+                                                          'form': form_filtros()})
+    def post(self, request):
+        userDj = request.user
+        form = form_filtros(request.POST)
+        if form.is_valid():
+            filtros = form.cleaned_data['filtros']
+        return render(request, 'refactoring/index.html', {'userDj': userDj, 'vendedores': getVendedores(),
+                                                          'form': form_filtros()})
 
 
 class Login(View):

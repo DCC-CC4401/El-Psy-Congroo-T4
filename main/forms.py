@@ -77,3 +77,8 @@ class Formulario_Producto(forms.ModelForm):
     class Meta:
         model = Comida
         fields = ('nombre', 'precio', 'stock', 'categorias', 'descripcion')
+
+
+class form_filtros(forms.Form):
+    filtros = forms.MultipleChoiceField(label='Filtros', widget=forms.CheckboxSelectMultiple, choices=Categorias,
+                                        required=False)

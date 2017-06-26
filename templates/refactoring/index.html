@@ -3,31 +3,53 @@
 
 {% block filtros_content %}
     <li><a class="subheader">Filtros</a></li>
-    {% if userDj.is_authenticated %}
-        {% if user.tipo == 1 %}
+    <form method="post" action="">
+        {% csrf_token %}
+        {% if userDj.is_authenticated %}
+            {% if user.tipo == 1 %}
+                <li>
+                    <div class="switch" style="margin-left: 10px;">
+                        <label>
+                            <input type="checkbox"><span class="lever"></span>Sólo mostrar favoritos
+                        </label>
+                    </div>
+                </li>
+            {% endif %}
+        {% endif %}
+        <ul id="id_filtros">
+        {% for choice, text in form.filtros.field.choices %}
             <li>
                 <div class="switch" style="margin-left: 10px;">
-                    <label>
-                        <input type="checkbox"><span class="lever"></span>Sólo mostrar favoritos
+                    <label for="id_filtros_{{ forloop.counter0 }}">
+                        <input id="id_filtros_{{ forloop.counter0 }}" name="filtros" type="checkbox" value="{{ forloop.counter0 }}">
+                        <span class="lever"></span>{{ text }}
                     </label>
                 </div>
             </li>
-        {% endif %}
-    {% endif %}
-    <li>
-        <div class="switch" style="margin-left: 10px;">
-            <label>
-                <input type="checkbox"><span class="lever"></span>Snacks
-            </label>
-        </div>
-    </li>
-    <li>
-        <div class="switch" style="margin-left: 10px;">
-            <label>
-                <input type="checkbox"><span class="lever"></span>Almuerzos
-            </label>
-        </div>
-    </li>
+        {% endfor %}
+        </ul>
+        <li>
+            <div class="switch" style="margin-left: 10px;">
+                <label>
+                    <input type="checkbox"><span class="lever"></span>Snacks
+                </label>
+            </div>
+        </li>
+        <li>
+            <div class="switch" style="margin-left: 10px;">
+                <label>
+                    <input type="checkbox"><span class="lever"></span>Almuerzos
+                </label>
+            </div>
+        </li>
+        <li>
+            <div class='row center-align' style="margin-bottom: 100px;">
+                <button type='submit' name='filtrar' class='btn btn-large waves-effect teal'>
+                    Filtrar
+                </button>
+            </div>
+        </li>
+    </form>
 {% endblock %}
 
 
@@ -53,7 +75,7 @@
                     position: {lat: {{ vendedor.lat }}, lng: {{ vendedor.long }}},
                     map: map
                     {% if vendedor in vendedores_favoritos %}
-                    , icon: '../static/img/star.png'
+                        , icon: '../static/img/star.png'
                     {% endif %}
                 }));
                 {% if vendedor.activo %}
