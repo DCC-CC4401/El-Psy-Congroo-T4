@@ -80,5 +80,6 @@ class Formulario_Producto(forms.ModelForm):
 
 
 class form_filtros(forms.Form):
+    favoritos = forms.BooleanField(label='Favoritos', widget=forms.CheckboxInput, required=False)
     filtros = forms.MultipleChoiceField(label='Filtros', widget=forms.CheckboxSelectMultiple, choices=Categorias,
                                         required=False)

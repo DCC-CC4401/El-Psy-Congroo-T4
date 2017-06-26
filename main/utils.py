@@ -92,11 +92,12 @@ def getVendedores(filtros=[]):
     return vendedorList
 
 
-def getVendedoresFavoritos(user):
+def getVendedoresFavoritos(user, vendedores):
     favoritos = Favoritos.objects.filter(usuario=user)
     favoritosList = []
     for f in favoritos:
-        favoritosList.append(f.vendedor)
+        if f.vendedor in vendedores:
+            favoritosList.append(f.vendedor)
     return favoritosList
 
 

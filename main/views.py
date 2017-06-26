@@ -1,5 +1,3 @@
-import datetime
-
 import simplejson
 from django.contrib import auth
 from django.contrib.auth import authenticate
@@ -979,16 +977,30 @@ class index(View):
             return render(request, 'refactoring/index.html', {'userDj': userDj, 'vendedores': getVendedores(),
                                                               'form': form_filtros()})
         user = Usuario.objects.get(usuario=userDj)
+        vendedores = getVendedores()
         return render(request, 'refactoring/index.html', {'user': user, 'userDj': userDj,
-                                                          'vendedores': getVendedores(),
-                                                          'vendedores_favoritos': getVendedoresFavoritos(user),
+                                                          'vendedores': vendedores,
+                                                          'vendedores_favoritos': getVendedoresFavoritos(user, vendedores),
                                                           'form': form_filtros()})
+
     def post(self, request):
         userDj = request.user
+        user = Usuario.objects.get(usuario=userDj)
         form = form_filtros(request.POST)
         if form.is_valid():
             filtros = form.cleaned_data['filtros']
-        return render(request, 'refactoring/index.html', {'userDj': userDj, 'vendedores': getVendedores(filtros),
+            favoritos = form.cleaned_data['favoritos']
+            vendedores = getVendedores(filtros)
+            if favoritos:
+                vendedores = getVendedoresFavoritos(user, vendedores)
+            return render(request, 'refactoring/index.html', {'user': user, 'userDj': userDj,
+                                                              'vendedores': vendedores,
+                                                              'vendedores_favoritos': getVendedoresFavoritos(user, vendedores),
+                                                              'form': form_filtros()})
+        vendedores = getVendedores()
+        return render(request, 'refactoring/index.html', {'user': user, 'userDj': userDj,
+                                                          'vendedores': vendedores,
+                                                          'vendedores_favoritos': getVendedoresFavoritos(user, vendedores),
                                                           'form': form_filtros()})
 
 
