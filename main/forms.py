@@ -38,8 +38,9 @@ class Formulario_Ingreso(forms.Form):
     correo = forms.EmailField(label='Ingresa tu e-mail', widget=forms.EmailInput)
     contrasena = forms.CharField(label='Ingresa tu contraseña', widget=forms.PasswordInput())
 
+
 class Formulario_Actualizar_Perfil(forms.Form):
-    nombre =  forms.CharField(label='Editar nombre')
+    nombre = forms.CharField(label='Editar nombre')
     email = forms.EmailField(label='Ingresa tu e-mail', widget=forms.EmailInput)
     avatar = forms.ImageField(label='Avatar', widget=forms.FileInput, required=False, initial=None)
     contrasena = forms.CharField(label='Contraseña', widget=forms.PasswordInput)
@@ -70,17 +71,9 @@ class Formulario_Actualizar_Perfil(forms.Form):
         exclude = ('username', 'date_joined')
 
 
-# class Formulario_Gestion_Producto(forms.Form):
-#     idVendedor = 0
-#     nombre = forms.CharField(max_length=200)
-#     categorias = forms.IntegerField()
-#     descripcion = forms.CharField(max_length=500)
-#     stock = forms.IntegerField()
-#     precio = forms.IntegerField()
-
-
 class Formulario_Producto(forms.ModelForm):
     imagen = forms.ImageField(label='Imagen', widget=forms.FileInput, required=False, initial=None)
+
     class Meta:
         model = Comida
         fields = ('nombre', 'precio', 'stock', 'categorias', 'descripcion')
