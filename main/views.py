@@ -1129,11 +1129,18 @@ def vendedorprofilepage(request, vendedor):
     vendedorUser = Vendedor.objects.get(nombre=vendedor)
     user = request.user
     favorito = False
-    usuario = Usuario.objects.get(usuario=user)
-    tipo = usuario.tipo
     metodospago = ''
     favs = 0
+    for m in vendedorUser.formasDePago.all():
+        metodospago += m.forma + ' '
+    now = datetime.datetime.now().time()
+    if vendedorUser.usuario.tipo == 2:
+        if now > vendedorUser.horarioIni and now < vendedorUser.horarioFin:
+            vendedorUser.activo = True
+            vendedorUser.save()
     if user.is_authenticated:
+        usuario = Usuario.objects.get(usuario=user)
+        tipo = usuario.tipo
         if tipo == 1:
             if Favoritos.objects.filter(usuario=usuario, vendedor=vendedorUser).count() != 0:
                 favorito = True
@@ -1141,16 +1148,8 @@ def vendedorprofilepage(request, vendedor):
             for fav in Favoritos.objects.all():
                 if fav.vendedor == vendedorUser:
                     favs += 1
-            for m in vendedorUser.formasDePago.all():
-                metodospago += m.forma + ' '
-            now = datetime.datetime.now().time()
-            if vendedorUser.usuario.tipo == 2:
-                if now > vendedorUser.horarioIni and now < vendedorUser.horarioFin:
-                    vendedorUser.activo = True
-                    vendedorUser.save()
     data = {
         'userDj': user,
-        'user': usuario,
         'vendedor': vendedorUser,
         'vendedor_estado': 'Activo' if vendedorUser.activo else 'Inactivo',
         'vendedor_tipo': 'Vendedor fijo' if vendedorUser.usuario.tipo == 2 else 'Vendedor ambulante',
@@ -1225,16 +1224,14 @@ class AgregarProducto(View):
 
 
 class EditarProducto(View):
+
     def get(self, request, nombre, vendedor):
         producto_inicial = Comida.objects.all().filter(nombre=nombre).first()
         form = Formulario_Producto(instance=producto_inicial)
-        if request.user.usuario.tipo != 1:
-            usuario = request.user.usuario
-            vendedor = Vendedor.objects.get(usuario=usuario)
-            return render(request, 'refactoring/editar-productos.html', {'form': form, 'userDj': request.user,
-                                                                         'user': usuario, 'vendedor': vendedor})
+        usuario = request.user.usuario
+        vendedor = Vendedor.objects.get(usuario=usuario)
         return render(request, 'refactoring/editar-productos.html', {'form': form, 'userDj': request.user,
-                                                                     'user': request.user.usuario})
+                                                                     'user': usuario, 'vendedor': vendedor})
 
     def post(self, request, nombre, vendedor):
         producto_inicial = Comida.objects.all().filter(nombre=nombre).first()

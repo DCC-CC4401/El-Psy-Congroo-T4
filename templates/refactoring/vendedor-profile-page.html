@@ -3,7 +3,7 @@
 
 {% block activo_content %}
     {% if userDj.is_authenticated %}
-        {% if user.tipo == 3 %}
+        {% if userDj.usuario.tipo == 3 %}
             <li><a class="subheader">Activo</a></li>
             <li>
                 <div class="switch" style="margin-left: 80px;">

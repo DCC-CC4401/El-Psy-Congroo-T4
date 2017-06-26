@@ -51,7 +51,7 @@ class FormasDePago(models.Model):
 
 
 class Comida(models.Model):
-    nombre = models.CharField(max_length=200, primary_key=True)
+    nombre = models.CharField(max_length=200)
     categorias = models.IntegerField(default=0, choices=Categorias)
     descripcion = models.CharField(max_length=500)
     stock = models.PositiveSmallIntegerField(default=0)

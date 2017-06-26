@@ -54,14 +54,14 @@ def agregar_producto(vendedor, form):
 
 
 def editar_producto(producto_inicial, form):
-    producto_inicial.nombre = form.cleaned_data['nombre']
-    producto_inicial.stock = form.cleaned_data['stock']
-    producto_inicial.categorias = form.cleaned_data['categorias']
-    producto_inicial.descripcion = form.cleaned_data['descripcion']
-    producto_inicial.precio = form.cleaned_data['precio']
-    producto_inicial.imagen = form.cleaned_data['imagen']
-    producto_inicial.save()
-
+    producto = Comida.objects.all().filter(nombre=producto_inicial).first()
+    producto.nombre = form.cleaned_data['nombre']
+    producto.stock = form.cleaned_data['stock']
+    producto.categorias = form.cleaned_data['categorias']
+    producto.descripcion = form.cleaned_data['descripcion']
+    producto.precio = form.cleaned_data['precio']
+    producto.imagen = form.cleaned_data['imagen']
+    producto.save()
 
 def getVendedores():
     vendedores = Vendedor.objects.all()
