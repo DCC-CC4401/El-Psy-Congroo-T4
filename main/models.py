@@ -1,5 +1,5 @@
-from django.db import models
 from django.contrib.auth.models import User
+from django.db import models
 from django.utils import timezone
 from django.utils.formats import get_format
 
@@ -11,7 +11,8 @@ class Usuario(models.Model):
     nombre = models.CharField(max_length=200)
     tipo = models.IntegerField(default=1, choices=TiposUsuarios)
     avatar = models.ImageField(default='AvatarEstudiante3.png')
-    #favoritos = models.ManyToManyField('Vendedor', related_name="favs", blank=True)
+
+    # favoritos = models.ManyToManyField('Vendedor', related_name="favs", blank=True)
 
     def __str__(self):
         return self.nombre
@@ -38,6 +39,7 @@ class Vendedor(models.Model):
     class Meta:
         verbose_name = 'Vendedor'
         verbose_name_plural = 'Vendedores'
+
 
 class FormasDePago(models.Model):
     forma = models.CharField(max_length=200, default='', primary_key=True)
@@ -71,12 +73,13 @@ class Comida(models.Model):
 class Favoritos(models.Model):
     usuario = models.ForeignKey('Usuario', related_name="usuario_fav")
     vendedor = models.ForeignKey('Vendedor', related_name="vendedor_fav")
+
     # idAlumno = models.IntegerField()
     # idVendedor = models.IntegerField()
 
     def __str__(self):
         return self.vendedor.nombre
-        #return self.idAlumno
+        # return self.idAlumno
 
     class Meta:
         verbose_name = 'Favorito'
