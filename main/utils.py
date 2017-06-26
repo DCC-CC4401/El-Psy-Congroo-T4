@@ -70,3 +70,10 @@ def getVendedores():
     for v in vendedores:
         vendedorList.append(v)
     return vendedorList
+
+def getVendedoresFavoritos(user):
+    favoritos = Favoritos.objects.filter(usuario=user)
+    favoritosList = []
+    for f in favoritos:
+            favoritosList.append(f.vendedor)
+    return favoritosList

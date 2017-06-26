@@ -1068,7 +1068,9 @@ def index(request):
     if not userDj.is_authenticated():
         return render(request, 'refactoring/index.html', {'userDj': userDj, 'vendedores': getVendedores()})
     user = Usuario.objects.get(usuario=userDj)
-    return render(request, 'refactoring/index.html', {'user': user, 'userDj': userDj, 'vendedores': getVendedores()})
+    return render(request, 'refactoring/index.html', {'user': user, 'userDj': userDj,
+                                                      'vendedores': getVendedores(),
+                                                      'vendedores_favoritos': getVendedoresFavoritos(user)})
 
 
 class Login(View):

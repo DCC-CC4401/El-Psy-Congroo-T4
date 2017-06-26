@@ -52,6 +52,9 @@
                 markers.push(new google.maps.Marker({
                     position: {lat: {{ vendedor.lat }}, lng: {{ vendedor.long }}},
                     map: map
+                    {% if vendedor in vendedores_favoritos %}
+                    , icon: '../static/img/star.png'
+                    {% endif %}
                 }));
                 {% if vendedor.activo %}
                     estado = 'Activo';
