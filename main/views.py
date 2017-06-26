@@ -1133,11 +1133,8 @@ def vendedorprofilepage(request, vendedor):
     favs = 0
     for m in vendedorUser.formasDePago.all():
         metodospago += m.forma + ' '
-    now = datetime.datetime.now().time()
     if vendedorUser.usuario.tipo == 2:
-        if now > vendedorUser.horarioIni and now < vendedorUser.horarioFin:
-            vendedorUser.activo = True
-            vendedorUser.save()
+        actualizar_actividad(vendedorUser)
     if user.is_authenticated:
         usuario = Usuario.objects.get(usuario=user)
         tipo = usuario.tipo
