@@ -29,7 +29,7 @@ class Vendedor(models.Model):
     horarioIni = models.TimeField(u'Horario de inicio', null=True)
     horarioFin = models.TimeField(u'Horario fin', null=True)
     lat = models.DecimalField(u'Latitud', null=True, decimal_places=40, max_digits=42)
-    long = models.DecimalField(u'Loongitud', null=True, decimal_places=40, max_digits=42)
+    long = models.DecimalField(u'Longitud', null=True, decimal_places=40, max_digits=42)
     avatar = models.ImageField(default='AvatarVendedor5.png')
 
     def __str__(self):

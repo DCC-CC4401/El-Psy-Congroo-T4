@@ -1,5 +1,5 @@
-
 from main.models import *
+
 
 def crear_usuario(tipo, form):
     user = User.objects.create_user(username=form.cleaned_data['nombre'],
@@ -17,6 +17,7 @@ def crear_usuario(tipo, form):
                                horarioFin=form.cleaned_data['hora_fin'])
         usuarioFijo.save()
         usuarioFijo.formasDePago = form.cleaned_data['pagos']
+
 
 def editar_usuario(user, form):
     user.email = form.cleaned_data['email']
@@ -36,6 +37,7 @@ def editar_usuario(user, form):
         vendedor.horarioFin = form.cleaned_data['hora_fin']
         vendedor.save()
 
+
 def agregar_producto(vendedor, form):
     producto = Comida(nombre=form.cleaned_data['nombre'], stock=form.cleaned_data['stock'],
                       categorias=form.cleaned_data['categorias'],
@@ -45,6 +47,7 @@ def agregar_producto(vendedor, form):
                       vendedor=vendedor)
     producto.save()
 
+
 def editar_producto(producto_inicial, form):
     producto_inicial.nombre = form.cleaned_data['nombre']
     producto_inicial.stock = form.cleaned_data['stock']
@@ -53,3 +56,12 @@ def editar_producto(producto_inicial, form):
     producto_inicial.precio = form.cleaned_data['precio']
     producto_inicial.imagen = form.cleaned_data['imagen']
     producto_inicial.save()
+
+
+def getVendedores():
+    vendedores = Vendedor.objects.all()
+    vendedorList = []
+
+    for v in vendedores:
+        vendedorList.append(v)
+    return vendedorList
