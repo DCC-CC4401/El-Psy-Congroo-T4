@@ -25,13 +25,30 @@
                         <div class='col s12 m12'>
                         </div>
                     </div>
+                    <div class='row'>
+                        <div class='input-field col s12 m12' >
+{#                            <h6>Editar nombre:</h6>#}
+                            {{ form.nombre}}
+                            <label style="text-align: center;" for='id_nombre'>Editar nombre</label>
+                        </div>
+                    </div>
 
                     <div class='row'>
                         <div class='input-field col s12 m12'>
                             {{ form.email }}
-                            <label style="text-align: center" for='id_email'>Ingresar e-mail nuevo</label>
+                            <label style="text-align: center" for='id_email'>Editar e-mail</label>
                         </div>
                     </div>
+
+{#                    {% if userDj.usuario.tipo == 1 %}#}
+{#                        <div class='row'>#}
+{#                            <div class='input-field col s12 m12'>#}
+                                {#<h6>Editar favoritos:</h6>#}
+{#                                {{ form.favoritos }}#}
+{#                                <label style="text-align: center;" for='id_favoritos'>Editar favoritos</label>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                    {% endif %}#}
 
                     {% if userDj.usuario.tipo == 2 %}
 

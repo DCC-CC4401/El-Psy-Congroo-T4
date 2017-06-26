@@ -35,15 +35,17 @@ class Formulario_Ingreso(forms.Form):
     correo = forms.EmailField(label='Ingresa tu e-mail', widget=forms.EmailInput)
     contrasena = forms.CharField(label='Ingresa tu contraseña', widget=forms.PasswordInput())
 
-
 class Formulario_Actualizar_Perfil(forms.Form):
+    nombre =  forms.CharField(label='Editar nombre')
     email = forms.EmailField(label='Ingresa tu e-mail', widget=forms.EmailInput)
+    avatar = forms.ImageField(label='Avatar', widget=forms.FileInput, required=False, initial=None)
+    contrasena = forms.CharField(label='Contraseña', widget=forms.PasswordInput)
     pagos = forms.ModelMultipleChoiceField(queryset=FormasDePago.objects.all(), required=False,
                                            initial=FormasDePago.objects.none())
     hora_inicio = forms.TimeField(label='Hora de apertura', widget=forms.TimeInput(), required=False)
     hora_fin = forms.TimeField(label='Hora de cierre', widget=forms.TimeInput(), required=False)
-    avatar = forms.ImageField(label='Avatar', widget=forms.FileInput, required=False, initial=None)
-    contrasena = forms.CharField(label='Contraseña', widget=forms.PasswordInput)
+    # favoritos = forms.ModelMultipleChoiceField(queryset=Favoritos.objects.all(), widget=forms.SelectMultiple(),
+    #                                    required=False, initial=Favoritos.objects.none())
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user', None)

@@ -1,6 +1,5 @@
 from main.models import *
 
-
 def crear_usuario(tipo, form):
     user = User.objects.create_user(username=form.cleaned_data['nombre'],
                                     password=form.cleaned_data['contrasena'], email=form.cleaned_data['email'])
@@ -18,23 +17,29 @@ def crear_usuario(tipo, form):
         usuarioFijo.save()
         usuarioFijo.formasDePago = form.cleaned_data['pagos']
 
-
 def editar_usuario(user, form):
-    user.email = form.cleaned_data['email']
-    user.save()
     avatar = form.cleaned_data['avatar']
-    if user.usuario.tipo == 1:  # usuario es alumno
-        editar_usuario(user, form)
-        alumno = Usuario.objects.get(usuario=user)
-        alumno.avatar = avatar
-        alumno.save()
+    nombre = form.cleaned_data['nombre']
+    user.email = form.cleaned_data['email']
+    user.username = nombre
+    user.save()
+    usuario = Usuario.objects.get(usuario=user)
+    usuario.nombre = nombre
+    if usuario.tipo == 1:
+        if avatar is not None:
+            usuario.avatar = avatar
+        usuario.save()
     else:  # usuario vendedor
+        usuario.save()
         usuario = Usuario.objects.get(usuario=user)
         vendedor = Vendedor.objects.get(usuario=usuario)
+        vendedor.nombre = nombre
+        vendedor.formasDePago = form.cleaned_data['pagos']
         if avatar is not None:
             vendedor.avatar = avatar
-        vendedor.horarioIni = form.cleaned_data['hora_inicio']
-        vendedor.horarioFin = form.cleaned_data['hora_fin']
+        if usuario.tipo == 2:
+            vendedor.horarioIni = form.cleaned_data['hora_inicio']
+            vendedor.horarioFin = form.cleaned_data['hora_fin']
         vendedor.save()
 
 

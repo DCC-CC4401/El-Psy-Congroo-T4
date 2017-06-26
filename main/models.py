@@ -11,7 +11,7 @@ class Usuario(models.Model):
     nombre = models.CharField(max_length=200)
     tipo = models.IntegerField(default=1, choices=TiposUsuarios)
     avatar = models.ImageField(default='AvatarEstudiante3.png')
-    favoritos = models.ManyToManyField('Vendedor', related_name="favs", blank=True)
+    #favoritos = models.ManyToManyField('Vendedor', related_name="favs", blank=True)
 
     def __str__(self):
         return self.nombre
@@ -75,7 +75,7 @@ class Favoritos(models.Model):
     # idVendedor = models.IntegerField()
 
     def __str__(self):
-        return self.usuario
+        return self.vendedor.nombre
         #return self.idAlumno
 
     class Meta:

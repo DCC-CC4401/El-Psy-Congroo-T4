@@ -359,7 +359,7 @@
             $.ajax({
                 url: '{% url "add_favorite" %}',
                 data: {
-                    'vendedor': '{{nombre}}'
+                    'vendedor': '{{vendedor.nombre}}'
                 },
                 dataType: 'json',
             })
@@ -368,7 +368,7 @@
             $.ajax({
                 url: '{% url "add_favorite" %}',
                 data: {
-                    'vendedor': '{{nombre}}'
+                    'vendedor': '{{vendedor.nombre}}'
                 },
                 dataType: 'json',
             })

@@ -1074,12 +1074,10 @@ def index(request):
 class Login(View):
     @staticmethod
     def get(request):
-        print('login1')
         form = Formulario_Ingreso()
         return render(request, 'refactoring/login.html', {'form': form})
 
     def post(self, request):
-        print('login')
         form = Formulario_Ingreso(request.POST)
         if not form.is_valid():
             self.get(request)
@@ -1135,7 +1133,7 @@ def vendedorprofilepage(request, vendedor):
     favs = 0
     if user.is_authenticated:
         if tipo == 1:
-            if vendedorUser in usuario.favoritos:
+            if Favoritos.objects.filter(usuario=usuario, vendedor=vendedorUser).count() != 0:
                 favorito = True
         else:
             for fav in Favoritos.objects.all():
@@ -1164,16 +1162,27 @@ def vendedorprofilepage(request, vendedor):
 
 class EditarPerfil(View):
     def get(self, request):
-        form = Formulario_Actualizar_Perfil()
         if not request.user.is_authenticated():
             return redirect('index')
+        user = request.user
+        vendedor = Vendedor.objects.get(usuario=user.usuario)
+        inicial = {'nombre': user.username, 'email': user.email}
+        if user.usuario.tipo == 1:
+            inicial['favoritos'] = Favoritos.objects.filter(usuario=user.usuario)
+        else:
+            inicial['pagos'] = vendedor.formasDePago.all()
+        if user.usuario.tipo == 2:
+            inicial['hora_inicio'] = vendedor.horarioIni
+            inicial['hora_fin'] = vendedor.horarioFin
+
+        form = Formulario_Actualizar_Perfil(initial=inicial)
+        usuario = request.user.usuario
         if request.user.usuario.tipo != 1:
-            usuario = request.user.usuario
             vendedor = Vendedor.objects.get(usuario=usuario)
             return render(request, 'refactoring/editar-perfil.html', {'form': form, 'userDj': request.user,
                                                                       'user': usuario, 'vendedor': vendedor})
         return render(request, 'refactoring/editar-perfil.html', {'form': form, 'userDj': request.user,
-                                                                  'user': request.user.usuario})
+                                                                  'user': usuario})
 
     def post(self, request):
         form = Formulario_Actualizar_Perfil(request.POST, request.FILES)
@@ -1186,7 +1195,7 @@ class EditarPerfil(View):
             if user.usuario.tipo == 1:
                 return redirect('index')
             else:
-                vendedor = Vendedor.objects.get(usuario=request.user.usuario.vendedor)
+                vendedor = Vendedor.objects.get(usuario=request.user.usuario)
                 return redirect('vendedorprofilepage', vendedor=vendedor)
         return render(request, 'refactoring/editar-perfil.html', {'form': form})
 
@@ -1266,10 +1275,10 @@ def change_active(request):
 def add_favorite(request):
     user = Usuario.objects.get(nombre=request.user)
     vendedor = Vendedor.objects.get(nombre=request.GET.get('vendedor', None))
-    if (vendedor in user.favoritos.all()):
-        user.favoritos.remove(vendedor)
+    if Favoritos.objects.filter(usuario=user, vendedor=vendedor).count() != 0:
+        Favoritos.objects.filter(usuario=user, vendedor=vendedor).delete()
     else:
-        user.favoritos.add(vendedor)
-    user.save()
+        nuevoFav = Favoritos(usuario=user, vendedor=vendedor)
+        nuevoFav.save()
     vendedor.users.all().count()
     return HttpResponse("")

@@ -5,5 +5,6 @@ from .models import *
 admin.site.register(Usuario)
 admin.site.register(Vendedor)
 admin.site.register(FormasDePago)
+admin.site.register(Favoritos)
 admin.site.register(Comida)
 admin.site.register(Transacciones)
