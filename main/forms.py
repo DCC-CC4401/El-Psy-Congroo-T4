@@ -15,6 +15,9 @@ class Formulario_Registro(forms.Form):
     hora_inicio = forms.TimeField(label='Hora de apertura', widget=forms.TimeInput(), required=False, initial='8:00')
     hora_fin = forms.TimeField(label='Hora de cierre', widget=forms.TimeInput(), required=False, initial='18:00')
 
+    latitud = forms.DecimalField(decimal_places=40, max_digits=42, widget=forms.HiddenInput(), initial='-33.457785')
+    longitud = forms.DecimalField(decimal_places=40, max_digits=42, widget=forms.HiddenInput(), initial='-70.663808')
+
     pagos = forms.ModelMultipleChoiceField(queryset=FormasDePago.objects.all(), widget=forms.SelectMultiple(),
                                            required=False, initial=FormasDePago.objects.none())
 
