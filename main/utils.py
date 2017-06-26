@@ -41,6 +41,8 @@ def editar_usuario(user, form):
         if usuario.tipo == 2:
             vendedor.horarioIni = form.cleaned_data['hora_inicio']
             vendedor.horarioFin = form.cleaned_data['hora_fin']
+            vendedor.lat = form.cleaned_data['latitud']
+            vendedor.long = form.cleaned_data['longitud']
         vendedor.save()
 
 

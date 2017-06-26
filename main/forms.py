@@ -47,6 +47,10 @@ class Formulario_Actualizar_Perfil(forms.Form):
                                            initial=FormasDePago.objects.none())
     hora_inicio = forms.TimeField(label='Hora de apertura', widget=forms.TimeInput(), required=False)
     hora_fin = forms.TimeField(label='Hora de cierre', widget=forms.TimeInput(), required=False)
+
+    latitud = forms.DecimalField(decimal_places=40, max_digits=42, widget=forms.HiddenInput(), initial='-33.457785')
+    longitud = forms.DecimalField(decimal_places=40, max_digits=42, widget=forms.HiddenInput(), initial='-70.663808')
+
     # favoritos = forms.ModelMultipleChoiceField(queryset=Favoritos.objects.all(), widget=forms.SelectMultiple(),
     #                                    required=False, initial=Favoritos.objects.none())
 
