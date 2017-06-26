@@ -72,15 +72,23 @@ def editar_producto(producto_inicial, form):
     producto.save()
 
 
-def getVendedores():
+def getVendedores(filtros=[]):
     vendedores = Vendedor.objects.all()
     vendedorList = []
-    for v in vendedores:
-        if v.usuario.tipo == 2:
-            actualizar_actividad(v)
-            vendedorList.append(v)
-        if v.activo:
-            vendedorList.append(v)
+    if filtros:
+        for v in vendedores:
+            for filtro in filtros:
+                if chequear_filtro(v, filtro):
+                    if v.usuario.tipo == 2:
+                        actualizar_actividad(v)
+                    if v.activo and tiene_stock(v):
+                        vendedorList.append(v)
+    else:
+        for v in vendedores:
+            if v.usuario.tipo == 2:
+                actualizar_actividad(v)
+            if v.activo and tiene_stock(v):
+                vendedorList.append(v)
     return vendedorList
 
 
@@ -97,3 +105,17 @@ def actualizar_actividad(vendedor):
     if vendedor.horarioIni < now < vendedor.horarioFin:
         vendedor.activo = True
         vendedor.save()
+
+
+def chequear_filtro(vendedor, filtro):
+    for item in vendedor.vendedor_respectivo.all():
+        if str(filtro) == str(item.categorias):
+            return True
+    return False
+
+
+def tiene_stock(v):
+    for item in v.vendedor_respectivo.all():
+        if item.stock > 0:
+            return True
+    return False

@@ -988,7 +988,7 @@ class index(View):
         form = form_filtros(request.POST)
         if form.is_valid():
             filtros = form.cleaned_data['filtros']
-        return render(request, 'refactoring/index.html', {'userDj': userDj, 'vendedores': getVendedores(),
+        return render(request, 'refactoring/index.html', {'userDj': userDj, 'vendedores': getVendedores(filtros),
                                                           'form': form_filtros()})
 
 
