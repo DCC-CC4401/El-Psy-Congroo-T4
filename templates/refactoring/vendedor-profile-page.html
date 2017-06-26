@@ -207,7 +207,7 @@
                                                     </div>
                                                     {% if vendedor.usuario.usuario.id == userDj.id %}
                                                         <div class="col m4 offset-s8 right-align">
-                                                            <a href="{% url 'editar_producto' nombre=p.nombre vendedor=vendedor %}"
+                                                            <a href="{% url 'editar_producto' pid=p.id %}"
                                                                class="btn-floating activator waves-effect waves-light darken-2">
                                                                 <i class="material-icons ">mode_edit</i>
                                                             </a>
@@ -244,7 +244,7 @@
                                                             </div>
 
                                                             <p><a class="red-text right"
-                                                                  href="{% url 'eliminar_producto' nombre=p.nombre vendedor=vendedor %}">Eliminar</a>
+                                                                  href="{% url 'eliminar_producto' pid=p.id %}">Eliminar</a>
                                                             </p>
                                                         {% endif %}
 

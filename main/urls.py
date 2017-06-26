@@ -48,8 +48,9 @@ urlpatterns = [
     url(r'^vendedor/(?P<vendedor>.+)$', views.vendedorprofilepage, name='vendedorprofilepage'),
     url(r'^editar_perfil$', views.EditarPerfil.as_view(), name='editar_perfil'),
     url(r'^agregar_producto$', views.AgregarProducto.as_view(), name='agregar_producto'),
-    url(r'^productos/(?P<vendedor>.+)/edit/(?P<nombre>.+)$', views.EditarProducto.as_view(), name='editar_producto'),
-    url(r'^productos/(?P<vendedor>.+)/delete/(?P<nombre>.+)$', views.productos_delete, name='eliminar_producto'),
+    url(r'^editar_producto/(?P<pid>[0-9]+)/$', views.EditarProducto.as_view(), name='editar_producto'),
+    url(r'^eliminar_producto/(?P<pid>[0-9]+)/$', views.productos_delete, name='eliminar_producto'),
+    #url(r'^productos/(?P<vendedor>.+)/delete/(?P<nombre>.+)$', views.productos_delete, name='eliminar_producto'),
     # ajax request to change vendedor active status
     url(r'^ajax/change_active/$', views.change_active, name='change_active'),
     # ajax request to add fav to user

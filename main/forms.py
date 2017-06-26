@@ -51,9 +51,6 @@ class Formulario_Actualizar_Perfil(forms.Form):
     latitud = forms.DecimalField(decimal_places=40, max_digits=42, widget=forms.HiddenInput(), initial='-33.457785')
     longitud = forms.DecimalField(decimal_places=40, max_digits=42, widget=forms.HiddenInput(), initial='-70.663808')
 
-    # favoritos = forms.ModelMultipleChoiceField(queryset=Favoritos.objects.all(), widget=forms.SelectMultiple(),
-    #                                    required=False, initial=Favoritos.objects.none())
-
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user', None)
         if self.user is not None:
@@ -73,18 +70,17 @@ class Formulario_Actualizar_Perfil(forms.Form):
         exclude = ('username', 'date_joined')
 
 
-class Formulario_Gestion_Producto(forms.Form):
-    idVendedor = 0
-    nombre = forms.CharField(max_length=200)
-    categorias = forms.IntegerField()
-    descripcion = forms.CharField(max_length=500)
-    stock = forms.IntegerField()
-    precio = forms.IntegerField()
+# class Formulario_Gestion_Producto(forms.Form):
+#     idVendedor = 0
+#     nombre = forms.CharField(max_length=200)
+#     categorias = forms.IntegerField()
+#     descripcion = forms.CharField(max_length=500)
+#     stock = forms.IntegerField()
+#     precio = forms.IntegerField()
 
 
 class Formulario_Producto(forms.ModelForm):
+    imagen = forms.ImageField(label='Imagen', widget=forms.FileInput, required=False, initial=None)
     class Meta:
         model = Comida
-        fields = ('nombre', 'precio', 'stock', 'categorias', 'descripcion', 'imagen')
-        # class Formulario_Editar_Producto(forms.Form):
-        #     foto = forms.FileField()
+        fields = ('nombre', 'precio', 'stock', 'categorias', 'descripcion')

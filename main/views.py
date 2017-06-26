@@ -1225,19 +1225,22 @@ class AgregarProducto(View):
 
 class EditarProducto(View):
 
-    def get(self, request, nombre, vendedor):
-        producto_inicial = Comida.objects.all().filter(nombre=nombre).first()
-        form = Formulario_Producto(instance=producto_inicial)
-        usuario = request.user.usuario
+    def get(self, request, pid):
+        usuario = Usuario.objects.get(usuario=request.user)
         vendedor = Vendedor.objects.get(usuario=usuario)
+        productos = Comida.objects.filter(vendedor=vendedor)
+        producto_inicial = productos.get(id=pid)
+        form = Formulario_Producto(instance=producto_inicial)
         return render(request, 'refactoring/editar-productos.html', {'form': form, 'userDj': request.user,
                                                                      'user': usuario, 'vendedor': vendedor})
 
-    def post(self, request, nombre, vendedor):
-        producto_inicial = Comida.objects.all().filter(nombre=nombre).first()
+    def post(self, request, pid):
+        usuario = Usuario.objects.get(usuario=request.user)
+        vendedor = Vendedor.objects.get(usuario=usuario)
+        productos = Comida.objects.filter(vendedor=vendedor)
+        producto_inicial = productos.get(id=pid)
         form = Formulario_Producto(request.POST, request.FILES)
         if form.is_valid():
-            vendedor = Vendedor.objects.get(usuario=request.user.usuario)
             editar_producto(producto_inicial, form)
             return redirect('vendedorprofilepage', vendedor=vendedor)
         else:
@@ -1247,8 +1250,11 @@ class EditarProducto(View):
                                                                          'vendedor': vendedor})
 
 
-def productos_delete(request, nombre, vendedor):
-    producto = Comida.objects.all().filter(nombre=nombre).first()
+def productos_delete(request, pid):
+    usuario = Usuario.objects.get(usuario=request.user)
+    vendedor = Vendedor.objects.get(usuario=usuario)
+    productos = Comida.objects.filter(vendedor=vendedor)
+    producto = productos.get(id=pid)
     producto.delete()
     return redirect('vendedorprofilepage', vendedor=vendedor)
 

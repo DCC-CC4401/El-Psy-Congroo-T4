@@ -63,7 +63,8 @@ def editar_producto(producto_inicial, form):
     producto.categorias = form.cleaned_data['categorias']
     producto.descripcion = form.cleaned_data['descripcion']
     producto.precio = form.cleaned_data['precio']
-    producto.imagen = form.cleaned_data['imagen']
+    if form.cleaned_data['imagen'] is not None:
+        producto.imagen = form.cleaned_data['imagen']
     producto.save()
 
 def getVendedores():
