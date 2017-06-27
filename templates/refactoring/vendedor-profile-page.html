@@ -349,19 +349,19 @@
             });
         }
         function bajarStock(pid){
-{#            $.ajax({#}
-{#                url:'{% url 'crearTransaccion' %}',#}
-{#                data: {#}
-{#                    id: pid,#}
-{#                    vendedor: '{{ vendedor }}'#}
-{#                },#}
-{#                dataType: "json",#}
-{#                success: function(data) {#}
-{#                },#}
-{#                error:function(data) {#}
-{#                    alert("error in getting from server");#}
-{#                },#}
-{#            });#}
+            $.ajax({
+                url:'{% url 'crearTransaccion' %}',
+                data: {
+                    id: pid,
+                    vendedor: '{{ vendedor }}'
+                },
+                dataType: "json",
+                success: function(response) {
+                },
+                error:function(response) {
+                    alert("error in getting from server");
+                },
+            });
            $.ajax({
                 url:'{% url 'getStock' %}',
                 data: {

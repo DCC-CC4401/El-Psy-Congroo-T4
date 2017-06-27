@@ -1200,7 +1200,6 @@ def getStock(request):
     productos = Comida.objects.filter(vendedor=vendedor)
     producto = productos.get(id=pid)
     stock = producto.stock
-    print(stock)
     if request.GET.get("op", None) == "suma":
         nuevoStock = stock + 1
         Comida.objects.filter(id=pid).update(stock=nuevoStock)

@@ -103,11 +103,12 @@
 
             {% block side_content %}
                 {% if userDj.is_authenticated %}
+                     <li><a href="{% url 'logout' %}"><i class="material-icons">exit_to_app</i>Cerrar Sesión</a></li>
                     {% if user.tipo == 1 %}
                         <li><a href="{% url 'index' %}"><i class="material-icons">home</i>Inicio</a></li>
+                    {% else %}
+                        <li><a href=""><i class="material-icons">assessment</i>Datos de ventas</a></li>
                     {% endif %}
-                    <li><a href="{% url 'logout' %}"><i class="material-icons">exit_to_app</i>Cerrar Sesión</a></li>
-                    <li><a href=""><i class="material-icons">assessment</i>Datos de ventas</a></li>
                     {% if user.tipo == 1 or user.tipo == 3 %}
                         <div id="alerta_pol">
                             <li><a onclick="alertaPolicial()"><i class="material-icons">add_alert</i>Alerta Policial</a>
