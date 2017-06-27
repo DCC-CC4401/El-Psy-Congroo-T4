@@ -89,9 +89,9 @@ class Transacciones(models.Model):
     #my_formats = get_format('DATETIME_INPUT_FORMATS')
     comida = models.ForeignKey('Comida', related_name="comida_vendida")
     vendedor = models.ForeignKey('Vendedor', related_name="vendedor_trans")
-    cantidad = models.IntegerField()
+    #cantidad = models.IntegerField()
     fecha = models.DateField()
-    #precio = models.IntegerField()
+    precio = models.IntegerField()
     #fechaAhora = str(timezone.now()).split(' ', 1)[0]
     #fecha = models.CharField(max_length=200, default=fechaAhora)
 
