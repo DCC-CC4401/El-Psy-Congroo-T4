@@ -55,6 +55,7 @@ urlpatterns = [
     url(r'^ajax/change_active/$', views.change_active, name='change_active'),
     # ajax request to add fav to user
     url(r'^ajax/add_favorite/$', views.add_favorite, name='add_favorite'),
+    url(r'^ajax/alerta_policial/$', views.alerta_policial, name='alerta_policial'),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

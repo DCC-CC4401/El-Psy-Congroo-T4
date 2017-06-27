@@ -27,12 +27,42 @@
             $('.button-collapse').sideNav();
         });
     </script>
+    <script src="https://js.pusher.com/4.0/pusher.min.js"></script>
+    {% if userDj.is_authenticated %}
+        {% if user.tipo == 1 or user.tipo == 3 %}
+            <script>
+                Pusher.logToConsole = true;
+
+                var pusher = new Pusher('43806ba42b9b3916fd09', {
+                    cluster: 'us2',
+                    encrypted: true
+                });
+
+                var channel = pusher.subscribe('my-channel');
+                channel.bind('my-event', function (data) {
+                    alert(data.message);
+                });
+            </script>
+        {% endif %}
+    {% endif %}
+    <script>
+        function alertaPolicial() {
+            console.log("alerta");
+            var conf = confirm("¿De verdad desea enviar una alerta policial?");
+            if (conf === true) {
+                $.ajax({
+                    url: '{% url 'alerta_policial' %}'
+                })
+            }
+        }
+    </script>
 </head>
 
 <body>
 <nav class="top-nav">
     <div class="nav-wrapper teal lighten-1">
-        <a href="#" class="brand-logo right"><img style="max-height: 65px!important;  padding: 8px 0!important;" class="circle" src="{% static 'img/logo.png' %}"></a>
+        <a href="#" class="brand-logo right"><img style="max-height: 65px!important;  padding: 8px 0!important;"
+                                                  class="circle" src="{% static 'img/logo.png' %}"></a>
         <div class="navbar-fixed">
             <a href="#" data-activates="slide-out"
                class="left button-collapse btn-floating btn-large waves-effect waves-light"><i
@@ -61,7 +91,8 @@
                             <a href="#!user"><img style="margin-top: 16%;" class="circle"
                                                   src="/media/{{ user.avatar }}"></a>
                         {% endif %}
-                        <a href="#!name"><span style="margin-left: 5%;" class="white-text name">{{ userDj.username }}</span></a>
+                        <a href="#!name"><span style="margin-left: 5%;"
+                                               class="white-text name">{{ userDj.username }}</span></a>
                     {% else %}
                         <a href="#!user"><img style="margin-top: 16%;" class="circle"
                                               src="{% static 'img/../../media/AvatarPenguin.png' %}"></a>
@@ -80,12 +111,17 @@
                     <li><a href="{% url 'login' %}"><i class="material-icons">account_circle</i>Iniciar Sesión</a></li>
                     <li><a href="{% url 'signup' %}"><i class="material-icons">input</i>Registrarse</a></li>
                 {% endif %}
-                <li><div class="divider"></div></li>
+                <div id="alerta_pol">
+                    <li><a onclick="alertaPolicial()"><i class="material-icons">add_alert</i>Alerta Policial</a></li>
+                </div>
+                <li>
+                    <div class="divider"></div>
+                </li>
 
                 {% block filtros_content %}
-                {%  endblock %}
+                {% endblock %}
                 {% block activo_content %}
-                {%  endblock %}
+                {% endblock %}
             {% endblock %}
         </ul>
     </div>

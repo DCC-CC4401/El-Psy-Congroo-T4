@@ -1,4 +1,5 @@
 import simplejson
+import pusher
 from django.contrib import auth
 from django.contrib.auth import authenticate
 from django.core.files.storage import default_storage
@@ -1078,6 +1079,7 @@ def vendedorprofilepage(request, vendedor):
                     favs += 1
     data = {
         'userDj': user,
+        'user': usuario,
         'vendedor': vendedorUser,
         'vendedor_estado': 'Activo' if vendedorUser.activo else 'Inactivo',
         'vendedor_tipo': 'Vendedor fijo' if vendedorUser.usuario.tipo == 2 else 'Vendedor ambulante',
@@ -1126,7 +1128,7 @@ class EditarPerfil(View):
             else:
                 vendedor = Vendedor.objects.get(usuario=request.user.usuario)
                 return redirect('vendedorprofilepage', vendedor=vendedor)
-        return render(request, 'refactoring/editar-perfil.html', {'form': form})
+        return render(request, 'refactoring/editar-perfil.html', {'form': form, 'userDj': request.user, 'user': user})
 
 
 class AgregarProducto(View):
@@ -1138,7 +1140,7 @@ class AgregarProducto(View):
             return render(request, 'refactoring/agregar-productos.html', {'form': form, 'userDj': request.user,
                                                                           'user': usuario, 'vendedor': vendedor})
         return render(request, 'refactoring/agregar-productos.html', {'form': form, 'userDj': request.user,
-                                                                      'user': request.user.usuario})
+                                                                      'user': Usuario.objects.get(usuario=request.user)})
 
     def post(self, request):
         form = Formulario_Producto(request.POST, request.FILES)
@@ -1148,7 +1150,8 @@ class AgregarProducto(View):
             return redirect('vendedorprofilepage', vendedor=vendedor)
         else:
             form = Formulario_Producto()
-            return render(request, 'refactoring/agregar-productos.html', {'form': form})
+            return render(request, 'refactoring/agregar-productos.html', {'form': form, 'userDj': request.user,
+                                                                          'user': Usuario.objects.get(usuario=request.user)})
 
 
 class EditarProducto(View):
@@ -1214,3 +1217,15 @@ def add_favorite(request):
         nuevoFav.save()
     vendedor.users.all().count()
     return HttpResponse("")
+
+
+def alerta_policial(request):
+    pusher_client = pusher.Pusher(
+        app_id='358730',
+        key='43806ba42b9b3916fd09',
+        secret='a81c51a9bb4bd6b42287',
+        cluster='us2',
+        ssl=True
+    )
+
+    pusher_client.trigger('my-channel', 'my-event', {'message': 'hello world'})
