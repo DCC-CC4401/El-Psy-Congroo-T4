@@ -1257,5 +1257,6 @@ def alerta_policial(request):
         cluster='us2',
         ssl=True
     )
-
-    pusher_client.trigger('my-channel', 'my-event', {'message': 'hello world'})
+    lat = request.GET.get('lat', None)
+    lng = request.GET.get('long', None)
+    pusher_client.trigger('canal-alerta', 'evento-alerta', {'message': '¡Cuidado! Hay policías cerca', 'lat': lat, 'lng': lng})
