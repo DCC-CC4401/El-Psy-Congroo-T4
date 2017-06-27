@@ -280,12 +280,6 @@ def crearTransaccion(request):
         return HttpResponse('error message')
     return HttpResponse("")
 
-# def dashboard(request):
-#     usuario = Usuario.objects.get(usuario=request.user)
-#     vendedor = Vendedor.objects.get(usuario=usuario)
-#     return render(request, 'refactoring/dashboard.html', {'user': usuario, 'userDj': request.user,
-#                                                               'vendedor': vendedor})
-
 class Dashboard(View):
 
     def post(self, request):
@@ -302,7 +296,7 @@ class Dashboard(View):
 
         for element in temp_transaccionesDiarias:
            aux = []
-           aux.append(element['fecha'].strftime('%d-%m-%Y'))
+           aux.append(element['fecha'].strftime('%Y-%m-%d'))
            aux.append(element['conteo'])
            transaccionesDiariasArr.append(aux)
         transaccionesDiariasArr = simplejson.dumps(transaccionesDiariasArr)
@@ -312,12 +306,11 @@ class Dashboard(View):
         gananciasDiariasArr = []
         for element in temp_gananciasDiarias:
             aux = []
-            aux.append(element['fecha'].strftime('%d-%m-%Y'))
+            aux.append(element['fecha'].strftime('%Y-%m-%d'))
             aux.append(element['ganancia'])
             gananciasDiariasArr.append(aux)
         gananciasDiariasArr = simplejson.dumps(gananciasDiariasArr)
 
-        #todos los productos del vendedor
         productos = Comida.objects.filter(vendedor=vendedor).values('nombre','precio')
         temp_productos = list(productos)
         productosArr = []
@@ -330,20 +323,17 @@ class Dashboard(View):
             productosPrecioArr.append(aux)
         productosArr = simplejson.dumps(productosArr)
         productosPrecioArr = simplejson.dumps(productosPrecioArr)
-        print(productosPrecioArr)
 
-        #productos vendidos hoy con su cantidad respectiva
         fechaHoy = str(timezone.now()).split(' ', 1)[0]
         productosHoy = Transacciones.objects.filter(vendedor=vendedor,fecha=fechaHoy).values('comida').annotate(conteo=Count('comida'))
         temp_productosHoy = list(productosHoy)
         productosHoyArr = []
         for element in temp_productosHoy:
              aux = []
-             aux.append(element['comida'])
+             aux.append(Comida.objects.get(id=element['comida']).nombre)
              aux.append(element['conteo'])
              productosHoyArr.append(aux)
         productosHoyArr = simplejson.dumps(productosHoyArr)
-        print(productosHoyArr)
         return render(request, 'refactoring/dashboard.html', {'user': usuario, 'userDj': request.user,
                                                               'vendedor': vendedor,"transacciones":transaccionesDiariasArr,"ganancias":gananciasDiariasArr,"productos":productosArr,"productosHoy":productosHoyArr,"productosPrecio":productosPrecioArr})
 
