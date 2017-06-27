@@ -29,7 +29,7 @@
     </script>
     <script src="https://js.pusher.com/4.0/pusher.min.js"></script>
     {% if userDj.is_authenticated %}
-        {% if user.tipo == 1 or user.tipo == 3 %}
+        {% if user.tipo == 3 %}
             <script>
                 Pusher.logToConsole = true;
 
@@ -108,13 +108,17 @@
                     {% endif %}
                     <li><a href="{% url 'logout' %}"><i class="material-icons">exit_to_app</i>Cerrar Sesión</a></li>
                     <li><a href=""><i class="material-icons">assessment</i>Datos de ventas</a></li>
+                    {% if user.tipo == 1 or user.tipo == 3 %}
+                        <div id="alerta_pol">
+                            <li><a onclick="alertaPolicial()"><i class="material-icons">add_alert</i>Alerta Policial</a>
+                            </li>
+                        </div>
+                    {% endif %}
                 {% else %}
                     <li><a href="{% url 'login' %}"><i class="material-icons">account_circle</i>Iniciar Sesión</a></li>
                     <li><a href="{% url 'signup' %}"><i class="material-icons">input</i>Registrarse</a></li>
                 {% endif %}
-                <div id="alerta_pol">
-                    <li><a onclick="alertaPolicial()"><i class="material-icons">add_alert</i>Alerta Policial</a></li>
-                </div>
+
                 <li>
                     <div class="divider"></div>
                 </li>
