@@ -1,106 +1,103 @@
+from django.contrib.auth.models import User
 from django.db import models
-from multiselectfield import MultiSelectField
 from django.utils import timezone
 from django.utils.formats import get_format
 
-# Create your models here
+from main.choices import *
+
 
 class Usuario(models.Model):
-    id = models.AutoField(primary_key=True)
+    usuario = models.OneToOneField(User, verbose_name='Usuario', related_name='usuario')
     nombre = models.CharField(max_length=200)
-    email = models.CharField(max_length=200)
-    tipos = ((0, 'admin'), (1, 'alumno'), (2, 'fijo'), (3, 'ambulante'))
-    tipo = models.IntegerField(choices=tipos)
-    avatar = models.ImageField(upload_to = 'avatars')
-    contraseña = models.CharField(max_length=200)
-    activo = models.BooleanField(default=False,blank=True)
-    litaFormasDePago = (
-        (0, 'Efectivo'),
-        (1, 'Tarjeta de Crédito'),
-        (2, 'Tarjeta de Débito'),
-        (3, 'Tarjeta Junaeb'),
-    )
-    formasDePago = MultiSelectField(choices=litaFormasDePago,null=True,blank=True)
-    horarioIni = models.CharField(max_length=200,blank=True,null=True)
-    horarioFin = models.CharField(max_length=200,blank=True,null=True)
+    tipo = models.IntegerField(default=1, choices=TiposUsuarios)
+    avatar = models.ImageField(default='AvatarEstudiante3.png')
+
+    # favoritos = models.ManyToManyField('Vendedor', related_name="favs", blank=True)
 
     def __str__(self):
         return self.nombre
 
     class Meta:
-        db_table = 'usuario'
+        verbose_name = 'Usuario'
+        verbose_name_plural = 'Usuarios'
 
 
+class Vendedor(models.Model):
+    usuario = models.OneToOneField(Usuario, related_name='usuario_relacionado')
+    nombre = models.CharField(max_length=200)
+    activo = models.BooleanField(default=False)
+    formasDePago = models.ManyToManyField('FormasDePago', related_name='formasDePago')
+    horarioIni = models.TimeField(u'Horario de inicio', null=True)
+    horarioFin = models.TimeField(u'Horario fin', null=True)
+    lat = models.DecimalField(u'Latitud', null=True, decimal_places=40, max_digits=42)
+    long = models.DecimalField(u'Longitud', null=True, decimal_places=40, max_digits=42)
+    avatar = models.ImageField(default='AvatarVendedor5.png')
+
+    def __str__(self):
+        return self.nombre
+
+    class Meta:
+        verbose_name = 'Vendedor'
+        verbose_name_plural = 'Vendedores'
+
+
+class FormasDePago(models.Model):
+    forma = models.CharField(max_length=200, default='', primary_key=True)
+
+    def __str__(self):
+        return self.forma
+
+    class Meta:
+        verbose_name = 'Formas de pago'
+        verbose_name_plural = 'Formas de pago'
 
 
 class Comida(models.Model):
-    idVendedor = models.IntegerField(default=0);
-    nombre = models.CharField(max_length=200,primary_key=True)
-    listaCategorias = (
-        (0, 'Cerdo'),
-        (1, 'Chino'),
-        (2, 'Completos'),
-        (3, 'Egipcio'),
-        (4, 'Empanadas'),
-        (5, 'Ensalada'),
-        (6, 'Japones'),
-        (7, 'Pan'),
-        (8, 'Papas fritas'),
-        (9, 'Pasta'),
-        (10, 'Pescado'),
-        (11, 'Pollo'),
-        (12, 'Postres'),
-        (13, 'Sushi'),
-        (14, 'Vacuno'),
-        (15, 'Vegano'),
-        (16, 'Vegetariano'),
-    )
-    categorias = MultiSelectField(choices=listaCategorias)
+    nombre = models.CharField(max_length=200)
+    categorias = models.IntegerField(default=0, choices=Categorias)
     descripcion = models.CharField(max_length=500)
     stock = models.PositiveSmallIntegerField(default=0)
     precio = models.PositiveSmallIntegerField(default=0)
-    imagen = models.ImageField(upload_to="productos")
+    imagen = models.ImageField(default='rice.png')
+    vendedor = models.ForeignKey('Vendedor', related_name='vendedor_respectivo',
+                                 blank=True, null=True)
 
     def __str__(self):
         return self.nombre
 
     class Meta:
-        db_table = 'Comida'
+        verbose_name = 'Comida'
+        verbose_name_plural = 'Comida'
 
 
 class Favoritos(models.Model):
-    id = models.AutoField(primary_key=True)
-    idAlumno = models.IntegerField()
-    idVendedor = models.IntegerField()
+    usuario = models.ForeignKey('Usuario', related_name="usuario_fav")
+    vendedor = models.ForeignKey('Vendedor', related_name="vendedor_fav")
+
+    # idAlumno = models.IntegerField()
+    # idVendedor = models.IntegerField()
 
     def __str__(self):
-        return self.idAlumno
+        return self.vendedor.nombre
+        # return self.idAlumno
 
     class Meta:
-        db_table = 'Favoritos'
-
-
-class Imagen(models.Model):
-    id = models.AutoField(primary_key=True)
-    imagen = models.ImageField(upload_to='avatars')
-
-    def __str__(self):
-        return self.id
-
-    class Meta:
-        db_table = 'imagen'
+        verbose_name = 'Favorito'
+        verbose_name_plural = 'Favoritos'
 
 class Transacciones(models.Model):
-    my_formats = get_format('DATETIME_INPUT_FORMATS')
-    idTransaccion = models.AutoField(primary_key=True)
-    nombreComida = models.CharField(max_length=200,blank=True,null=True)
-    idVendedor = models.IntegerField()
+    #my_formats = get_format('DATETIME_INPUT_FORMATS')
+    comida = models.ForeignKey('Comida', related_name="comida_vendida")
+    vendedor = models.ForeignKey('Vendedor', related_name="vendedor_trans")
+    #cantidad = models.IntegerField()
+    fecha = models.DateField()
     precio = models.IntegerField()
-    fechaAhora = str(timezone.now()).split(' ', 1)[0]
-    fecha = models.CharField(max_length=200,default=fechaAhora)
+    #fechaAhora = str(timezone.now()).split(' ', 1)[0]
+    #fecha = models.CharField(max_length=200, default=fechaAhora)
 
     def __str__(self):
-        return str(self.idTransaccion)
+        return str(self.comida.nombre + ' ' + self.vendedor.nombre)
 
     class Meta:
-        db_table = 'transacciones'
+        verbose_name = 'Transaccion'
+        verbose_name_plural = 'Transacciones'

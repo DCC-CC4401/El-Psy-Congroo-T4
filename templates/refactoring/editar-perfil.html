@@ -1,0 +1,156 @@
+{% extends 'refactoring/base.html' %}
+{% load i18n %}
+{% load staticfiles %}
+
+{% block content %}
+    <style>
+        #map {
+            height: 400px;
+        }
+    </style>
+    <script>
+        $(document).ready(function () {
+            $('select').material_select();
+        });
+    </script>
+
+    <div class="section"></div>
+    <main>
+        <div class="section"></div>
+
+        <h5 class="teal-text" style="text-align: center;">Editar Información</h5>
+        <div class="section"></div>
+
+        <div class="container">
+            <div class="z-depth-1 grey lighten-4 row"
+                 style="margin-left: 5%; margin-right: 5%; padding: 32px 48px 0px 48px; border: 1px solid #EEE;">
+
+                <form class="col s12 m12" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class='row'>
+                        <div class='col s12 m12'>
+                        </div>
+                    </div>
+                    <div class='row'>
+                        <div class='input-field col s12 m12'>
+                            {#                            <h6>Editar nombre:</h6>#}
+                            {{ form.nombre }}
+                            <label style="text-align: center;" for='id_nombre'>Editar nombre</label>
+                        </div>
+                    </div>
+
+                    <div class='row'>
+                        <div class='input-field col s12 m12'>
+                            {{ form.email }}
+                            <label style="text-align: center" for='id_email'>Editar e-mail</label>
+                        </div>
+                    </div>
+
+                    {#                    {% if userDj.usuario.tipo == 1 %}#}
+                    {#                        <div class='row'>#}
+                    {#                            <div class='input-field col s12 m12'>#}
+                    {#<h6>Editar favoritos:</h6>#}
+                    {#                                {{ form.favoritos }}#}
+                    {#                                <label style="text-align: center;" for='id_favoritos'>Editar favoritos</label>#}
+                    {#                            </div>#}
+                    {#                        </div>#}
+                    {#                    {% endif %}#}
+
+                    {% if userDj.usuario.tipo == 2 %}
+
+                        <div class="row">
+                            <div class="col s12">
+                                <div class="row">
+                                    <div class="input-field col s6">
+                                        <i class="material-icons prefix">alarm</i>
+                                        {{ form.hora_inicio }}
+                                        <label for="id_hora_inicio">Hora inicial</label>
+                                    </div>
+                                    <div class="input-field col s6">
+                                        <i class="material-icons prefix">alarm</i>
+                                        {{ form.hora_fin }}
+                                        <label for="id_hora_fin">Hora final</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col s12">
+                            Seleccione su ubicación:
+                            {{ form.latitud }}
+                            {{ form.longitud }}
+                            <div id="map"></div>
+                            <script>
+                                var map;
+                                function initMap() {
+                                    map = new google.maps.Map(document.getElementById('map'), {
+                                        center: {lat: -33.457785, lng: -70.663808},
+                                        zoom: 19
+                                    });
+                                    var marker = new google.maps.Marker({
+                                            position: {
+                                                lat: -33.457785,
+                                                lng: -70.663808
+                                            },
+                                            map: map
+                                        }
+                                    );
+                                    google.maps.event.addListener(map, 'click', function (event) {
+                                        placeMarker(event.latLng);
+                                    });
+                                    function placeMarker(location) {
+                                        marker.setPosition(location);
+                                        document.forms[0].id_latitud.value = location.lat();
+                                        document.forms[0].id_longitud.value = location.lng();
+                                    }
+                                }
+                            </script>
+                            <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBV7ElkwQIJ2v6YG9fhXsbxbHNZzfoO9L8&callback=initMap"
+                                    async defer></script>
+
+                        </div>
+                    {% endif %}
+
+                    {% if userDj.usuario.tipo == 2 or userDj.usuario.tipo == 3 %}
+                        <div class='row'>
+                            <div class='input-field col s12 m12'>
+                                Seleccione sus formas de pago:
+                                <div>
+                                    {{ form.pagos }}
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                    <div>
+                        Cambiar avatar:
+                    </div>
+
+                    <div class="input-field col s12 l6">
+                        {{ form.avatar }}
+                    </div>
+
+                    <div class='row'>
+                        <div class='input-field col s12 m12'>
+                            {{ form.contrasena }}
+                            <label style="text-align: center" for='id_contrasena'>Para confirmar, ingresa tu
+                                contraseña</label>
+                        </div>
+                    </div>
+
+                    <div class='row'>
+                        <button type='submit' name='btn_login' class='col l6 offset-l3 btn btn-large waves-effect teal'>
+                            Guardar cambios
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+
+        <div class="section"></div>
+        <div class="section"></div>
+    </main>
+
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.1/jquery.min.js"></script>
+    <script type="text/javascript"
+            src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/js/materialize.min.js"></script>
+{% endblock %}
