@@ -19,8 +19,18 @@
     <!-- Compiled and minified JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/js/materialize.min.js"></script>
     <script src="http://materializecss.com/templates/starter-template/js/init.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.4/Chart.min.js"></script>
 
-    {% load static %}
+    {% load staticfiles %}
+    <style>
+        #canvas-container {
+            width: 100%;
+            text-align:center;
+        }
+        canvas {
+            display: inline;
+        }
+    </style>
 
     <script>
         $(function () {
@@ -147,7 +157,7 @@
                     {% if user.tipo == 1 %}
                         <li><a href="{% url 'index' %}"><i class="material-icons">home</i>Inicio</a></li>
                     {% else %}
-                        <li><a href=""><i class="material-icons">assessment</i>Datos de ventas</a></li>
+                        <li><a href="javascript:;" onclick="document.getElementById('dashboard').submit();"><i class="material-icons">assessment</i>Datos de ventas</a></li>
                     {% endif %}
                     {% if user.tipo == 1 or user.tipo == 3 %}
                         <div id="alerta_pol">
@@ -172,6 +182,10 @@
         </ul>
     </div>
 </nav>
+ <form id="dashboard" method="post" action="{% url 'dashboard' %}">
+     {% csrf_token %}
+     <label for="vendedorId"><input value="{{ user.id }}" name="vendedorId" id="vendedorId" type="text" style="display:none;"></label>
+ </form>
 {% block content %}
 {% endblock %}
 </body>
