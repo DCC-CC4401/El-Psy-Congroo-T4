@@ -85,17 +85,18 @@ class Favoritos(models.Model):
         verbose_name = 'Favorito'
         verbose_name_plural = 'Favoritos'
 
-
 class Transacciones(models.Model):
-    my_formats = get_format('DATETIME_INPUT_FORMATS')
-    nombreComida = models.CharField(max_length=200, blank=True, null=True)
-    idVendedor = models.ForeignKey('Usuario', related_name='vendedor')
-    precio = models.IntegerField()
-    fechaAhora = str(timezone.now()).split(' ', 1)[0]
-    fecha = models.CharField(max_length=200, default=fechaAhora)
+    #my_formats = get_format('DATETIME_INPUT_FORMATS')
+    comida = models.ForeignKey('Comida', related_name="comida_vendida")
+    vendedor = models.ForeignKey('Vendedor', related_name="vendedor_trans")
+    cantidad = models.IntegerField()
+    fecha = models.DateField()
+    #precio = models.IntegerField()
+    #fechaAhora = str(timezone.now()).split(' ', 1)[0]
+    #fecha = models.CharField(max_length=200, default=fechaAhora)
 
     def __str__(self):
-        return str(self.nombreComida + ' ' + self.idVendedor.nombre)
+        return str(self.comida.nombre + ' ' + self.vendedor.nombre)
 
     class Meta:
         verbose_name = 'Transaccion'
