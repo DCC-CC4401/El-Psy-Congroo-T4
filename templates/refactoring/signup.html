@@ -98,8 +98,7 @@
                                         }
                                     }
                                 </script>
-                                <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBV7ElkwQIJ2v6YG9fhXsbxbHNZzfoO9L8&callback=initMap"
-                                        async defer></script>
+                                <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBV7ElkwQIJ2v6YG9fhXsbxbHNZzfoO9L8"></script>
 
                             </div>
                         </div>
@@ -168,6 +167,7 @@
             }
             if (val.localeCompare("2") == 0) {
                 $('#options div').show();
+                initMap();
             }
             if (val.localeCompare("1") == 0) {
                 $('#options div').hide();
