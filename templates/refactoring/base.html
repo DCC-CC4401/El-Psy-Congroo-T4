@@ -38,21 +38,61 @@
                     encrypted: true
                 });
 
-                var channel = pusher.subscribe('my-channel');
-                channel.bind('my-event', function (data) {
-                    alert(data.message);
+                function toRad(x) {
+                    return x * Math.PI / 180;
+                }
+                function haversine(lat1, lon1, lat2, lon2) {
+                    var r = 6371000;
+                    var x1 = lat2 - lat1;
+                    var dLat = toRad(x1);
+                    var x2 = lon2 - lon1;
+                    var dLon = toRad(x2);
+                    var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                        Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+                        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+                    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+                    return r * c;
+                }
+
+                var channel = pusher.subscribe('canal-alerta');
+                channel.bind('evento-alerta', function (data) {
+                    var lat = 0;
+                    var lng = 0;
+                    {% if user.tipo == 3 %}
+                        lat = {{ vendedor.lat }};
+                        lng = {{ vendedor.long }};
+                    {% endif %}
+                    if (haversine(lat, lng, data.lat, data.lng) < 15) {
+                        alert(data.message);
+                    }
                 });
             </script>
         {% endif %}
     {% endif %}
     <script>
         function alertaPolicial() {
-            console.log("alerta");
             var conf = confirm("¿De verdad desea enviar una alerta policial?");
             if (conf === true) {
-                $.ajax({
-                    url: '{% url 'alerta_policial' %}'
-                })
+                var lat = 0;
+                var lng = 0;
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(alertaPosition, alertaSinPosicion);
+                    function alertaPosition(position) {
+                        lng = position.coords.longitude;
+                        lat = position.coords.latitude;
+                        $.ajax({
+                            url: '{% url "alerta_policial" %}',
+                            data: {
+                                'lat': lat,
+                                'long': lng
+                            },
+                            dataType: 'json'
+                        });
+                    }
+
+                    function alertaSinPosicion() {
+                    }
+                }
             }
         }
     </script>
@@ -103,7 +143,7 @@
 
             {% block side_content %}
                 {% if userDj.is_authenticated %}
-                     <li><a href="{% url 'logout' %}"><i class="material-icons">exit_to_app</i>Cerrar Sesión</a></li>
+                    <li><a href="{% url 'logout' %}"><i class="material-icons">exit_to_app</i>Cerrar Sesión</a></li>
                     {% if user.tipo == 1 %}
                         <li><a href="{% url 'index' %}"><i class="material-icons">home</i>Inicio</a></li>
                     {% else %}
