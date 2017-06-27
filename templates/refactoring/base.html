@@ -157,8 +157,8 @@
                     {% if user.tipo == 1 %}
                         <li><a href="{% url 'index' %}"><i class="material-icons">home</i>Inicio</a></li>
                     {% else %}
-{#                        <li><a href="javascript:;" onclick="document.getElementById('dashboard').submit();"><i class="material-icons">assessment</i>Datos de ventas</a></li>#}
-                        <li><a href="{% url 'dashboard' %}"><i class="material-icons">assessment</i>Datos de ventas</a></li>
+                        <li><a href="javascript:;" onclick="document.getElementById('dashboard').submit();"><i class="material-icons">assessment</i>Datos de ventas</a></li>
+{#                        <li><a href="{% url 'dashboard' %}"><i class="material-icons">assessment</i>Datos de ventas</a></li>#}
                     {% endif %}
                     {% if user.tipo == 1 or user.tipo == 3 %}
                         <div id="alerta_pol">
