@@ -105,7 +105,9 @@ def actualizar_actividad(vendedor):
     now = datetime.datetime.now().time()
     if vendedor.horarioIni < now < vendedor.horarioFin:
         vendedor.activo = True
-        vendedor.save()
+    else:
+        vendedor.activo = False
+    vendedor.save()
 
 
 def chequear_filtro(vendedor, filtro):
