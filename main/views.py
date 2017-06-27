@@ -11,6 +11,7 @@ from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
+from flask import json
 
 from main.utils import *
 from .forms import *
@@ -1224,6 +1225,23 @@ def crearTransaccion(request):
         return HttpResponse('error message')
     return HttpResponse("")
 
+def dashboard(request):
+    usuario = Usuario.objects.get(usuario=request.user)
+    vendedor = Vendedor.objects.get(usuario=usuario)
+    return render(request, 'refactoring/dashboard.html', {'user': usuario, 'userDj': request.user,
+                                                              'vendedor': vendedor})
+
+def get_data(request):
+    pid = request.POST.get("vendedorId", None)
+    usuario = Usuario.objects.get(id=pid)
+    vendedor = Vendedor.objects.get(usuario=usuario)
+    fecha_hoy = datetime.datetime.now().replace(microsecond=0).date()
+    transactiones = Transacciones.objects.filter(vendedor=vendedor)
+    transactiones_hoy = transactiones.filter(fecha=fecha_hoy)
+    qs = transactiones_hoy.values('comida_id').annotate(total=Sum('precio')).order_by('total')
+    print(json.dumps(qs))
+    return JsonResponse(json.dumps(qs))
+
 class Dashboard(View):
 
     template_name = 'refactoring/dashboard.html'
@@ -1232,15 +1250,21 @@ class Dashboard(View):
         pid = request.POST.get("vendedorId", None)
         usuario = Usuario.objects.get(id=pid)
         vendedor = Vendedor.objects.get(usuario=usuario)
+        fecha_hoy = datetime.datetime.now().replace(microsecond=0).date()
+        transactiones = Transacciones.objects.filter(vendedor=vendedor)
+        transactiones_hoy = transactiones.filter(fecha=fecha_hoy)
         transaccionesDiariasArr = []
-        gananciasDiarias = Transacciones.objects.filter(vendedor=vendedor).values('fecha').annotate(ganancia=Sum('precio'))
+        gananciasDiarias = transactiones_hoy.values('comida_id').annotate(ganancia=Sum('precio'))
+        print(gananciasDiarias)
         temp_gananciasDiarias = list(gananciasDiarias)
+        print(temp_gananciasDiarias)
         gananciasDiariasArr = []
         for element in temp_gananciasDiarias:
             aux = []
-            aux.append(element['fecha'])
+            aux.append(element['comida_id'])
             aux.append(element['ganancia'])
             gananciasDiariasArr.append(aux)
+        print(gananciasDiariasArr)
         gananciasDiariasArr = simplejson.dumps(gananciasDiariasArr)
         print(gananciasDiariasArr)
 
