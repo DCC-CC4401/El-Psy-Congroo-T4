@@ -10,7 +10,7 @@ idna==2.5
 ndg-httpsclient==0.4.2
 olefile==0.44
 packaging==16.8
-Pillow==4.1.1
+Pillow==6.2.0
 pusher==1.7.1
 pyasn1==0.2.3
 pycparser==2.17
