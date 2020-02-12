@@ -4,7 +4,7 @@ certifi==2017.4.17
 cffi==1.10.0
 chardet==3.0.4
 cryptography==1.9
-Django==1.11.2
+Django==1.11.28
 django-multiselectfield==0.1.7
 idna==2.5
 ndg-httpsclient==0.4.2
